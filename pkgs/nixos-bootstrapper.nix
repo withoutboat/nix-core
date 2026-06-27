@@ -11,12 +11,16 @@ stdenv.mkDerivation {
   installPhase = ''
     mkdir -p $out/bin
     
-    find . -type f -executable -exec cp {} $out/bin/nixos-bootstrapper \;
+    TARGET_BIN=$(find . -type f -name "nixos-bootstrapper*" | head -n 1)
     
-    if [ ! -f $out/bin/nixos-bootstrapper ]; then
-      echo "Error: No executable binary found in the release archive structure!"
+    if [ -z "$TARGET_BIN" ]; then
+      echo "Error: Cannot find any file matching 'nixos-bootstrapper*' in the archive!"
+      ls -R
       exit 1
     fi
+    
+    echo "Found binary at $TARGET_BIN, copying to $out/bin/nixos-bootstrapper"
+    cp "$TARGET_BIN" $out/bin/nixos-bootstrapper
     
     chmod +x $out/bin/nixos-bootstrapper
   '';
