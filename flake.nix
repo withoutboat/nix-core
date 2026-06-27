@@ -30,5 +30,15 @@
         ./hosts/iso-installer.nix 
       ];
     }).config.system.build.isoImage;
+
+    nixosConfigurations.pc-th = nixpkgs.lib.nixosSystem {
+      inherit system;
+      modules = [
+        { nixpkgs.pkgs = pkgs; }
+
+        ./hosts/pc-th.nix
+        
+      ];
+    };
   };
 }
