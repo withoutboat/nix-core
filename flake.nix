@@ -3,10 +3,6 @@
 
   inputs = {
     nixpkgs.url = "github:nixos/nixpkgs/nixos-unstable";
-    nixos-generators = {
-      url = "github:nix-community/nixos-generators";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
 
     nixos-bootstrapper-src = {
       url = "github:withoutboat/nixos-bootstrapper/releases/download/v0.1.1/nixos-bootstrapper-linux-amd64.tar.gz";
@@ -14,7 +10,7 @@
     };
   };
 
-  outputs = { self, nixpkgs, nixos-generators, nixos-bootstrapper-src, ... }@inputs:
+  outputs = { self, nixpkgs, nixos-bootstrapper-src, ... }@inputs:
   let
     system = "x86_64-linux";
     
@@ -26,14 +22,13 @@
       ];
     };
   in {
-    packages.${system}.iso-installer = nixos-generators.nixosGenerate {
+    packages.${system}.iso-installer = (nixpkgs.lib.nixosSystem {
       inherit system;
       modules = [
+        "${nixpkgs}/nixos/modules/installer/cd-dvd/installation-cd-minimal.nix"
         { nixpkgs.pkgs = pkgs; }
-        
         ./hosts/iso-installer.nix 
       ];
-      format = "install-iso";
-    };
+    }).config.system.build.isoImage;
   };
 }
