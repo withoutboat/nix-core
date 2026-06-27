@@ -19,7 +19,7 @@
     nixos-bootstrapper 
   ];
 
-  services.getty.autologinUser = "root";
+  services.getty.autologinUser = pkgs.lib.mkForce "root";
   programs.bash.loginShellInit = ''
     if [ "$(tty)" = "/dev/tty1" ]; then
       exec nixos-bootstrapper
