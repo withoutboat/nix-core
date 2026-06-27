@@ -9,7 +9,7 @@
     };
 
     nixos-bootstrapper-src = {
-      url = "github:withoutboat/nixos-bootstrapper/releases/download/v0.1.0/nixos-bootstrapper-linux-amd64.tar.gz";
+      url = "github:withoutboat/nixos-bootstrapper/releases/download/v0.1.1/nixos-bootstrapper-linux-amd64.tar.gz";
       flake = false;
     };
   };
