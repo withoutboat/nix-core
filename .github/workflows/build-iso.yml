@@ -43,9 +43,9 @@ jobs:
         uses: softprops/action-gh-release@v2
         with:
           tag_name: ${{ github.ref_type == 'tag' && github.ref_name || 'latest' }}
-          name: ${{ github.ref_type == 'tag' && paste0('Release ', github.ref_name) || 'Latest Custom ISO Build' }}
+          name: ${{ github.ref_type == 'tag' && format('Release {0}', github.ref_name) || 'Latest Custom ISO Build' }}
           draft: false
           prerelease: false
           files: dist/nixos-custom-installer.iso
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} 
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
