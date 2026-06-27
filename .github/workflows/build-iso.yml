@@ -1,0 +1,38 @@
+name: Automated NixOS ISO Build
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  build-iso:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Download and Extract Bootstrapper Release Binary
+        run: |
+          mkdir -p ./local-bootstrapper
+          URL="https://github.com/withoutboat/nixos-bootstrapper/releases/download/v0.1.0/nixos-bootstrapper-linux-amd64.tar.gz"
+          curl -L "$URL" | tar -xzf - -C ./local-bootstrapper
+
+      - name: Install Nix
+        uses: determinatesystems/nix-installer-action@v14
+
+      - name: Magic Nix Cache
+        uses: determinatesystems/magic-nix-cache-action@v8
+
+      - name: Build Custom ISO with Input Override
+        run: |
+          nix build .#iso-installer --override-input nixos-bootstrapper-src ./local-bootstrapper
+
+      - name: Upload ISO to Artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: nixos-yubikey-installer
+          path: result/iso/*.iso
+          retention-days: 5
