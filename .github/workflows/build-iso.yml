@@ -32,7 +32,7 @@ jobs:
 
       - name: Build Custom ISO with Input Override
         run: |
-          nix build .#iso-installer --override-input nixos-bootstrapper-src ./local-bootstrapper
+          nix build .#iso-installer --recreate-lock-file --override-input nixos-bootstrapper-src ./local-bootstrapper
 
       - name: Upload ISO to Artifacts
         uses: actions/upload-artifact@v4
