@@ -9,7 +9,7 @@ on:
 
 permissions:
   id-token: write
-  contents: read
+  contents: write
 
 jobs:
   build-iso:
@@ -34,9 +34,18 @@ jobs:
         run: |
           nix build .#iso-installer --recreate-lock-file --override-input nixos-bootstrapper-src ./local-bootstrapper
 
-      - name: Upload ISO to Artifacts
-        uses: actions/upload-artifact@v4
+      - name: Prepare ISO File for Release
+        run: |
+          mkdir -p dist
+          cp -L result/iso/*.iso dist/nixos-custom-installer.iso
+
+      - name: Upload ISO to GitHub Releases
+        uses: softprops/action-gh-release@v2
         with:
-          name: nixos-yubikey-installer
-          path: result/iso/*.iso
-          retention-days: 5
+          tag_name: ${{ github.ref_type == 'tag' && github.ref_name || 'latest' }}
+          name: ${{ github.ref_type == 'tag' && paste0('Release ', github.ref_name) || 'Latest Custom ISO Build' }}
+          draft: false
+          prerelease: false
+          files: dist/nixos-custom-installer.iso
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} 
