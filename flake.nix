@@ -15,7 +15,7 @@
     };
   };
 
-  outputs = { self, nixpkgs, nixos-bootstrapper-src, home-manager, nix-home, ... }@inputs:
+  outputs = { self, nixpkgs, home-manager, nix-home, ... }@inputs:
   let
     system = "x86_64-linux";
     
