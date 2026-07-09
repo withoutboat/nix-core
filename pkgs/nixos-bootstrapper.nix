@@ -17,7 +17,7 @@ let
 in
 stdenv.mkDerivation {
   pname = "nixos-bootstrapper";
-  version = "0.1.2";
+  version = "0.1.4";
   
   src = nixos-bootstrapper-src;
   sourceRoot = ".";
@@ -28,15 +28,19 @@ stdenv.mkDerivation {
     echo '${hostsJson}' > hosts.json
     echo "Baked hosts into metadata context: ${hostsJson}"
 
-    TARGET_BIN=$(find . -type f -name "*nixos-bootstrapper*" | head -n 1)
-    if [ -z "$TARGET_BIN" ]; then
+    echo "Files in archive:"
+    ls -R
+
+    if [ -f "nixos-bootstrapper-linux-amd64" ]; then
+      cp nixos-bootstrapper-linux-amd64 $out/bin/nixos-bootstrapper
+    elif [ -f "nixos-bootstrapper" ]; then
+      cp nixos-bootstrapper $out/bin/nixos-bootstrapper
+    else
       echo "Error: Binary not found in source archive!"
       exit 1
     fi
     
-    cp "$TARGET_BIN" $out/bin/nixos-bootstrapper
     chmod +x $out/bin/nixos-bootstrapper
-    
     cp hosts.json $out/bin/
   '';
 }
