@@ -14,12 +14,6 @@ jobs:
       - name: Checkout Repository
         uses: actions/checkout@v4
 
-      - name: Download Binary
-        run: |
-          mkdir -p ./local-bootstrapper
-          curl -L "https://github.com/withoutboat/nixos-bootstrapper/releases/download/v0.1.4/nixos-bootstrapper-linux-amd64" -o ./local-bootstrapper/nixos-bootstrapper
-          chmod +x ./local-bootstrapper/nixos-bootstrapper 
-
       - name: Install Nix
         uses: determinatesystems/nix-installer-action@v14
 
@@ -28,7 +22,7 @@ jobs:
 
       - name: Build Custom ISO with Input Override
         run: |
-          nix build .#iso-installer --recreate-lock-file --override-input nixos-bootstrapper-src ./local-bootstrapper
+          nix build .#iso-installer --recreate-lock-file
 
       - name: Prepare ISO File for Release
         run: |

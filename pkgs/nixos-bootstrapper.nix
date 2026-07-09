@@ -1,32 +1,23 @@
-{ stdenv, nixos-bootstrapper-src, lib, ... }:
+{ stdenv, fetchurl, lib }:
 
 let
-  hostsDir = ../hosts;
-  
-  hostFiles = if builtins.pathExists hostsDir 
-              then builtins.attrNames (builtins.readDir hostsDir)
-              else [ "pc-th.nix" ];
-
-  discoveredHosts = lib.pipe hostFiles [
-    (builtins.filter (name: lib.hasSuffix ".nix" name))
-    (map (name: lib.removeSuffix ".nix" name))
-    (builtins.filter (name: name != "iso-installer"))
-  ];
-
-  hostsJson = builtins.toJSON { hosts = discoveredHosts; };
+  version = "0.1.5";
 in
 stdenv.mkDerivation {
   pname = "nixos-bootstrapper";
-  version = "0.1.5";
-  
-  src = nixos-bootstrapper-src;
-  
+  inherit version;
+
+  src = fetchurl {
+    url = "https://github.com/withoutboat/nixos-bootstrapper/releases/download/v${version}/nixos-bootstrapper-linux-amd64";
+    sha256 = lib.fakeSha256; 
+  };
+
   dontUnpack = true;
+  dontBuild = true;
 
   installPhase = ''
     mkdir -p $out/bin
-    find $src -maxdepth 1 -type f -exec cp {} $out/bin/nixos-bootstrapper \;
+    cp $src $out/bin/nixos-bootstrapper
     chmod +x $out/bin/nixos-bootstrapper
-    echo '${hostsJson}' > $out/bin/hosts.json
   '';
 }

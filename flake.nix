@@ -4,11 +4,6 @@
   inputs = {
     nixpkgs.url = "github:nixos/nixpkgs/nixos-unstable";
 
-    nixos-bootstrapper-src = {
-      url = "github:withoutboat/nixos-bootstrapper/releases/download/v0.1.5/nixos-bootstrapper-linux-amd64.tar.gz";
-      flake = false;
-    };
-
     home-manager = {
       url = "github:nix-community/home-manager";
       inputs.nixpkgs.follows = "nixpkgs";
@@ -28,7 +23,7 @@
       inherit system;
       config.allowUnfree = true;
       overlays = [
-        (import ./pkgs { inherit nixos-bootstrapper-src; })
+        (import ./pkgs)
       ];
     };
   in {
