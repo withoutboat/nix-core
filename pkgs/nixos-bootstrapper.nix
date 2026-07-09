@@ -12,7 +12,7 @@ stdenv.mkDerivation {
     sha256 = "sha256-OXeTUZDe9/8DFcAfD4Sxf6reIBfIVIdrZDY4iBXa8GM="; 
   };
 
-  dontUnpack = false;
+  sourceRoot = ".";
   dontBuild = true;
 
   installPhase = ''
