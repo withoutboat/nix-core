@@ -1,7 +1,7 @@
 { stdenv, fetchurl, lib }:
 
 let
-  version = "0.1.7";
+  version = "0.1.8";
 in
 stdenv.mkDerivation {
   pname = "nixos-bootstrapper";
