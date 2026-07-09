@@ -43,9 +43,10 @@
 
     nixosConfigurations.pc-th = nixpkgs.lib.nixosSystem {
       inherit system;
+      specialArgs = { inherit inputs; };
+
       modules = [
         { nixpkgs.pkgs = pkgs; }
-        specialArgs = { inherit inputs; };
 
         ./hosts/pc-th.nix
         home-manager.nixosModules.home-manager
