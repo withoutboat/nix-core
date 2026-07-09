@@ -25,11 +25,8 @@ stdenv.mkDerivation {
 
   installPhase = ''
     mkdir -p $out/bin
-    
-    cp $src $out/bin/nixos-bootstrapper
-    
+    find $src -maxdepth 1 -type f -exec cp {} $out/bin/nixos-bootstrapper \;
     chmod +x $out/bin/nixos-bootstrapper
-    
     echo '${hostsJson}' > $out/bin/hosts.json
   '';
 }
