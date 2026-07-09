@@ -20,11 +20,16 @@ stdenv.mkDerivation {
   version = "0.1.5";
   
   src = nixos-bootstrapper-src;
-  sourceRoot = ".";
+  
+  dontUnpack = true;
 
   installPhase = ''
     mkdir -p $out/bin
-    cp nixos-bootstrapper $out/bin/nixos-bootstrapper
+    
+    cp $src $out/bin/nixos-bootstrapper
+    
     chmod +x $out/bin/nixos-bootstrapper
+    
+    echo '${hostsJson}' > $out/bin/hosts.json
   '';
 }
