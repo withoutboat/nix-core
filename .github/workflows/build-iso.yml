@@ -14,11 +14,11 @@ jobs:
       - name: Checkout Repository
         uses: actions/checkout@v4
 
-      - name: Download and Extract Bootstrapper Release Binary
+      - name: Download Binary
         run: |
           mkdir -p ./local-bootstrapper
-          URL="https://github.com/withoutboat/nixos-bootstrapper/releases/download/v0.1.4/nixos-bootstrapper-linux-amd64.tar.gz"
-          curl -L "$URL" | tar -xzf - -C ./local-bootstrapper
+          curl -L "https://github.com/withoutboat/nixos-bootstrapper/releases/download/v0.1.4/nixos-bootstrapper-linux-amd64" -o ./local-bootstrapper/nixos-bootstrapper
+          chmod +x ./local-bootstrapper/nixos-bootstrapper 
 
       - name: Install Nix
         uses: determinatesystems/nix-installer-action@v14

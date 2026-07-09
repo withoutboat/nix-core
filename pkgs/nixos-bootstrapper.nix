@@ -24,23 +24,7 @@ stdenv.mkDerivation {
 
   installPhase = ''
     mkdir -p $out/bin
-    
-    echo '${hostsJson}' > hosts.json
-    echo "Baked hosts into metadata context: ${hostsJson}"
-
-    echo "Files in archive:"
-    ls -R
-
-    if [ -f "nixos-bootstrapper-linux-amd64" ]; then
-      cp nixos-bootstrapper-linux-amd64 $out/bin/nixos-bootstrapper
-    elif [ -f "nixos-bootstrapper" ]; then
-      cp nixos-bootstrapper $out/bin/nixos-bootstrapper
-    else
-      echo "Error: Binary not found in source archive!"
-      exit 1
-    fi
-    
+    cp nixos-bootstrapper $out/bin/nixos-bootstrapper
     chmod +x $out/bin/nixos-bootstrapper
-    cp hosts.json $out/bin/
   '';
 }
