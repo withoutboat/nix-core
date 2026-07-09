@@ -17,7 +17,7 @@ let
 in
 stdenv.mkDerivation {
   pname = "nixos-bootstrapper";
-  version = "0.1.4";
+  version = "0.1.5";
   
   src = nixos-bootstrapper-src;
   sourceRoot = ".";

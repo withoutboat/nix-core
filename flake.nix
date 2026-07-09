@@ -5,7 +5,7 @@
     nixpkgs.url = "github:nixos/nixpkgs/nixos-unstable";
 
     nixos-bootstrapper-src = {
-      url = "github:withoutboat/nixos-bootstrapper/releases/download/v0.1.4/nixos-bootstrapper-linux-amd64.tar.gz";
+      url = "github:withoutboat/nixos-bootstrapper/releases/download/v0.1.5/nixos-bootstrapper-linux-amd64.tar.gz";
       flake = false;
     };
 
