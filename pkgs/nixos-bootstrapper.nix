@@ -8,16 +8,16 @@ stdenv.mkDerivation {
   inherit version;
 
   src = fetchurl {
-    url = "https://github.com/withoutboat/nixos-bootstrapper/releases/download/v${version}/nixos-bootstrapper-linux-amd64";
-    sha256 = lib.fakeSha256; 
+    url = "https://github.com/withoutboat/nixos-bootstrapper/releases/download/v${version}/nixos-bootstrapper-linux-amd64.tar.gz";
+    sha256 = "sha256-OXeTUZDe9/8DFcAfD4Sxf6reIBfIVIdrZDY4iBXa8GM="; 
   };
 
-  dontUnpack = true;
+  dontUnpack = false;
   dontBuild = true;
 
   installPhase = ''
     mkdir -p $out/bin
-    cp $src $out/bin/nixos-bootstrapper
+    cp nixos-bootstrapper-linux-amd64 $out/bin/nixos-bootstrapper
     chmod +x $out/bin/nixos-bootstrapper
   '';
 }
