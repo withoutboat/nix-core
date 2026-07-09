@@ -17,7 +17,7 @@ stdenv.mkDerivation {
 
   installPhase = ''
     mkdir -p $out/bin
-    cp nixos-bootstrapper-linux-amd64 $out/bin/nixos-bootstrapper
+    cp nixos-bootstrapper $out/bin/nixos-bootstrapper
     chmod +x $out/bin/nixos-bootstrapper
   '';
 }
