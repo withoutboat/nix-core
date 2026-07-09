@@ -1,8 +1,15 @@
-{ config, pkgs, lib, ... }:
+{ pkgs, ... }:
 
 {
   imports = [
-    (lib.optional (builtins.pathExists ./pc-th-hardware.nix) ./pc-th-hardware.nix)
+    ./modules/hardware.nix
+    ./modules/user.nix
+    ./modules/hardware-drivers.nix
+    ./modules/yubikey.nix
+    ./modules/logitech.nix
+    ./modules/terminal.nix
+    ./modules/hyperland.nix
+    ./modules/wayland.nix
   ];
 
   networking.hostName = "pc-th";
@@ -22,13 +29,6 @@
       preLVM = true;
       yubikey.slot = 2;
     };
-  };
-
-  users.users.vladimir = {
-    isNormalUser = true;
-    description = "Vladimir";
-    extraGroups = [ "networkmanager" "wheel" "video" "audio" ];
-    shell = pkgs.zsh;
   };
 
   environment.systemPackages = with pkgs; [

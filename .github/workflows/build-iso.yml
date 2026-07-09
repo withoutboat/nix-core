@@ -17,7 +17,7 @@ jobs:
       - name: Download and Extract Bootstrapper Release Binary
         run: |
           mkdir -p ./local-bootstrapper
-          URL="https://github.com/withoutboat/nixos-bootstrapper/releases/download/v0.1.0/nixos-bootstrapper-linux-amd64.tar.gz"
+          URL="https://github.com/withoutboat/nixos-bootstrapper/releases/download/v0.1.4/nixos-bootstrapper-linux-amd64.tar.gz"
           curl -L "$URL" | tar -xzf - -C ./local-bootstrapper
 
       - name: Install Nix

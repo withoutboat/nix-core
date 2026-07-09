@@ -5,12 +5,22 @@
     nixpkgs.url = "github:nixos/nixpkgs/nixos-unstable";
 
     nixos-bootstrapper-src = {
-      url = "github:withoutboat/nixos-bootstrapper/releases/download/v0.1.1/nixos-bootstrapper-linux-amd64.tar.gz";
+      url = "github:withoutboat/nixos-bootstrapper/releases/download/v0.1.4/nixos-bootstrapper-linux-amd64.tar.gz";
       flake = false;
+    };
+
+    home-manager = {
+      url = "github:nix-community/home-manager";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
+    nix-home = {
+      url = "github:withoutboat/nix-home";
+      flake = true;
     };
   };
 
-  outputs = { self, nixpkgs, nixos-bootstrapper-src, ... }@inputs:
+  outputs = { self, nixpkgs, nixos-bootstrapper-src, home-manager, nix-home, ... }@inputs:
   let
     system = "x86_64-linux";
     
@@ -35,9 +45,10 @@
       inherit system;
       modules = [
         { nixpkgs.pkgs = pkgs; }
+        specialArgs = { inherit inputs; };
 
         ./hosts/pc-th.nix
-        
+        home-manager.nixosModules.home-manager
       ];
     };
   };
