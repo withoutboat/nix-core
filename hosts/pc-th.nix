@@ -26,7 +26,7 @@
     luks.devices."cryptroot" = {
       device = "/dev/disk/by-partlabel/disk-main-luks";
       preLVM = true;
-      crypttabExtraOpts = [ "fido2-device=auto" ];
+      crypttabExtraOpts = [ "fido2-device=auto" "fido2-with-user-presence=yes" ];
     };
   };
 
