@@ -1,4 +1,4 @@
-{ pkgs, ... }:
+{ config, pkgs, ... }:
 
 {
   imports = [
@@ -21,12 +21,12 @@
   boot.loader.efi.canTouchEfiVariables = true;
 
   boot.initrd = {
+    systemd.enable = true; 
     availableKernelModules = [ "xhci_pci" "ahci" "nvme" "usb_storage" "sd_mod" ];
-    luks.yubikeySupport = true;
     luks.devices."cryptroot" = {
-      device = "/dev/disk/by-partlabel/disk-main-luks"; 
+      device = "/dev/disk/by-partlabel/disk-main-luks";
       preLVM = true;
-      yubikey.slot = 2;
+      crypttabExtraOpts = [ "fido2-device=auto" ];
     };
   };
 
