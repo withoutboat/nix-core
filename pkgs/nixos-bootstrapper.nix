@@ -9,7 +9,7 @@ stdenv.mkDerivation {
 
   src = fetchurl {
     url = "https://github.com/withoutboat/nixos-bootstrapper/releases/download/v${version}/nixos-bootstrapper-linux-amd64.tar.gz";
-    sha256 = "sha256-RddrpriqwDds6VaQU/wkmDq4KZv3uh70bTkJrB8u4S0="; 
+    sha256 = "sha256-qgCKVDhFDetL68+ubq2iwlQaM3XDNLDTTCye6GZ9jTk="; 
   };
 
   sourceRoot = ".";
