@@ -30,6 +30,8 @@
     };
   };
 
+  #security.pam.services.login.u2fAuth = true
+
   environment.systemPackages = with pkgs; [
     git neovim curl home-manager
   ];
