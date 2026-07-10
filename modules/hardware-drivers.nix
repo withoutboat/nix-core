@@ -25,14 +25,14 @@
       nvidiaSettings = true;
       package = config.boot.kernelPackages.nvidiaPackages.production;
     }
-    (lib.mkIf (spec.gpu == "hybrid-amd-nvidia" || spec.gpu == "intel-nvidia") {
-      prime = {
-        offload = {
-          enable = true;
-          enableOffloadCmd = true;
-        };
-      };
-    })
+    #(lib.mkIf (spec.gpu == "hybrid-amd-nvidia" || spec.gpu == "intel-nvidia") {
+    #  prime = {
+    #    offload = {
+    #      enable = true;
+    #      enableOffloadCmd = true;
+    #    };
+    #  };
+    #})
   ]);
 
   systemd.tmpfiles.rules = lib.mkIf (lib.hasPrefix "amd" spec.gpu) [
