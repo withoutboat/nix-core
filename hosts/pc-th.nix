@@ -2,13 +2,13 @@
 
 {
   imports = [
-    ./modules/user.nix
-    ./modules/hardware-drivers.nix
-    ./modules/yubikey.nix
-    ./modules/logitech.nix
-    ./modules/terminal.nix
-    ./modules/hyperland.nix
-    ./modules/wayland.nix
+    ../modules/user.nix
+    ../modules/hardware-drivers.nix
+    ../modules/yubikey.nix
+    ../modules/logitech.nix
+    ../modules/terminal.nix
+    ../modules/hyperland.nix
+    ../modules/wayland.nix
   ];
 
   networking.hostName = "pc-th";
