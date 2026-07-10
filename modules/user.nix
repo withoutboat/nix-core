@@ -1,18 +1,12 @@
-{ config, pkgs, lib, inputs, ... }:
+{ config, pkgs, lib, inputs, spec ? { username = "withoutboat"; }, ... }:
 
 let
-  userContextPath = ../user-context.nix;
-  username = if builtins.pathExists userContextPath
-             then (import userContextPath).username
-             else "withoutboat";
+  username = spec.username;
 in
 {
   users.users.${username} = {
     isNormalUser = true;
-    description = builtins.concatStringsSep "" [ 
-      (lib.toUpper (builtins.substring 0 1 username)) 
-      (builtins.substring 1 (builtins.stringLength username) username) 
-    ];
+    description = "Primary User"; 
     extraGroups = [ "networkmanager" "wheel" "video" "audio" ];
     shell = pkgs.zsh;
   };
