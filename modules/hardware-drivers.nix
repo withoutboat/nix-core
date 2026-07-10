@@ -1,15 +1,21 @@
 { config, pkgs, lib, spec ? { cpu = "amd"; gpu = "none"; nvidiaOpen = false; }, ... }:
 
 {
+  hardware.enableRedistributableFirmware = true;
+
   hardware.cpu.amd.updateMicrocode = lib.mkIf (spec.cpu == "amd") true;
   hardware.cpu.intel.updateMicrocode = lib.mkIf (spec.cpu == "intel") true;
 
   hardware.graphics = lib.mkIf (spec.gpu != "none") {
     enable = true;
     enable32Bit = true;
+    extraPackages = with pkgs; [
+      intel-media-driver
+    ];
   };
 
-  services.xserver.videoDrivers = lib.mkIf (lib.hasSuffix "nvidia" spec.gpu) [ "nvidia" ];
+  services.xserver.videoDrivers = 
+    lib.optional (lib.hasSuffix "nvidia" spec.gpu) "nvidia" ++ ["modesetting"];
 
   hardware.nvidia = lib.mkIf (lib.hasSuffix "nvidia" spec.gpu) (lib.mkMerge [
     {
