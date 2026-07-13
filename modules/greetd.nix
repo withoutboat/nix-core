@@ -2,7 +2,7 @@
 
 {
   environment.systemPackages = [
-    pkgs.greetd.tuigreet
+    pkgs.tuigreet
   ];
 
   services.greetd = {
