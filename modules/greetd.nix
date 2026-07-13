@@ -3,30 +3,35 @@
 let
   managedUsers = lib.attrNames config.home-manager.users;
   managedUserCount = builtins.length managedUsers;
+  hasExplicitUsername = spec ? username;
+  hasManagedUser = managedUserCount == 1;
   username =
-    if spec ? username then
+    if hasExplicitUsername then
       spec.username
-    else if managedUserCount == 1 then
-      lib.head managedUsers
     else
-      "";
+      lib.head managedUsers;
+  usernameAssertionMessage =
+    if managedUserCount == 0 then
+      "modules/greetd.nix requires spec.username or exactly one home-manager.users entry for Hyprland auto-start. No Home Manager users are configured, so please set spec.username."
+    else
+      "modules/greetd.nix requires spec.username or exactly one home-manager.users entry for Hyprland auto-start. Found ${toString managedUserCount} managed users, so please set spec.username.";
 in {
   assertions = [
     {
-      assertion = username != "";
-      message = "modules/greetd.nix requires exactly one home-manager.users entry or an explicit spec.username for Hyprland auto-start. Found ${toString managedUserCount} managed users. Please specify spec.username or configure exactly one Home Manager user.";
+      assertion = hasExplicitUsername || hasManagedUser;
+      message = usernameAssertionMessage;
     }
   ];
 
   services.greetd = {
     enable = true;
-    settings = {
+    settings = lib.optionalAttrs (hasExplicitUsername || hasManagedUser) {
       # Auto-start Hyprland on this workstation; tuigreet remains available as a fallback session chooser.
       initial_session = {
         command = "${pkgs.hyprland}/bin/Hyprland";
         user = username;
       };
-
+    } // {
       default_session = {
         command = "${pkgs.greetd.tuigreet}/bin/tuigreet --time --remember --remember-user --cmd Hyprland";
         user = "greeter";
