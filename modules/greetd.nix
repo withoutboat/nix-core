@@ -29,4 +29,5 @@ in
     TTYReset = true;
     TTYVHangup = true;
     TTYVTDisallocate = true;
-  };}
+  };
+}
