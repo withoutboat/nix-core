@@ -2,6 +2,7 @@
 
 {
   imports = [
+    ../modules/greetd.nix
     ../modules/user.nix
     ../modules/hardware-drivers.nix
     ../modules/yubikey.nix
