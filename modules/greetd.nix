@@ -1,8 +1,22 @@
-{ pkgs, spec ? { username = "withoutboat"; }, ... }:
+{ config, lib, pkgs, spec ? { }, ... }:
 
 let
-  username = spec.username;
+  normalUsers = lib.attrNames (lib.filterAttrs (_: user: user.isNormalUser or false) config.users.users);
+  username =
+    if spec ? username then
+      spec.username
+    else if normalUsers != [ ] then
+      lib.head normalUsers
+    else
+      "";
 in {
+  assertions = [
+    {
+      assertion = normalUsers != [ ] || spec ? username;
+      message = "modules/greetd.nix needs a normal user or spec.username for Hyprland auto-start.";
+    }
+  ];
+
   services.greetd = {
     enable = true;
     settings = {
