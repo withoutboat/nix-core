@@ -25,7 +25,7 @@
   security.pam.u2f = {
     enable = true;
     control = "sufficient";
-    authfile = "/etc/u2f_mappings";
+    authFile = "/etc/u2f_mappings";
   };
 
   security.pam.services.sudo.u2fAuth = true;
