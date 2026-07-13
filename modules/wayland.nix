@@ -18,10 +18,12 @@
 
   # Security, Portals, and Keyring integration
   security.polkit.enable = true;
+  programs.dconf.enable = true;
   services.gnome.gnome-keyring.enable = true;
   
   xdg.portal = {
     enable = true;
+    config.common.default = [ "hyprland" "gtk" ];
     extraPortals = [ pkgs.xdg-desktop-portal-hyprland ];
   };
 }
