@@ -1,7 +1,7 @@
 { stdenv, fetchurl, lib }:
 
 let
-  version = "0.1.17";
+  version = "0.1.46";
 in
 stdenv.mkDerivation {
   pname = "nixos-bootstrapper";
@@ -9,7 +9,7 @@ stdenv.mkDerivation {
 
   src = fetchurl {
     url = "https://github.com/withoutboat/nixos-bootstrapper/releases/download/v${version}/nixos-bootstrapper-linux-amd64.tar.gz";
-    sha256 = "sha256-qgCKVDhFDetL68+ubq2iwlQaM3XDNLDTTCye6GZ9jTk="; 
+    sha256 = "sha256-CQchplRdPCaB8UCpxMa23sKFHRP05NK+l0bwGI2fLOU=";
   };
 
   sourceRoot = ".";

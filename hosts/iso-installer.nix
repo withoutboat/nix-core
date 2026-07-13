@@ -5,6 +5,7 @@
     "${modulesPath}/profiles/installation-device.nix"
     
     ../modules/security.nix
+    ../modules/yubikey.nix
   ];
 
   networking.hostName = "nixos-core-installer";
@@ -14,7 +15,6 @@
 
   environment.systemPackages = with pkgs; [
     git
-    yubikey-manager
     cryptsetup
     zfs
     parted             # partprobe
