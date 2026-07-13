@@ -14,7 +14,7 @@ in {
   assertions = [
     {
       assertion = username != "";
-      message = "modules/greetd.nix requires spec.username or exactly one home-manager.users entry for Hyprland auto-start; found ${toString managedUserCount}.";
+      message = "modules/greetd.nix requires exactly one home-manager.users entry or an explicit spec.username for Hyprland auto-start. Found ${toString managedUserCount} managed users. Please specify spec.username or configure exactly one Home Manager user.";
     }
   ];
 
