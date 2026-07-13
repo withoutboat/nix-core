@@ -2,6 +2,8 @@
 
 let
   hyprlandSession = pkgs.writeShellScriptBin "hyprland-session" ''
+    export XDG_CURRENT_DESKTOP=Hyprland
+    export XDG_SESSION_TYPE=wayland
     exec ${pkgs.dbus}/bin/dbus-run-session ${pkgs.hyprland}/bin/Hyprland
   '';
 in
