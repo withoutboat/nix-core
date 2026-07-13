@@ -5,23 +5,37 @@ let
   managedUserCount = builtins.length managedUsers;
   managedUserList = lib.concatStringsSep ", " managedUsers;
   hasExplicitUsername = spec ? username;
-  hasManagedUser = managedUserCount == 1;
-  username =
+  explicitUsername =
     if hasExplicitUsername then
       spec.username
+    else
+      null;
+  hasManagedUser = managedUserCount == 1;
+  username =
+    if explicitUsername != null then
+      explicitUsername
     else if hasManagedUser then
       lib.head managedUsers
     else
       null;
+  hasSystemUser =
+    if username != null then
+      builtins.hasAttr username config.users.users
+    else
+      false;
   usernameAssertionMessage =
-    if managedUserCount == 0 then
+    if explicitUsername != null && !hasSystemUser then
+      "modules/greetd.nix requires spec.username to reference a defined users.users entry for Hyprland auto-start. '${explicitUsername}' is not configured as a system user."
+    else if username != null && !hasSystemUser then
+      "modules/greetd.nix detected '${username}' for Hyprland auto-start, but that user is not configured in users.users."
+    else if managedUserCount == 0 then
       "modules/greetd.nix requires spec.username or exactly one home-manager.users entry for Hyprland auto-start. No Home Manager users are configured, and spec.username is not set."
     else
       "modules/greetd.nix requires spec.username or exactly one home-manager.users entry for Hyprland auto-start. Found ${toString managedUserCount} managed users (${managedUserList}), so set spec.username explicitly.";
 in {
   assertions = [
     {
-      assertion = username != null;
+      assertion = username != null && hasSystemUser;
       message = usernameAssertionMessage;
     }
   ];
