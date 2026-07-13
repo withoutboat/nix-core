@@ -6,7 +6,7 @@ let
 in
 {
   networking.networkmanager.ensureProfiles = lib.mkIf hasWifi {
-    profiles.home-wifi = {
+    profiles.${spec.wifiSSID} = {
       connection = {
         id = spec.wifiSSID;
         type = "wifi";
@@ -19,6 +19,7 @@ in
       wifi-security = {
         auth-alg = "open";
         key-mgmt = "wpa-psk";
+        # psk is sourced from the machine-local hardware.nix (gitignored)
         psk = spec.wifiPass;
       };
       ipv4 = {
