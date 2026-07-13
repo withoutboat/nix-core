@@ -1,15 +1,21 @@
 { config, pkgs, ... }:
 
+let
+  hyprlandSession = pkgs.writeShellScriptBin "hyprland-session" ''
+    exec ${pkgs.dbus}/bin/dbus-run-session ${pkgs.hyprland}/bin/Hyprland
+  '';
+in
 {
   environment.systemPackages = [
     pkgs.tuigreet
+    hyprlandSession
   ];
 
   services.greetd = {
     enable = true;
     settings = {
       default_session = {
-        command = "tuigreet --time --remember --remember-user --cmd Hyprland";
+        command = "${pkgs.tuigreet}/bin/tuigreet --time --remember --remember-user --cmd ${hyprlandSession}/bin/hyprland-session";
         user = "greeter";
       };
     };
