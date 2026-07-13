@@ -22,8 +22,6 @@
   boot.loader.systemd-boot.configurationLimit = 15;
   boot.loader.efi.canTouchEfiVariables = true;
 
-  hardware.u2f.enable = true;
-
   security.pam.u2f = {
     enable = true;
     control = "sufficient";
