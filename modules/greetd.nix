@@ -1,19 +1,19 @@
 { config, lib, pkgs, spec ? { }, ... }:
 
 let
-  normalUsers = lib.attrNames (lib.filterAttrs (_: user: user.isNormalUser or false) config.users.users);
+  managedUsers = lib.attrNames config.home-manager.users;
   username =
     if spec ? username then
       spec.username
-    else if normalUsers != [ ] then
-      lib.head normalUsers
+    else if builtins.length managedUsers == 1 then
+      lib.head managedUsers
     else
       "";
 in {
   assertions = [
     {
-      assertion = normalUsers != [ ] || spec ? username;
-      message = "modules/greetd.nix needs a normal user or spec.username for Hyprland auto-start.";
+      assertion = username != "";
+      message = "modules/greetd.nix needs spec.username or exactly one home-manager.users entry for Hyprland auto-start.";
     }
   ];
 
