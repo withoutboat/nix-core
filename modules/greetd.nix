@@ -8,8 +8,10 @@ let
   username =
     if hasExplicitUsername then
       spec.username
+    else if hasManagedUser then
+      lib.head managedUsers
     else
-      lib.head managedUsers;
+      "";
   usernameAssertionMessage =
     if managedUserCount == 0 then
       "modules/greetd.nix requires spec.username or exactly one home-manager.users entry for Hyprland auto-start. No Home Manager users are configured, so please set spec.username."
@@ -25,13 +27,13 @@ in {
 
   services.greetd = {
     enable = true;
-    settings = lib.optionalAttrs (hasExplicitUsername || hasManagedUser) {
+    settings = {
       # Auto-start Hyprland on this workstation; tuigreet remains available as a fallback session chooser.
       initial_session = {
         command = "${pkgs.hyprland}/bin/Hyprland";
         user = username;
       };
-    } // {
+
       default_session = {
         command = "${pkgs.greetd.tuigreet}/bin/tuigreet --time --remember --remember-user --cmd Hyprland";
         user = "greeter";
