@@ -28,13 +28,13 @@ in {
 
   services.greetd = {
     enable = true;
-    settings = (lib.optionalAttrs (username != null) {
+    settings = {
       # Auto-start Hyprland on this workstation; tuigreet remains available as a fallback session chooser.
       initial_session = {
         command = "${pkgs.hyprland}/bin/Hyprland";
         user = username;
       };
-    }) // {
+
       default_session = {
         command = "${pkgs.greetd.tuigreet}/bin/tuigreet --time --remember --remember-user --cmd Hyprland";
         user = "greeter";
