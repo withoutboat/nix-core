@@ -25,22 +25,24 @@
   security.pam.u2f = {
     enable = true;
     control = "sufficient";
-    authFile = "/etc/u2f_mappings";
-  };
+    settings = {
+      authFile = "/etc/u2f_mappings";
+      cue = true;
+    };
+  }; 
 
   security.pam.services.sudo.u2fAuth = true;
   security.pam.services.login.u2fAuth = true;
 
   boot.initrd = {
     systemd.enable = true; 
-    availableKernelModules = [ "xhci_pci" "ahci" "nvme" "usb_storage" "sd_mod" ];
+    availableKernelModules = [ "xhci_pci" "ahci" "nvme" "usb_storage" "sd_mod" "usbhid" "hid_generic" ];
     luks.devices."cryptroot" = pkgs.lib.mkForce {
       device = "/dev/disk/by-partlabel/disk-main-luks";
       preLVM = true;
       crypttabExtraOpts = [ "fido2-device=auto" "fido2-with-user-presence=yes" ];
     };
-  };
-
+  }; 
   
   environment.systemPackages = with pkgs; [
     git neovim curl home-manager

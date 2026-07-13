@@ -9,7 +9,7 @@ in
     description = "Primary User"; 
     extraGroups = [ "networkmanager" "wheel" "video" "audio" ];
     shell = pkgs.zsh;
-    password = null;
+    password = "pssword"
   };
 
   home-manager.extraSpecialArgs = { inherit username; };
