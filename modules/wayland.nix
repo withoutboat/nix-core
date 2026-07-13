@@ -23,7 +23,7 @@
   
   xdg.portal = {
     enable = true;
-    config.common.default = "*";
+    config.common.default = [ "hyprland" "gtk" ];
     extraPortals = [ pkgs.xdg-desktop-portal-hyprland ];
   };
 }
