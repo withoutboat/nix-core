@@ -15,7 +15,7 @@ in
     enable = true;
     settings = {
       default_session = {
-        command = "${pkgs.tuigreet}/bin/tuigreet --time --remember --remember-user --cmd ${hyprlandSession}/bin/hyprland-session";
+        command = "${pkgs.greetd.tuigreet}/bin/tuigreet --time --remember --remember-user --tty 7 --asterisks --cmd ${hyprlandSession}/bin/hyprland-session";
         user = "greeter";
       };
     };
@@ -23,8 +23,6 @@ in
 
   systemd.services.greetd.serviceConfig = {
     Type = "idle";
-    StandardInput = "tty";
-    StandardOutput = "tty";
     StandardError = "journal";
     TTYReset = true;
     TTYVHangup = true;
