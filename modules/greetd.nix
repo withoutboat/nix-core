@@ -11,20 +11,13 @@ let
     else if hasManagedUser then
       lib.head managedUsers
     else
-      "";
+      builtins.abort usernameAssertionMessage;
   usernameAssertionMessage =
     if managedUserCount == 0 then
-      "modules/greetd.nix requires spec.username or exactly one home-manager.users entry for Hyprland auto-start. No Home Manager users are configured, so please set spec.username."
+      "modules/greetd.nix requires spec.username or exactly one home-manager.users entry for Hyprland auto-start. No Home Manager users are configured, and spec.username is not set."
     else
-      "modules/greetd.nix requires spec.username or exactly one home-manager.users entry for Hyprland auto-start. Found ${toString managedUserCount} managed users, so please set spec.username.";
+      "modules/greetd.nix requires spec.username or exactly one home-manager.users entry for Hyprland auto-start. Found ${toString managedUserCount} managed users, so set spec.username explicitly.";
 in {
-  assertions = [
-    {
-      assertion = hasExplicitUsername || hasManagedUser;
-      message = usernameAssertionMessage;
-    }
-  ];
-
   services.greetd = {
     enable = true;
     settings = {
