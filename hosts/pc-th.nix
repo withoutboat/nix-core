@@ -26,7 +26,7 @@
   boot.initrd = {
     systemd.enable = true; 
     availableKernelModules = [ "xhci_pci" "ahci" "nvme" "usb_storage" "sd_mod" ];
-    luks.devices."cryptroot" = {
+    luks.devices."cryptroot" = pkgs.lib.mkForce {
       device = "/dev/disk/by-partlabel/disk-main-luks";
       preLVM = true;
       crypttabExtraOpts = [ "fido2-device=auto" "fido2-with-user-presence=yes" ];
