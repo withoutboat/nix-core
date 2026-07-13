@@ -22,6 +22,16 @@
   boot.loader.systemd-boot.configurationLimit = 15;
   boot.loader.efi.canTouchEfiVariables = true;
 
+  hardware.u2f.enable = true;
+
+  security.pam.u2f = {
+    enable = true;
+    control = "sufficient";
+    authFile = "/etc/u2f_mappings";
+  };
+
+  security.pam.services.sudo.u2fAuth = true;
+  security.pam.services.login.u2fAuth = true;
 
   boot.initrd = {
     systemd.enable = true; 
@@ -33,8 +43,7 @@
     };
   };
 
-  #security.pam.services.login.u2fAuth = true
-
+  
   environment.systemPackages = with pkgs; [
     git neovim curl home-manager
   ];

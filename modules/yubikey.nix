@@ -14,9 +14,4 @@
   services.udev.extraRules = ''
     SUBSYSTEM=="usb", ATTR{idVendor}=="1050", MODE="0660", GROUP="plugdev"
   '';
-
-  security.pam.u2f = {
-    enable = true;
-    authFile = "/etc/u2f_mappings";
-  };
 }

@@ -12,9 +12,6 @@ in
     password = null;
   };
 
-  security.pam.services.login.u2fAuth = true;
-  security.pam.services.sudo.u2fAuth = true;
-
   home-manager.extraSpecialArgs = { inherit username; };
   home-manager.users.${username} = inputs.nix-home.homeModules.default;
 }
