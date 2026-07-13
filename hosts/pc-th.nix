@@ -17,7 +17,7 @@
   networking.networkmanager.enable = true;
 
   time.timeZone = "Asia/Tyumen";
-  i18n.defaultLocale = "ru_RU.UTF-8";
+  i18n.defaultLocale = "en_US.UTF-8";
 
   boot.loader.systemd-boot.enable = true;
   boot.loader.efi.efiSysMountPoint = "/efi";
