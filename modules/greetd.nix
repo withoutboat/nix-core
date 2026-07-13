@@ -1,15 +1,13 @@
 { config, pkgs, ... }:
 
 {
-  environment.systemPackages = [
-    pkgs.greetd-tuigreet
-  ];
-
   services.greetd = {
     enable = true;
+    package = pkgs.greetd.tuigreet;
+
     settings = {
       default_session = {
-        command = "${pkgs.greetd-tuigreet}/bin/tuigreet --time --remember --remember-user --cmd Hyprland";
+        command = "tuigreet --time --remember --remember-user --cmd Hyprland";
         user = "greeter";
       };
     };
