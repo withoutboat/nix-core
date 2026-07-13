@@ -23,7 +23,7 @@ in {
     settings = {
       # Auto-start Hyprland on this workstation; tuigreet remains available as a fallback session chooser.
       initial_session = {
-        command = "Hyprland";
+        command = "${pkgs.hyprland}/bin/Hyprland";
         user = username;
       };
 
