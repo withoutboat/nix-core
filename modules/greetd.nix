@@ -1,23 +1,15 @@
 { config, pkgs, ... }:
 
-let
-  hyprlandSession = pkgs.writeShellScriptBin "hyprland-session" ''
-    export XDG_CURRENT_DESKTOP=Hyprland
-    export XDG_SESSION_TYPE=wayland
-    exec ${pkgs.dbus}/bin/dbus-run-session ${pkgs.hyprland}/bin/Hyprland
-  '';
-in
 {
   environment.systemPackages = [
     pkgs.tuigreet
-    hyprlandSession
   ];
 
   services.greetd = {
     enable = true;
     settings = {
       default_session = {
-        command = "${pkgs.tuigreet}/bin/tuigreet --time --remember --asterisks --cmd ${hyprlandSession}/bin/hyprland-session";
+        command = "${pkgs.tuigreet}/bin/tuigreet --time --remember --asterisks --cmd Hyprland";
         user = "greeter";
       };
     };
@@ -31,5 +23,17 @@ in
     TTYReset = true;
     TTYVHangup = true;
     TTYVTDisallocate = true;
+  };
+
+  security.pam.services.greetd = {
+    text = ''
+      auth     required pam_securetty.so
+      auth     requisite pam_nologin.so
+      auth     sufficient pam_u2f.so authfile=/etc/u2f_mappings cue
+      auth     required pam_unix.so nullok
+      account  include  login
+      password include  login
+      session  include  login
+    '';
   };
 }
