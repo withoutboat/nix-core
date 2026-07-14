@@ -13,6 +13,8 @@
       url = "github:withoutboat/nix-home";
       flake = true;
     };
+
+    hyprland.url = "github:hyprwm/Hyprland";
   };
 
   outputs = { self, nixpkgs, home-manager, nix-home, ... }@inputs:
