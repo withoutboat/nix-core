@@ -17,7 +17,6 @@ in
     extraSpecialArgs = { 
       inherit inputs; 
       inherit username;
-      inherit (pkgs.stdenv.hostPlatform) system; 
     };
     users.${username} = inputs.nix-home.homeModules.default;
   };
