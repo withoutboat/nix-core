@@ -10,7 +10,7 @@
     enable = true;
     settings = {
       default_session = {
-        command = "${pkgs.greetd.tuigreet}/bin/tuigreet --time --remember --asterisks --cmd 'dbus-run-session Hyprland'";
+        command = "${pkgs.tuigreet}/bin/tuigreet --time --remember --asterisks --cmd 'dbus-run-session Hyprland'";
         user = "greeter";
       };
     };
