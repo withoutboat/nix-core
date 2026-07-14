@@ -9,6 +9,7 @@
     settings = {
       authFile = "/etc/u2f_mappings";
       cue = true;
+      control = "sufficient";
     };
   };
 
