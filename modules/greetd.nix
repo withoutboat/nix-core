@@ -15,21 +15,11 @@
     };
   };
 
-  systemd.services.greetd.serviceConfig = {
-    Type = "idle";
-    StandardInput = "tty";
-    StandardOutput = "tty";
-    StandardError = "journal";
-    TTYReset = true;
-    TTYVHangup = true;
-    TTYVTDisallocate = true;
-  };
-
   security.pam.services.greetd = {
     text = ''
       auth     required pam_securetty.so
       auth     requisite pam_nologin.so
-      auth     sufficient pam_u2f.so authfile=/etc/u2f_mappings cue
+      auth     required pam_u2f.so authfile=/etc/u2f_mappings cue
       auth     required pam_unix.so nullok
       account  include  login
       password include  login

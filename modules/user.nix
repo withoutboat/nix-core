@@ -16,4 +16,11 @@ in
   home-manager.useUserPackages = true;
   home-manager.extraSpecialArgs = { inherit username; };
   home-manager.users.${username} = inputs.nix-home.homeModules.default;
+
+  users.users.greeter = {
+    isSystemUser = true;
+    group = "greeter";
+    extraGroups = [ "video" "input" ]; 
+  };
+  users.groups.greeter = {};
 }
