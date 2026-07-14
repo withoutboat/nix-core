@@ -12,4 +12,6 @@
     # Hint to Electron apps to use Wayland
     NIXOS_OZONE_WL = "1";
   };
+
+  services.displayManager.sessionPackages = [ pkgs.hyprland ];
 }
