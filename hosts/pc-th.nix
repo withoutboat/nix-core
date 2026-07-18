@@ -46,4 +46,9 @@
 
   nix.settings.experimental-features = [ "nix-command" "flakes" ];
   system.stateVersion = "26.11";
+
+  system.activationScripts.force-rebuild = {
+    text = "echo 'Forcing rebuild at $(date)'";
+    deps = [];
+  };
 }
