@@ -43,6 +43,7 @@
       modules = [
         { nixpkgs.pkgs = pkgs; }
 
+
         ./hosts/pc-th.nix
         ./hardware.nix
         home-manager.nixosModules.home-manager
