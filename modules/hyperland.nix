@@ -9,6 +9,7 @@
 
   programs.hyprland = {
     enable = true;
+    withUWSM  = true;
   };
   security.polkit.enable = true;
   programs.dconf.enable = true;
