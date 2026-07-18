@@ -38,7 +38,7 @@
 
     nixosConfigurations.pc-th = nixpkgs.lib.nixosSystem {
       inherit system;
-      specialArgs = { inherit inputs; };
+      specialArgs = { inherit inputs self; };
 
       modules = [
         { nixpkgs.pkgs = pkgs; }
