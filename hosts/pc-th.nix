@@ -10,7 +10,6 @@
     ../modules/logitech.nix
     ../modules/terminal.nix
     ../modules/hyperland.nix
-    ../modules/wayland.nix
   ];
 
   networking.hostName = "pc-th";
