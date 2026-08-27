@@ -6,6 +6,7 @@
     ../modules/user.nix
     ../modules/hardware-drivers.nix
     ../modules/networks.nix
+    ../modules/amneziawg.nix
     ../modules/yubikey.nix
     ../modules/logitech.nix
     ../modules/terminal.nix
