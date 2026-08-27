@@ -1,4 +1,5 @@
 { config, lib, ... }:
+
 let
   cfg = config.services.amneziawg;
 in
@@ -9,28 +10,33 @@ in
     interfaceName = lib.mkOption {
       type = lib.types.str;
       default = "awg0";
-      description = "AmneziaWG interface name.";
     };
 
     configFile = lib.mkOption {
-      type = lib.types.nullOr lib.types.str;
+      type = lib.types.nullOr lib.types.path;
       default = null;
-      example = "/run/secrets/amnezia/amnezia.conf";
-      description = "Path to AmneziaWG config file used by wg-quick at runtime.";
     };
 
     autoStart = lib.mkOption {
       type = lib.types.bool;
       default = true;
-      description = "Whether to autostart the AmneziaWG interface.";
     };
   };
 
   config = lib.mkIf cfg.enable {
+    boot.extraModulePackages = [
+      config.boot.kernelPackages.amneziawg
+    ];
+
+    boot.kernelModules = [
+      "amneziawg"
+    ];
+
     assertions = [
       {
-        assertion = cfg.configFile != null && cfg.configFile != "";
-        message = "services.amneziawg.configFile must be set when services.amneziawg.enable = true.";
+        assertion = cfg.configFile != null;
+        message =
+          "services.amneziawg.configFile must be set when AmneziaWG is enabled.";
       }
     ];
 
