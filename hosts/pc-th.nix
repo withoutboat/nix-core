@@ -1,4 +1,4 @@
-{ config, pkgs, inputs, ... }:
+{ config, pkgs, ... }:
 
 {
   imports = [
@@ -6,7 +6,7 @@
     ../modules/user.nix
     ../modules/hardware-drivers.nix
     ../modules/networks.nix
-    inputs.nix-home.nixosModules.amnezia
+    ../modules/amneziawg.nix
     ../modules/yubikey.nix
     ../modules/logitech.nix
     ../modules/terminal.nix
