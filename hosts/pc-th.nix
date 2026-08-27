@@ -1,4 +1,4 @@
-{ config, pkgs, ... }:
+{ config, pkgs, inputs, ... }:
 
 {
   imports = [
@@ -6,7 +6,7 @@
     ../modules/user.nix
     ../modules/hardware-drivers.nix
     ../modules/networks.nix
-    ../modules/amneziawg.nix
+    inputs.nix-home.nixosModules.amnezia
     ../modules/yubikey.nix
     ../modules/logitech.nix
     ../modules/terminal.nix
@@ -15,6 +15,13 @@
 
   networking.hostName = "pc-th";
   networking.networkmanager.enable = true;
+
+  services.amneziawg = {
+    enable = true;
+    interfaceName = "awg0";
+    configFile = "${../secrets/amnezia_for_awg.conf}";
+    autoStart = true;
+  };
 
   time.timeZone = "Asia/Tyumen";
   i18n.defaultLocale = "en_US.UTF-8";
