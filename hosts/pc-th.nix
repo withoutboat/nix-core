@@ -21,8 +21,7 @@
   boot.loader.systemd-boot.enable = true;
   boot.loader.efi.efiSysMountPoint = "/efi";
   boot.loader.efi.canTouchEfiVariables = true;
-
-  boot.loader.systemd-boot.configurationLimit = 30;
+  boot.loader.systemd-boot.configurationLimit = 5;
   boot.loader.systemd-boot.editor = false;
   nix.gc = {
     automatic = true;
