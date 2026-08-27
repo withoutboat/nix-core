@@ -2,20 +2,19 @@
 
 ## `pc-th` AmneziaWG integration
 
-`pc-th` imports `inputs.nix-home.nixosModules.amnezia` directly and enables the
-system tunnel as `awg0`.
+`pc-th` imports the local `modules/amneziawg.nix` module and enables the system
+tunnel as `awg0`.
 
 - Machine-specific test config path in this repo: `secrets/amnezia_for_awg.conf`
 - The file is passed to `services.amneziawg.configFile` from `hosts/pc-th.nix`.
-- With `networking.networkmanager.enable = true`, the upstream module orders the
+- With `networking.networkmanager.enable = true`, the module orders the
   `wg-quick-awg0` unit after `NetworkManager-wait-online.service`.
 
 For a full tunnel, keep the routing in the config file, including
 `AllowedIPs = 0.0.0.0/0` and `AllowedIPs = ::/0` when needed, plus any endpoint
 reachability rules required by your provider's `amneziawg` config.
 
-The upstream module intentionally leaves `services.amneziawg.killSwitch.enable`
-disabled; no generic kill-switch is configured here.
+This module does not configure a generic kill-switch automatically.
 
 ### After merge
 
