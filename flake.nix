@@ -18,7 +18,7 @@
   outputs = { self, nixpkgs, home-manager, nix-home, ... }@inputs:
   let
     system = "x86_64-linux";
-    
+
     pkgs = import nixpkgs {
       inherit system;
       config.allowUnfree = true;
@@ -26,13 +26,14 @@
         (import ./pkgs)
       ];
     };
-  in {
+  in
+  {
     packages.${system}.iso-installer = (nixpkgs.lib.nixosSystem {
       inherit system;
       modules = [
         "${nixpkgs}/nixos/modules/installer/cd-dvd/installation-cd-minimal.nix"
         { nixpkgs.pkgs = pkgs; }
-        ./hosts/iso-installer.nix 
+        ./hosts/iso-installer/default.nix
       ];
     }).config.system.build.isoImage;
 
@@ -42,13 +43,10 @@
 
       modules = [
         { nixpkgs.pkgs = pkgs; }
-
-
-        ./hosts/pc-th.nix
-        ./hardware.nix
+        ./hosts/pc-th/default.nix
         home-manager.nixosModules.home-manager
       ];
     };
   };
 
-  }
+}
