@@ -1,11 +1,11 @@
-{ config, pkgs, modulesPath, ... }:
+{ pkgs, modulesPath, ... }:
 
 {
   imports = [
     "${modulesPath}/profiles/installation-device.nix"
-    
-    ../modules/security.nix
-    ../modules/yubikey.nix
+
+    ../../modules/security.nix
+    ../../modules/yubikey.nix
   ];
 
   networking.hostName = "nixos-core-installer";
@@ -22,11 +22,11 @@
     dosfstools         # mkfs.fat (boot раздел)
     e2fsprogs          # mkfs.ext4 (root раздел)
     pciutils           # lspci (детекция GPU в скрипте)
-    nixos-bootstrapper 
+    nixos-bootstrapper
   ];
 
   services.getty.autologinUser = pkgs.lib.mkForce "root";
-  
+
   programs.bash.loginShellInit = ''
     if [ "$(tty)" = "/dev/tty1" ]; then
       exec nixos-bootstrapper

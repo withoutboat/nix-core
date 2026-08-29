@@ -1,2 +1,4 @@
 /hardware.nix
 /amnezia.conf
+/hosts/*/hardware.nix
+/hosts/*/configuration.nix

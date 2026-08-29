@@ -1,6 +1,6 @@
 { config, pkgs, lib, inputs, spec ? { username = "withoutboat"; }, ... }:
 let
-  username = spec.username;
+  username = spec.username or "withoutboat";
 in
 {
   users.users.${username} = {
