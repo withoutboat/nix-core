@@ -26,41 +26,6 @@
     };
   };
 
-  # Automatic theme switching via systemd timers
-  systemd.services.theme-switch-light = {
-    description = "Switch to light theme (Stylix specialisation)";
-    serviceConfig = {
-      Type = "oneshot";
-      ExecStart = "/run/current-system/specialisation/light/bin/switch-to-configuration test";
-    };
-  };
-
-  systemd.timers.theme-switch-light = {
-    description = "Timer to switch to light theme at 09:00";
-    wantedBy = [ "timers.target" ];
-    timerConfig = {
-      OnCalendar = "*-*-* 09:00:00";
-      Persistent = true;
-    };
-  };
-
-  systemd.services.theme-switch-dark = {
-    description = "Switch to dark theme (Stylix default)";
-    serviceConfig = {
-      Type = "oneshot";
-      ExecStart = "/run/current-system/bin/switch-to-configuration test";
-    };
-  };
-
-  systemd.timers.theme-switch-dark = {
-    description = "Timer to switch to dark theme at 16:00";
-    wantedBy = [ "timers.target" ];
-    timerConfig = {
-      OnCalendar = "*-*-* 16:00:00";
-      Persistent = true;
-    };
-  };
-
   # Allow wheel group to switch system specialisations without password
   security.sudo.extraRules = [
     {
