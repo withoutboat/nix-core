@@ -34,7 +34,7 @@ sudo nixos-rebuild switch --flake .#pc-th
 - Config filename is specified in `hosts/<name>/configuration.nix` via `_module.args.spec.amneziaConfig` (e.g. `"amnezia_for_awg.conf"`).
 - When `amneziaConfig` is set and the encrypted file exists in `secrets/`, `modules/amneziawg.nix` automatically registers the SOPS binary secret and enables the system tunnel as `awg0`.
 - With `networking.networkmanager.enable = true`, the module orders the
-  `wg-quick-awg0` unit after `NetworkManager-wait-online.service` and `sops-nix.service`.
+  `wg-quick-awg0` unit after `NetworkManager-wait-online.service`.
 
 For a full tunnel, keep the routing in the config file, including
 `AllowedIPs = 0.0.0.0/0` and `AllowedIPs = ::/0` when needed, plus any endpoint
