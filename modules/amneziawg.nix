@@ -35,6 +35,30 @@ in
       default = true;
       description = "Whether to start interface at boot.";
     };
+
+    bypassEnable = lib.mkOption {
+      type = lib.types.bool;
+      default = spec.amneziaBypassEnable or true;
+      description = "Enable DNS-based domain bypassing of AmneziaWG for direct internet access to specified domains.";
+    };
+
+    bypassDomains = lib.mkOption {
+      type = lib.types.listOf lib.types.str;
+      default = spec.amneziaBypassDomains or [
+        "github.com"
+        "githubusercontent.com"
+        "githubassets.com"
+        "github.io"
+        "nixos.org"
+        "cachix.org"
+        "flakehub.com"
+        "garnix.io"
+        "gitlab.com"
+        "codeberg.org"
+        "crates.io"
+      ];
+      description = "Domain suffixes to route directly via default gateway in bypass of AmneziaWG.";
+    };
   };
 
   config = lib.mkMerge [
@@ -71,10 +95,10 @@ in
 
       systemd.services."awg-quick-${cfg.interfaceName}" = {
         description = "AmneziaWG Tunnel - ${cfg.interfaceName}";
-        after = [ "network.target" "network-online.target" ]
+        after = [ "network.target" "network-online.target" "firewall.service" ]
           ++ lib.optional (config ? sops && config.sops.useSystemdActivation) "sops-install-secrets.service"
           ++ lib.optional config.networking.networkmanager.enable "NetworkManager-wait-online.service";
-        wants = [ "network-online.target" ]
+        wants = [ "network-online.target" "firewall.service" ]
           ++ lib.optional (config ? sops && config.sops.useSystemdActivation) "sops-install-secrets.service"
           ++ lib.optional config.networking.networkmanager.enable "NetworkManager-wait-online.service";
         wantedBy = lib.optional cfg.autoStart "multi-user.target";
@@ -89,6 +113,7 @@ in
           pkgs.iproute2
           pkgs.procps
           pkgs.coreutils
+          pkgs.ipset
           config.networking.firewall.package
           config.networking.resolvconf.package
         ];
@@ -131,6 +156,55 @@ in
       networking.networkmanager.unmanaged = lib.mkIf config.networking.networkmanager.enable [
         "interface-name:${cfg.interfaceName}"
       ];
+    })
+
+    (lib.mkIf (cfg.enable && cfg.bypassEnable && cfg.bypassDomains != [ ]) {
+      environment.systemPackages = [
+        pkgs.ipset
+      ];
+
+      boot.kernelModules = [
+        "ip_set"
+        "ip_set_hash_ip"
+        "xt_set"
+      ];
+
+      boot.kernel.sysctl = {
+        "net.ipv4.conf.default.rp_filter" = lib.mkDefault 2;
+        "net.ipv4.conf.all.rp_filter" = lib.mkDefault 2;
+      };
+
+      networking.firewall.extraCommands = lib.mkAfter ''
+        ${pkgs.ipset}/bin/ipset create -exist awg_bypass_v4 hash:ip timeout 3600
+        ${pkgs.ipset}/bin/ipset create -exist awg_bypass_v6 hash:ip family inet6 timeout 3600
+        iptables -t mangle -C OUTPUT -m set --match-set awg_bypass_v4 dst -j MARK --set-mark 51820 2>/dev/null || \
+          iptables -t mangle -A OUTPUT -m set --match-set awg_bypass_v4 dst -j MARK --set-mark 51820
+        ip6tables -t mangle -C OUTPUT -m set --match-set awg_bypass_v6 dst -j MARK --set-mark 51820 2>/dev/null || \
+          ip6tables -t mangle -A OUTPUT -m set --match-set awg_bypass_v6 dst -j MARK --set-mark 51820
+      '';
+
+      networking.firewall.extraStopCommands = lib.mkAfter ''
+        iptables -t mangle -D OUTPUT -m set --match-set awg_bypass_v4 dst -j MARK --set-mark 51820 2>/dev/null || true
+        ip6tables -t mangle -D OUTPUT -m set --match-set awg_bypass_v6 dst -j MARK --set-mark 51820 2>/dev/null || true
+      '';
+
+      services.dnsmasq = {
+        enable = true;
+        resolveLocalQueries = true;
+        settings = {
+          server = [ "1.1.1.1" "1.0.0.1" ];
+          ipset = map (domain: "/${domain}/awg_bypass_v4,awg_bypass_v6") cfg.bypassDomains;
+        };
+      };
+
+      systemd.services.dnsmasq = {
+        after = [ "firewall.service" ];
+        wants = [ "firewall.service" ];
+        serviceConfig = {
+          AmbientCapabilities = [ "CAP_NET_ADMIN" "CAP_NET_RAW" "CAP_NET_BIND_SERVICE" ];
+          CapabilityBoundingSet = [ "CAP_NET_ADMIN" "CAP_NET_RAW" "CAP_NET_BIND_SERVICE" ];
+        };
+      };
     })
   ];
 }
