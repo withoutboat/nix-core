@@ -18,9 +18,14 @@
       url = "github:withoutboat/nix-home";
       flake = true;
     };
+
+    nur = {
+      url = "github:nix-community/NUR";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
   };
 
-  outputs = { self, nixpkgs, home-manager, nix-home, sops-nix, ... }@inputs:
+  outputs = { self, nixpkgs, home-manager, nix-home, sops-nix, nur, ... }@inputs:
   let
     system = "x86_64-linux";
 
@@ -29,6 +34,7 @@
       config.allowUnfree = true;
       overlays = [
         (import ./pkgs)
+        nur.overlays.default
       ];
     };
   in
