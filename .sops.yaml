@@ -7,7 +7,7 @@
 keys:
   # Primary YubiKey recipient (run: age-plugin-yubikey --list)
   # Replace with your actual YubiKey recipient:
-  - &yubikey_primary age1yubikey1qv000000000000000000000000000000000000000000000000000000000
+  - &yubikey_primary age1yubikey1q0jaun0q26r2m0z3gxlgg8u8f0m3ken0ku59y8emr0xesc5fuwqaxpq9k4n
 
   # Optional backup key (e.g. secondary YubiKey or recovery age key)
   # - &backup_key age1...
