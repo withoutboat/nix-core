@@ -57,14 +57,15 @@ This module does not configure a generic kill-switch automatically.
    sudo nixos-rebuild switch --flake .#pc-th
    ```
 
-3. Verify the service without dumping the config:
+3. Verify the service and connection:
 
    ```bash
-   systemctl status wg-quick-awg0
+   systemctl status awg-quick-awg0
+   sudo awg show
    ```
 
 If you rename the interface, the systemd unit name changes to
-`wg-quick-<interfaceName>`.
+`awg-quick-<interfaceName>` (with `wg-quick-<interfaceName>` retained as an alias).
 
 ⚠️ `secrets/amnezia_for_awg.conf` currently contains intentionally published
 test keys for validation. Treat these keys as compromised and replace the config
