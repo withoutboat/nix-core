@@ -173,15 +173,15 @@ in
       };
 
       networking.firewall.extraCommands = lib.mkAfter ''
-        ${pkgs.nftables}/bin/nft -f - << 'EOF'
-        add table inet awg_bypass
-        add set inet awg_bypass bypass_v4 { type ipv4_addr; flags timeout; timeout 1h; }
-        add set inet awg_bypass bypass_v6 { type ipv6_addr; flags timeout; timeout 1h; }
-        add chain inet awg_bypass output { type route hook output priority mangle; policy accept; }
-        flush chain inet awg_bypass output
-        add rule inet awg_bypass output ip daddr @bypass_v4 meta mark set 51820
-        add rule inet awg_bypass output ip6 daddr @bypass_v6 meta mark set 51820
-        EOF
+        ${pkgs.nftables}/bin/nft 'add table inet awg_bypass'
+        ${pkgs.nftables}/bin/nft 'list set inet awg_bypass bypass_v4' >/dev/null 2>&1 || \
+          ${pkgs.nftables}/bin/nft 'add set inet awg_bypass bypass_v4 { type ipv4_addr; flags timeout; timeout 1h; }'
+        ${pkgs.nftables}/bin/nft 'list set inet awg_bypass bypass_v6' >/dev/null 2>&1 || \
+          ${pkgs.nftables}/bin/nft 'add set inet awg_bypass bypass_v6 { type ipv6_addr; flags timeout; timeout 1h; }'
+        ${pkgs.nftables}/bin/nft 'add chain inet awg_bypass output { type route hook output priority mangle; policy accept; }'
+        ${pkgs.nftables}/bin/nft 'flush chain inet awg_bypass output'
+        ${pkgs.nftables}/bin/nft 'add rule inet awg_bypass output ip daddr @bypass_v4 meta mark set 51820'
+        ${pkgs.nftables}/bin/nft 'add rule inet awg_bypass output ip6 daddr @bypass_v6 meta mark set 51820'
       '';
 
       networking.firewall.extraStopCommands = lib.mkAfter ''
@@ -201,20 +201,16 @@ in
         after = [ "firewall.service" ];
         wants = [ "firewall.service" ];
         preStart = lib.mkBefore ''
-          ${pkgs.nftables}/bin/nft -f - << 'EOF'
-          add table inet awg_bypass
-          add set inet awg_bypass bypass_v4 { type ipv4_addr; flags timeout; timeout 1h; }
-          add set inet awg_bypass bypass_v6 { type ipv6_addr; flags timeout; timeout 1h; }
-          add chain inet awg_bypass output { type route hook output priority mangle; policy accept; }
-          flush chain inet awg_bypass output
-          add rule inet awg_bypass output ip daddr @bypass_v4 meta mark set 51820
-          add rule inet awg_bypass output ip6 daddr @bypass_v6 meta mark set 51820
-          EOF
+          ${pkgs.nftables}/bin/nft 'add table inet awg_bypass'
+          ${pkgs.nftables}/bin/nft 'list set inet awg_bypass bypass_v4' >/dev/null 2>&1 || \
+            ${pkgs.nftables}/bin/nft 'add set inet awg_bypass bypass_v4 { type ipv4_addr; flags timeout; timeout 1h; }'
+          ${pkgs.nftables}/bin/nft 'list set inet awg_bypass bypass_v6' >/dev/null 2>&1 || \
+            ${pkgs.nftables}/bin/nft 'add set inet awg_bypass bypass_v6 { type ipv6_addr; flags timeout; timeout 1h; }'
+          ${pkgs.nftables}/bin/nft 'add chain inet awg_bypass output { type route hook output priority mangle; policy accept; }'
+          ${pkgs.nftables}/bin/nft 'flush chain inet awg_bypass output'
+          ${pkgs.nftables}/bin/nft 'add rule inet awg_bypass output ip daddr @bypass_v4 meta mark set 51820'
+          ${pkgs.nftables}/bin/nft 'add rule inet awg_bypass output ip6 daddr @bypass_v6 meta mark set 51820'
         '';
-        serviceConfig = {
-          AmbientCapabilities = [ "CAP_NET_ADMIN" "CAP_NET_RAW" "CAP_NET_BIND_SERVICE" ];
-          CapabilityBoundingSet = [ "CAP_NET_ADMIN" "CAP_NET_RAW" "CAP_NET_BIND_SERVICE" ];
-        };
       };
     })
   ];
