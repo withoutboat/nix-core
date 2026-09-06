@@ -96,51 +96,113 @@ Encrypted secrets are managed using [sops-nix](https://github.com/Mic92/sops-nix
 
 ### 2. Configure `.sops.yaml`
 
-In the root `.sops.yaml` file, specify your YubiKey recipient:
+In the root `.sops.yaml` file, specify your YubiKey recipient and creation rules:
 
 ```yaml
 keys:
   - &yubikey age1yubikey1... # Output from age-plugin-yubikey --list
 
 creation_rules:
+  # 1. Structured YAML secrets (encrypts only values, keeps keys cleartext)
   - path_regex: secrets/.*\.ya?ml$
+    key_groups:
+      - age:
+          - *yubikey
+
+  # 2. Whole raw/binary files (encrypts the entire file content)
+  - path_regex: secrets/.*(\.conf|\.bin|\.raw|\.key|\.env)$
+    input_type: binary
+    output_type: binary
     key_groups:
       - age:
           - *yubikey
 ```
 
-### 3. Create and encrypt your first secret file
+#### `.sops.yaml` key options explained:
+- **`path_regex`**: RegEx pattern determining which files apply to this rule.
+- **`input_type` / `output_type`**:
+  - `yaml` / `json` (default for matching extensions): Encrypts values while preserving tree structure and key names.
+  - `binary`: Encrypts the entire file as a single raw blob (ideal for whole configs like WireGuard/Amnezia, certificates, or SSH keys).
+  - `dotenv`: Key-value `.env` files.
+- **`encrypted_regex`**: (Optional) Regex to selectively encrypt only specific keys in structured files (e.g. `^(token|password|.*_key)$`), keeping non-sensitive metadata readable in Git diffs.
+- **`key_groups`**: List of recipient key groups (can contain multiple age or PGP keys, e.g. for backup keys).
 
-1. Create an encrypted YAML secrets file (e.g., `secrets/secrets.yaml`):
+---
+
+### 3. Encrypting Secrets
+
+#### A. Structured Key-Value Secrets (YAML)
+1. Create or edit an encrypted YAML file:
    ```bash
    sops secrets/secrets.yaml
    ```
-   Add your secrets in the editor:
+   Add your secrets:
    ```yaml
-   example_secret: my-secret-value
+   user_password: my-secure-password
+   api_token: eyJhbGciOi...
    ```
-   Upon saving and exiting, `sops` automatically encrypts the data using the key defined in `.sops.yaml`.
+   Upon save & exit, SOPS automatically encrypts the values.
 
-2. To encrypt an existing unencrypted file in-place:
+2. Encrypt an existing unencrypted file in-place:
    ```bash
    sops --encrypt --in-place secrets/secrets.yaml
    ```
 
-3. To view or edit an encrypted file:
+#### B. Whole Files (Config Files, Certificates, Private Keys)
+To encrypt an entire configuration file (like `secrets/amnezia_for_awg.conf`) as a whole without altering its format:
+
+1. Encrypt in-place using SOPS binary mode:
    ```bash
-   sops secrets/secrets.yaml
+   sops --encrypt --in-place secrets/amnezia_for_awg.conf
    ```
-   (YubiKey must be plugged in; touch the key and/or enter PIN when prompted).
+   *(Or without `--in-place` to a separate file: `sops -e secrets/raw.conf > secrets/raw.enc.conf`)*
 
-### 4. Use secrets in NixOS
+2. View or edit the encrypted whole file in your editor:
+   ```bash
+   sops secrets/amnezia_for_awg.conf
+   ```
 
-In your configuration module, declare secrets via `sops`:
+3. Alternatively, embed whole file contents inside a YAML secret:
+   ```yaml
+   amnezia_conf: |
+     [Interface]
+     PrivateKey = ...
+     Address = ...
+   ```
+
+---
+
+### 4. Use Secrets in NixOS
+
+In your NixOS module (e.g. `hosts/pc-th/default.nix`):
 
 ```nix
-sops.defaultSopsFile = ../../secrets/secrets.yaml;
-sops.secrets."example_secret" = {
-  mode = "0400";
-  owner = "root";
-};
+{ config, ... }:
+{
+  sops = {
+    defaultSopsFile = ../../secrets/secrets.yaml;
+
+    secrets = {
+      # 1. From default YAML file
+      "user_password" = {
+        neededForUsers = true; # for user passwords during boot
+      };
+
+      # 2. Entire whole/binary file
+      "amnezia_for_awg.conf" = {
+        format = "binary";
+        sopsFile = ../../secrets/amnezia_for_awg.conf;
+        mode = "0400";
+        owner = "root";
+      };
+    };
+  };
+
+  # Pass the decrypted path to services:
+  services.amneziawg = {
+    enable = true;
+    configFile = config.sops.secrets."amnezia_for_awg.conf".path;
+  };
+}
 ```
-The decrypted secret will be mounted at `/run/secrets/example_secret`.
+All decrypted secret files are securely mounted in RAM at `/run/secrets/<name>` (e.g. `/run/secrets/amnezia_for_awg.conf`).

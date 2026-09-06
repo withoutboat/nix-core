@@ -19,3 +19,12 @@ creation_rules:
       - age:
           - *yubikey_primary
           # - *backup_key
+
+  # Encrypt whole raw/binary files (e.g. config files, certs, private keys)
+  - path_regex: secrets/.*(\.conf|\.bin|\.raw|\.key|\.env)$
+    input_type: binary
+    output_type: binary
+    key_groups:
+      - age:
+          - *yubikey_primary
+          # - *backup_key
