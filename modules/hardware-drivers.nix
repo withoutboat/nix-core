@@ -9,8 +9,6 @@ let
     && (spec ? nvidiaBusId) && spec.nvidiaBusId != "";
 in
 {
-  nixpkgs.config.allowUnfree = true;
-
   hardware.enableRedistributableFirmware = true;
 
   hardware.cpu.amd.updateMicrocode = lib.mkIf (cpu == "amd") true;
