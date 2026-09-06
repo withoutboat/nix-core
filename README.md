@@ -71,39 +71,39 @@ If you rename the interface, the systemd unit name changes to
 test keys for validation. Treat these keys as compromised and replace the config
 and all related keys after verification.
 
-## Управление секретами с sops-nix и YubiKey
+## Secret Management with sops-nix and YubiKey
 
-Для управления зашифрованными секретами используется [sops-nix](https://github.com/Mic92/sops-nix) с поддержкой [age-plugin-yubikey](https://github.com/str4d/age-plugin-yubikey). Приватный age-ключ хранится аппаратно на YubiKey.
+Encrypted secrets are managed using [sops-nix](https://github.com/Mic92/sops-nix) with [age-plugin-yubikey](https://github.com/str4d/age-plugin-yubikey). The private age key is stored in hardware on the YubiKey.
 
-### 1. Инициализация age-ключа на YubiKey
+### 1. Initialize the age key on YubiKey
 
-1. Вставьте YubiKey в USB-разъем.
-2. Сгенерируйте age-ключ в слоте PIV YubiKey:
+1. Insert your YubiKey into a USB port.
+2. Generate an age key in the YubiKey PIV slot:
    ```bash
    age-plugin-yubikey
    ```
-   Следуйте подсказкам мастера: выберите слот (по умолчанию 1), задайте PIN и настройте Touch Policy (запрос касания для расшифровки).
+   Follow the interactive wizard: choose a slot (default is 1), configure a PIN, and set the Touch Policy (requiring a physical touch to decrypt).
 
-3. Получите публичный recipient ключа (начинается с `age1yubikey1...`):
+3. Get the public recipient for the key (starts with `age1yubikey1...`):
    ```bash
    age-plugin-yubikey --list
    ```
 
-4. Экспортируйте файл identity stub на хосте в `/var/lib/sops-nix/key.txt` (требуется `sops-nix` для расшифровки при сборке/активации системы):
+4. Export the identity stub file on the host to `/var/lib/sops-nix/key.txt` (required by `sops-nix` for decryption during system build/activation):
    ```bash
    sudo mkdir -p /var/lib/sops-nix
    sudo sh -c 'age-plugin-yubikey --identity > /var/lib/sops-nix/key.txt'
    sudo chmod 600 /var/lib/sops-nix/key.txt
    ```
-   *(Для работы с `sops` от обычного пользователя identity также можно сохранить в `~/.config/sops/age/keys.txt`)*
+   *(For managing secrets with `sops` as a non-root user, you can also save the identity to `~/.config/sops/age/keys.txt`)*
 
-### 2. Настройка `.sops.yaml`
+### 2. Configure `.sops.yaml`
 
-В корневом файле `.sops.yaml` укажите полученный recipient YubiKey:
+In the root `.sops.yaml` file, specify your YubiKey recipient:
 
 ```yaml
 keys:
-  - &yubikey age1yubikey1... # результат команды age-plugin-yubikey --list
+  - &yubikey age1yubikey1... # Output from age-plugin-yubikey --list
 
 creation_rules:
   - path_regex: secrets/.*\.ya?ml$
@@ -112,32 +112,32 @@ creation_rules:
           - *yubikey
 ```
 
-### 3. Создание и шифрование первого файла секретов
+### 3. Create and encrypt your first secret file
 
-1. Создайте зашифрованный YAML-файл секретов (например, `secrets/secrets.yaml`):
+1. Create an encrypted YAML secrets file (e.g., `secrets/secrets.yaml`):
    ```bash
    sops secrets/secrets.yaml
    ```
-   В открывшемся редакторе добавьте секреты:
+   Add your secrets in the editor:
    ```yaml
    example_secret: my-secret-value
    ```
-   После сохранения и выхода `sops` автоматически зашифрует данные указанным в `.sops.yaml` ключом.
+   Upon saving and exiting, `sops` automatically encrypts the data using the key defined in `.sops.yaml`.
 
-2. Для шифрования существующего незашифрованного файла:
+2. To encrypt an existing unencrypted file in-place:
    ```bash
    sops --encrypt --in-place secrets/secrets.yaml
    ```
 
-3. Для просмотра или редактирования зашифрованного файла:
+3. To view or edit an encrypted file:
    ```bash
    sops secrets/secrets.yaml
    ```
-   (потребуется подключенный YubiKey; при запросе коснитесь кнопки и/или введите PIN).
+   (YubiKey must be plugged in; touch the key and/or enter PIN when prompted).
 
-### 4. Подключение секретов в NixOS
+### 4. Use secrets in NixOS
 
-В модуле конфигурации подключите секрет через `sops`:
+In your configuration module, declare secrets via `sops`:
 
 ```nix
 sops.defaultSopsFile = ../../secrets/secrets.yaml;
@@ -146,4 +146,4 @@ sops.secrets."example_secret" = {
   owner = "root";
 };
 ```
-Расшифрованное значение будет смонтировано в `/run/secrets/example_secret`.
+The decrypted secret will be mounted at `/run/secrets/example_secret`.
