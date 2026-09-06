@@ -23,9 +23,15 @@
       url = "github:nix-community/NUR";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+
+    stylix = {
+      url = "github:danth/stylix";
+      inputs.nixpkgs.follows = "nixpkgs";
+      inputs.home-manager.follows = "home-manager";
+    };
   };
 
-  outputs = { self, nixpkgs, home-manager, nix-home, sops-nix, nur, ... }@inputs:
+  outputs = { self, nixpkgs, home-manager, nix-home, sops-nix, nur, stylix, ... }@inputs:
   let
     system = "x86_64-linux";
 
@@ -57,6 +63,7 @@
         ./hosts/pc-th/default.nix
         home-manager.nixosModules.home-manager
         sops-nix.nixosModules.sops
+        stylix.nixosModules.stylix
       ];
     };
   };

@@ -18,6 +18,7 @@ in
     ../../modules/terminal.nix
     ../../modules/hyperland.nix
     ../../modules/sops.nix
+    ../../modules/theme.nix
   ]
   ++ lib.optional hasGeneratedConfiguration generatedConfiguration
   ++ lib.optional hasGeneratedHardware generatedHardware;
