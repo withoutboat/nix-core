@@ -16,7 +16,8 @@
 
     nix-home = {
       url = "github:withoutboat/nix-home";
-      flake = true;
+      inputs.nixpkgs.follows = "nixpkgs";
+      inputs.home-manager.follows = "home-manager";
     };
 
     nur = {
