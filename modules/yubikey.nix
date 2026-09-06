@@ -42,6 +42,8 @@
     libfido2
   ];
   
+  users.users.pcscd.extraGroups = [ "plugdev" ];
+
   services.udev.extraRules = ''
     SUBSYSTEM=="usb", ATTR{idVendor}=="1050", MODE="0660", GROUP="plugdev"
   '';
