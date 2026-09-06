@@ -6,7 +6,7 @@ in
   users.users.${username} = {
     isNormalUser = true;
     description = "Primary User"; 
-    extraGroups = [ "networkmanager" "wheel" "video" "audio" ];
+    extraGroups = [ "networkmanager" "wheel" "video" "audio" "plugdev" ];
     shell = pkgs.zsh;
     password = "pssword";
   };
