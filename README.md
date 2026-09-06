@@ -8,7 +8,7 @@ Host entrypoints now live under `hosts/<name>/default.nix` so they are compatibl
 - `hosts/iso-installer/default.nix` is the ISO host/profile used by `.#iso-installer`
 - bootstrapper-generated machine-local files stay next to the host entrypoint as `hosts/<name>/hardware.nix` and `hosts/<name>/configuration.nix`
 
-`hosts/<name>/configuration.nix` can provide runtime values through `_module.args.spec` (for example `username`, `cpu`, `gpu`, `nvidiaOpen`, Wi-Fi settings, and PRIME bus IDs). These generated files are gitignored and should not be moved back to the repository root.
+`hosts/<name>/configuration.nix` can provide runtime values through `_module.args.spec` (for example `username`, `cpu`, `gpu`, `nvidiaOpen`, Wi-Fi settings, PRIME bus IDs, and `amneziaConfig`). These generated files are gitignored and should not be moved back to the repository root.
 
 For `pc-th`, `hosts/pc-th/hardware.nix` is required once `hosts/pc-th/configuration.nix` has been generated. This keeps clean GitHub evaluation working while still making `nixos-install --flake .#pc-th` fail clearly until the bootstrapper has written the machine-specific hardware file.
 
@@ -29,13 +29,12 @@ sudo nixos-rebuild switch --flake .#pc-th
 
 ## `pc-th` AmneziaWG integration
 
-`pc-th` imports the local `modules/amneziawg.nix` module and enables the system
-tunnel as `awg0`.
+`pc-th` imports the local `modules/amneziawg.nix` module.
 
-- Machine-specific test config path in this repo: `secrets/amnezia_for_awg.conf`
-- The file is passed to `services.amneziawg.configFile` from `hosts/pc-th/default.nix`.
+- Config filename is specified in `hosts/<name>/configuration.nix` via `_module.args.spec.amneziaConfig` (e.g. `"amnezia_for_awg.conf"`).
+- When `amneziaConfig` is set and the encrypted file exists in `secrets/`, `modules/amneziawg.nix` automatically registers the SOPS binary secret and enables the system tunnel as `awg0`.
 - With `networking.networkmanager.enable = true`, the module orders the
-  `wg-quick-awg0` unit after `NetworkManager-wait-online.service`.
+  `wg-quick-awg0` unit after `NetworkManager-wait-online.service` and `sops-nix.service`.
 
 For a full tunnel, keep the routing in the config file, including
 `AllowedIPs = 0.0.0.0/0` and `AllowedIPs = ::/0` when needed, plus any endpoint
