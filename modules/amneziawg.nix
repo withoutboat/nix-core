@@ -160,13 +160,11 @@ in
 
     (lib.mkIf (cfg.enable && cfg.bypassEnable && cfg.bypassDomains != [ ]) {
       environment.systemPackages = [
-        pkgs.ipset
+        pkgs.nftables
       ];
 
       boot.kernelModules = [
-        "ip_set"
-        "ip_set_hash_ip"
-        "xt_set"
+        "nf_tables"
       ];
 
       boot.kernel.sysctl = {
@@ -175,17 +173,19 @@ in
       };
 
       networking.firewall.extraCommands = lib.mkAfter ''
-        ${pkgs.ipset}/bin/ipset create -exist awg_bypass_v4 hash:ip timeout 3600
-        ${pkgs.ipset}/bin/ipset create -exist awg_bypass_v6 hash:ip family inet6 timeout 3600
-        iptables -t mangle -C OUTPUT -m set --match-set awg_bypass_v4 dst -j MARK --set-mark 51820 2>/dev/null || \
-          iptables -t mangle -A OUTPUT -m set --match-set awg_bypass_v4 dst -j MARK --set-mark 51820
-        ip6tables -t mangle -C OUTPUT -m set --match-set awg_bypass_v6 dst -j MARK --set-mark 51820 2>/dev/null || \
-          ip6tables -t mangle -A OUTPUT -m set --match-set awg_bypass_v6 dst -j MARK --set-mark 51820
+        ${pkgs.nftables}/bin/nft -f - << 'EOF'
+        add table inet awg_bypass
+        add set inet awg_bypass bypass_v4 { type ipv4_addr; flags timeout; timeout 1h; }
+        add set inet awg_bypass bypass_v6 { type ipv6_addr; flags timeout; timeout 1h; }
+        add chain inet awg_bypass output { type route hook output priority mangle; policy accept; }
+        flush chain inet awg_bypass output
+        add rule inet awg_bypass output ip daddr @bypass_v4 meta mark set 51820
+        add rule inet awg_bypass output ip6 daddr @bypass_v6 meta mark set 51820
+        EOF
       '';
 
       networking.firewall.extraStopCommands = lib.mkAfter ''
-        iptables -t mangle -D OUTPUT -m set --match-set awg_bypass_v4 dst -j MARK --set-mark 51820 2>/dev/null || true
-        ip6tables -t mangle -D OUTPUT -m set --match-set awg_bypass_v6 dst -j MARK --set-mark 51820 2>/dev/null || true
+        ${pkgs.nftables}/bin/nft 'delete table inet awg_bypass' 2>/dev/null || true
       '';
 
       services.dnsmasq = {
@@ -193,13 +193,24 @@ in
         resolveLocalQueries = true;
         settings = {
           server = [ "1.1.1.1" "1.0.0.1" ];
-          ipset = map (domain: "/${domain}/awg_bypass_v4,awg_bypass_v6") cfg.bypassDomains;
+          nftset = map (domain: "/${domain}/4#inet#awg_bypass#bypass_v4,6#inet#awg_bypass#bypass_v6") cfg.bypassDomains;
         };
       };
 
       systemd.services.dnsmasq = {
         after = [ "firewall.service" ];
         wants = [ "firewall.service" ];
+        preStart = lib.mkBefore ''
+          ${pkgs.nftables}/bin/nft -f - << 'EOF'
+          add table inet awg_bypass
+          add set inet awg_bypass bypass_v4 { type ipv4_addr; flags timeout; timeout 1h; }
+          add set inet awg_bypass bypass_v6 { type ipv6_addr; flags timeout; timeout 1h; }
+          add chain inet awg_bypass output { type route hook output priority mangle; policy accept; }
+          flush chain inet awg_bypass output
+          add rule inet awg_bypass output ip daddr @bypass_v4 meta mark set 51820
+          add rule inet awg_bypass output ip6 daddr @bypass_v6 meta mark set 51820
+          EOF
+        '';
         serviceConfig = {
           AmbientCapabilities = [ "CAP_NET_ADMIN" "CAP_NET_RAW" "CAP_NET_BIND_SERVICE" ];
           CapabilityBoundingSet = [ "CAP_NET_ADMIN" "CAP_NET_RAW" "CAP_NET_BIND_SERVICE" ];

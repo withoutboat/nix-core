@@ -35,7 +35,7 @@ sudo nixos-rebuild switch --flake .#pc-th
 - When `amneziaConfig` is set and the encrypted file exists in `secrets/`, `modules/amneziawg.nix` automatically registers the SOPS binary secret and enables the system tunnel as `awg0`.
 - With `networking.networkmanager.enable = true`, the module orders the
   `wg-quick-awg0` unit after `NetworkManager-wait-online.service`.
-- **Domain Bypass**: By default, traffic to `github.com` and all domains where Nix fetches packages/caches (`nixos.org`, `cachix.org`, `flakehub.com`, `garnix.io`, `gitlab.com`, `codeberg.org`, `crates.io`) automatically bypasses the `awg0` tunnel and routes directly via the physical network interface using `dnsmasq` and kernel `ipset`/`iptables` marking. Can be toggled with `services.amneziawg.bypassEnable` or customized via `services.amneziawg.bypassDomains`.
+- **Domain Bypass**: By default, traffic to `github.com` and all domains where Nix fetches packages/caches (`nixos.org`, `cachix.org`, `flakehub.com`, `garnix.io`, `gitlab.com`, `codeberg.org`, `crates.io`) automatically bypasses the `awg0` tunnel and routes directly via the physical network interface using `dnsmasq` and kernel `nftset`/`nftables` packet marking. Can be toggled with `services.amneziawg.bypassEnable` or customized via `services.amneziawg.bypassDomains`.
 
 For a full tunnel, keep the routing in the config file, including
 `AllowedIPs = 0.0.0.0/0` and `AllowedIPs = ::/0` when needed, plus any endpoint
