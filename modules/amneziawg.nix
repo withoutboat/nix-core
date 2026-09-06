@@ -72,10 +72,10 @@ in
       systemd.services."awg-quick-${cfg.interfaceName}" = {
         description = "AmneziaWG Tunnel - ${cfg.interfaceName}";
         after = [ "network.target" "network-online.target" ]
-          ++ lib.optional (config ? sops) "sops-nix.service"
+          ++ lib.optional (config ? sops && config.sops.useSystemdActivation) "sops-install-secrets.service"
           ++ lib.optional config.networking.networkmanager.enable "NetworkManager-wait-online.service";
         wants = [ "network-online.target" ]
-          ++ lib.optional (config ? sops) "sops-nix.service"
+          ++ lib.optional (config ? sops && config.sops.useSystemdActivation) "sops-install-secrets.service"
           ++ lib.optional config.networking.networkmanager.enable "NetworkManager-wait-online.service";
         wantedBy = lib.optional cfg.autoStart "multi-user.target";
         aliases = [ "wg-quick-${cfg.interfaceName}.service" ];

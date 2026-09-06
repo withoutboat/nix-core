@@ -31,8 +31,46 @@ in
     sshKeyPaths = [ ];
   };
 
-  # Ensure /etc symlinks are created before sops decrypts secrets
+  # Ensure pcscd and /etc symlinks are available before sops decrypts secrets
   system.activationScripts = lib.mkIf (hasRepoIdentity && config.sops.secrets != { }) {
-    setupSecrets.deps = [ "etc" ];
+    setupYubikeyForSops = lib.stringAfter [ "etc" "specialfs" ] ''
+      if ! ${pkgs.procps}/bin/pgrep -x pcscd >/dev/null 2>&1; then
+        echo "Starting temporary pcscd for sops-nix secret decryption..."
+        mkdir -p /var/lib/pcsc
+        ln -sfn ${pkgs.ccid}/pcsc/drivers /var/lib/pcsc/drivers
+        mkdir -p /run/pcscd
+        rm -f /run/pcscd/pcscd.comm /run/pcscd/pcscd.pid
+        EXTRA_ARGS=""
+        if [ -f /etc/reader.conf ]; then
+          EXTRA_ARGS="-c /etc/reader.conf"
+        fi
+        PCSCLITE_HP_DROPDIR="${pkgs.ccid}/pcsc/drivers" ${pkgs.pcsclite}/bin/pcscd $EXTRA_ARGS
+        touch /run/pcscd-started-by-activation
+        for i in $(seq 1 30); do
+          if [ -S /run/pcscd/pcscd.comm ]; then
+            sleep 0.5
+            break
+          fi
+          sleep 0.1
+        done
+      fi
+    '';
+
+    setupSecrets.deps = [ "etc" "setupYubikeyForSops" ];
+
+    cleanupYubikeyForSops = lib.stringAfter [ "setupSecrets" ] ''
+      if [ -f /run/pcscd-started-by-activation ]; then
+        echo "Stopping temporary pcscd..."
+        rm -f /run/pcscd-started-by-activation
+        ${pkgs.procps}/bin/pkill -x pcscd || true
+        for i in $(seq 1 20); do
+          if ! ${pkgs.procps}/bin/pgrep -x pcscd >/dev/null 2>&1; then
+            break
+          fi
+          sleep 0.1
+        done
+        rm -f /run/pcscd/pcscd.comm /run/pcscd/pcscd.pid || true
+      fi
+    '';
   };
 }
