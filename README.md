@@ -91,7 +91,7 @@ Encrypted secrets are managed using [sops-nix](https://github.com/Mic92/sops-nix
    ```bash
    age-plugin-yubikey --identity > secrets/yubikey-identity.txt
    ```
-   *Note: `secrets/yubikey-identity.txt` contains only the hardware reference (identity stub), not the private key (which never leaves the YubiKey). When committed, `modules/sops.nix` automatically uses this file on clean disk installs without requiring manual `/var/lib/sops-nix/key.txt` setup.*
+   *Note: `secrets/yubikey-identity.txt` contains only the hardware reference (identity stub), not the private key (which never leaves the YubiKey). When committed, `modules/sops.nix` automatically provisions this file to `/var/lib/sops-nix/key.txt` during activation without requiring manual key setup.*
 
 ### 2. Configure `.sops.yaml`
 
