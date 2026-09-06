@@ -15,7 +15,7 @@
     };
 
     nix-home = {
-      url = "github:withoutboat/nix-home/2b2c2004fb3cd425afef4192db3c79db79bb9b19";
+      url = "github:withoutboat/nix-home";
       flake = true;
     };
   };
