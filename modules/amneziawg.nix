@@ -156,6 +156,8 @@ in
       networking.networkmanager.unmanaged = lib.mkIf config.networking.networkmanager.enable [
         "interface-name:${cfg.interfaceName}"
       ];
+
+      networking.firewall.checkReversePath = lib.mkDefault "loose";
     })
 
     (lib.mkIf (cfg.enable && cfg.bypassEnable && cfg.bypassDomains != [ ]) {
@@ -182,6 +184,9 @@ in
         ${pkgs.nftables}/bin/nft 'flush chain inet awg_bypass output'
         ${pkgs.nftables}/bin/nft 'add rule inet awg_bypass output ip daddr @bypass_v4 meta mark set 51820'
         ${pkgs.nftables}/bin/nft 'add rule inet awg_bypass output ip6 daddr @bypass_v6 meta mark set 51820'
+        ${pkgs.nftables}/bin/nft 'add chain inet awg_bypass postrouting { type nat hook postrouting priority srcnat; policy accept; }'
+        ${pkgs.nftables}/bin/nft 'flush chain inet awg_bypass postrouting'
+        ${pkgs.nftables}/bin/nft 'add rule inet awg_bypass postrouting meta mark 51820 masquerade'
       '';
 
       networking.firewall.extraStopCommands = lib.mkAfter ''
@@ -210,6 +215,9 @@ in
           ${pkgs.nftables}/bin/nft 'flush chain inet awg_bypass output'
           ${pkgs.nftables}/bin/nft 'add rule inet awg_bypass output ip daddr @bypass_v4 meta mark set 51820'
           ${pkgs.nftables}/bin/nft 'add rule inet awg_bypass output ip6 daddr @bypass_v6 meta mark set 51820'
+          ${pkgs.nftables}/bin/nft 'add chain inet awg_bypass postrouting { type nat hook postrouting priority srcnat; policy accept; }'
+          ${pkgs.nftables}/bin/nft 'flush chain inet awg_bypass postrouting'
+          ${pkgs.nftables}/bin/nft 'add rule inet awg_bypass postrouting meta mark 51820 masquerade'
         '';
       };
     })
