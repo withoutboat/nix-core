@@ -11,6 +11,27 @@
       url = "https://raw.githubusercontent.com/zhichaoh/catppuccin-wallpapers/main/waves/Waves%20Dark%206016x6016.jpg";
       sha256 = "1a8e42ab67483980c79674e6b614990630ec4d176691e94e25ae5e6ff2c45d88";
     };
+
+    fonts = {
+      monospace = {
+        package = pkgs.nerd-fonts.blex-mono;
+        name = "BlexMono Nerd Font Mono";
+      };
+      sansSerif = {
+        package = pkgs.ibm-plex;
+        name = "IBM Plex Sans";
+      };
+      serif = {
+        package = pkgs.ibm-plex;
+        name = "IBM Plex Serif";
+      };
+      sizes = {
+        terminal = 12;
+        applications = 11;
+        desktop = 10;
+        popups = 10;
+      };
+    };
   };
 
   specialisation.light.configuration = {
