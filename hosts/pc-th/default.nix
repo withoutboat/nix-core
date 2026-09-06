@@ -59,7 +59,7 @@ in
   };
 
   environment.systemPackages = with pkgs; [
-    git neovim curl home-manager
+    git curl home-manager
   ];
 
   nix.settings.experimental-features = [ "nix-command" "flakes" ];
