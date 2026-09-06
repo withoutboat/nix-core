@@ -4,7 +4,6 @@
   imports = [
     "${modulesPath}/profiles/installation-device.nix"
 
-    ../../modules/security.nix
     ../../modules/yubikey.nix
   ];
 
