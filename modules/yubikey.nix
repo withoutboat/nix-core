@@ -24,7 +24,16 @@
     pkgs.yubikey-personalization
     pkgs.libfido2
   ];
-  services.pcscd.enable = true; 
+
+  services.pcscd = {
+    enable = true;
+    plugins = [ pkgs.ccid ];
+  };
+
+  # Disable internal CCID in scdaemon so GnuPG shares the smartcard via pcscd
+  programs.gnupg.agent.settings = {
+    disable-ccid = true;
+  }; 
 
   environment.systemPackages = with pkgs; [
     pam_u2f
