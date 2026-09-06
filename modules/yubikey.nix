@@ -1,23 +1,35 @@
-{ config, pkgs, ... }:
+{ config, pkgs, lib, ... }:
 
+let
+  repoU2fFile = ../secrets/u2f_mappings;
+  hasRepoU2fMappings = builtins.pathExists repoU2fFile;
+in
 {
   users.groups.plugdev = {};
+
+  # Declaratively symlink u2f_mappings from repo to /etc if present
+  environment.etc = lib.mkIf hasRepoU2fMappings {
+    "u2f_mappings".source = repoU2fFile;
+  };
 
   security.pam.u2f = {
     enable = true;
     control = "sufficient";
     settings = {
-      authFile = "/etc/u2f_mappings";
+      authfile = "/etc/u2f_mappings";
       cue = true;
-      control = "sufficient";
+      nouserok = true;
     };
   };
 
-  security.pam.services.sudo.u2fAuth = true;
-  security.pam.services.login.u2fAuth = true;
-  security.pam.services.greetd = {
-    enableGnomeKeyring = true;
-    u2fAuth = true;
+  security.pam.services = {
+    sudo.u2fAuth = true;
+    login.u2fAuth = true;
+    greetd = {
+      enableGnomeKeyring = true;
+      u2fAuth = true;
+    };
+    polkit-1.u2fAuth = true;
   };
 
   services.udev.packages = [
@@ -43,8 +55,10 @@
   ];
   
   users.users.pcscd.extraGroups = [ "plugdev" ];
+  users.users.greeter.extraGroups = [ "plugdev" ];
 
   services.udev.extraRules = ''
     SUBSYSTEM=="usb", ATTR{idVendor}=="1050", MODE="0660", GROUP="plugdev"
+    KERNEL=="hidraw*", SUBSYSTEM=="hidraw", ATTRS{idVendor}=="1050", MODE="0660", GROUP="plugdev"
   '';
 }

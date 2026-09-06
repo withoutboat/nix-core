@@ -205,3 +205,26 @@ In your NixOS module (e.g. `hosts/pc-th/default.nix`):
 }
 ```
 All decrypted secret files are securely mounted in RAM at `/run/secrets/<name>` (e.g. `/run/secrets/amnezia_for_awg.conf`).
+
+---
+
+## YubiKey Authentication for sudo and Login (PAM U2F)
+
+Для использования YubiKey вместо ввода пароля при входе в систему (`greetd`/`tuigreet`), выполнении команд `sudo` и диалогах `polkit`:
+
+### 1. Регистрация YubiKey (разово)
+Вставьте YubiKey в USB-порт и выполните команду генерации U2F-сопоставления (при запросе коснитесь сенсора ключа):
+```bash
+pamu2fcfg -u withoutboat | sudo tee /etc/u2f_mappings
+```
+
+Чтобы сохранить регистрацию в репозитории (для автоматического восстановления на чистых установках через декларативный симлинк в `/etc/u2f_mappings`):
+```bash
+cp /etc/u2f_mappings secrets/u2f_mappings
+```
+
+### 2. Как это работает
+* При выполнении `sudo` или на экране входа отображается подсказка `Please touch the device.` и мигает YubiKey.
+* Достаточно коснуться контакта на YubiKey для мгновенной авторизации без ввода пароля.
+* Если ключ не вставлен, PAM плавно откатывается на стандартный ввод пароля благодаря `control = "sufficient"` и `nouserok = true`.
+
