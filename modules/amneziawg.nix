@@ -71,18 +71,22 @@ in
         config.networking.resolvconf.package
       ];
 
+      # Do not fail or block nixos-rebuild switch if tunnel cannot be established
+      unitConfig.DefaultDependencies = true;
+
       serviceConfig = {
         Type = "oneshot";
         RemainAfterExit = true;
         RuntimeDirectory = "amneziawg";
         RuntimeDirectoryMode = "0700";
+        SuccessExitStatus = "0 1";
       };
 
       script = ''
         modprobe amneziawg || true
         cp ${cfg.configFile} /run/amneziawg/${cfg.interfaceName}.conf
         chmod 600 /run/amneziawg/${cfg.interfaceName}.conf
-        awg-quick up /run/amneziawg/${cfg.interfaceName}.conf
+        awg-quick up /run/amneziawg/${cfg.interfaceName}.conf || true
       '';
 
       preStop = ''
@@ -90,7 +94,7 @@ in
           cp ${cfg.configFile} /run/amneziawg/${cfg.interfaceName}.conf
           chmod 600 /run/amneziawg/${cfg.interfaceName}.conf
         fi
-        awg-quick down /run/amneziawg/${cfg.interfaceName}.conf
+        awg-quick down /run/amneziawg/${cfg.interfaceName}.conf || true
       '';
     };
 
