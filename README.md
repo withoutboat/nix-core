@@ -210,21 +210,21 @@ All decrypted secret files are securely mounted in RAM at `/run/secrets/<name>` 
 
 ## YubiKey Authentication for sudo and Login (PAM U2F)
 
-Для использования YubiKey вместо ввода пароля при входе в систему (`greetd`/`tuigreet`), выполнении команд `sudo` и диалогах `polkit`:
+To use your YubiKey instead of entering a password for login (`greetd`/`tuigreet`), `sudo` commands, and `polkit` elevation dialogs:
 
-### 1. Регистрация YubiKey (разово)
-Вставьте YubiKey в USB-порт и выполните команду генерации U2F-сопоставления (при запросе коснитесь сенсора ключа):
+### 1. Register YubiKey (One-time)
+Insert your YubiKey into a USB port and run `pamu2fcfg` to generate the U2F mapping (touch the key when prompted):
 ```bash
 pamu2fcfg -u withoutboat | sudo tee /etc/u2f_mappings
 ```
 
-Чтобы сохранить регистрацию в репозитории (для автоматического восстановления на чистых установках через декларативный симлинк в `/etc/u2f_mappings`):
+To persist the registration in the repository (so clean disk installs automatically provision it via a declarative `/etc/u2f_mappings` symlink):
 ```bash
 cp /etc/u2f_mappings secrets/u2f_mappings
 ```
 
-### 2. Как это работает
-* При выполнении `sudo` или на экране входа отображается подсказка `Please touch the device.` и мигает YubiKey.
-* Достаточно коснуться контакта на YubiKey для мгновенной авторизации без ввода пароля.
-* Если ключ не вставлен, PAM плавно откатывается на стандартный ввод пароля благодаря `control = "sufficient"` и `nouserok = true`.
+### 2. How it works
+* When running `sudo` or on the login screen, a `Please touch the device.` prompt appears and the YubiKey LED blinks.
+* Touch the sensor on the YubiKey to authenticate immediately without typing a password.
+* If the key is not inserted, PAM gracefully falls back to the standard password prompt thanks to `control = "sufficient"` and `nouserok = true`.
 
