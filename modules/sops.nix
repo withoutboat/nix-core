@@ -14,31 +14,25 @@ in
   # PC/SC daemon required for YubiKey PIV communication
   services.pcscd.enable = true;
 
+  # Declaratively symlink identity stub from repo to /etc
+  environment.etc = lib.mkIf hasRepoIdentity {
+    "sops/age/keys.txt".source = repoIdentityFile;
+  };
+
   sops.age = {
     plugins = [ pkgs.age-plugin-yubikey ];
     generateKey = false;
-    keyFile = lib.mkDefault "/var/lib/sops-nix/key.txt";
+    keyFile = lib.mkDefault (
+      if hasRepoIdentity then
+        "/etc/sops/age/keys.txt"
+      else
+        "/var/lib/sops-nix/key.txt"
+    );
     sshKeyPaths = [ ];
   };
 
-  # sops-nix requires sops.age.keyFile to be a path outside the Nix store (/nix/store is world-readable).
-  # If yubikey-identity.txt is tracked in the repository, automatically copy it to /var/lib/sops-nix/key.txt
-  # before setupSecrets runs, so clean installations work without manual key copying.
-  system.activationScripts = lib.mkIf hasRepoIdentity {
-    sopsInitAgeKey = {
-      deps = [ "specialfs" ];
-      text = ''
-        mkdir -p /var/lib/sops-nix
-        if [ ! -f /var/lib/sops-nix/key.txt ] || [ "${repoIdentityFile}" -nt /var/lib/sops-nix/key.txt ]; then
-          cp -f ${repoIdentityFile} /var/lib/sops-nix/key.txt
-          chmod 600 /var/lib/sops-nix/key.txt
-        fi
-      '';
-    };
-    setupSecrets.deps = [ "sopsInitAgeKey" ];
+  # Ensure /etc symlinks are created before sops decrypts secrets
+  system.activationScripts = lib.mkIf (hasRepoIdentity && config.sops.secrets != { }) {
+    setupSecrets.deps = [ "etc" ];
   };
-
-  systemd.tmpfiles.rules = lib.mkIf hasRepoIdentity [
-    "C /var/lib/sops-nix/key.txt 0600 root root - ${repoIdentityFile}"
-  ];
 }
