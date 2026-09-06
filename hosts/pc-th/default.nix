@@ -17,6 +17,7 @@ in
     ../../modules/logitech.nix
     ../../modules/terminal.nix
     ../../modules/hyperland.nix
+    ../../modules/sops.nix
   ]
   ++ lib.optional hasGeneratedConfiguration generatedConfiguration
   ++ lib.optional hasGeneratedHardware generatedHardware;

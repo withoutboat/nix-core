@@ -9,13 +9,18 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
+    sops-nix = {
+      url = "github:Mic92/sops-nix";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
     nix-home = {
       url = "github:withoutboat/nix-home/2b2c2004fb3cd425afef4192db3c79db79bb9b19";
       flake = true;
     };
   };
 
-  outputs = { self, nixpkgs, home-manager, nix-home, ... }@inputs:
+  outputs = { self, nixpkgs, home-manager, nix-home, sops-nix, ... }@inputs:
   let
     system = "x86_64-linux";
 
@@ -45,6 +50,7 @@
         { nixpkgs.pkgs = pkgs; }
         ./hosts/pc-th/default.nix
         home-manager.nixosModules.home-manager
+        sops-nix.nixosModules.sops
       ];
     };
   };

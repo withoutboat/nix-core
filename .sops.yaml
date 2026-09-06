@@ -1,0 +1,21 @@
+# SOPS configuration for nix-core
+# https://github.com/getsops/sops
+#
+# Age keys generated via age-plugin-yubikey are used to encrypt secrets.
+# Public recipient format: age1yubikey1...
+
+keys:
+  # Primary YubiKey recipient (run: age-plugin-yubikey --list)
+  # Replace with your actual YubiKey recipient:
+  - &yubikey_primary age1yubikey1qv000000000000000000000000000000000000000000000000000000000
+
+  # Optional backup key (e.g. secondary YubiKey or recovery age key)
+  # - &backup_key age1...
+
+creation_rules:
+  # Encrypt YAML secret files in secrets/
+  - path_regex: secrets/.*\.ya?ml$
+    key_groups:
+      - age:
+          - *yubikey_primary
+          # - *backup_key
