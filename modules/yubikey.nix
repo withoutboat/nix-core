@@ -20,13 +20,17 @@
     u2fAuth = true;
   };
 
-  services.udev.packages = [ pkgs.yubikey-personalization ];
+  services.udev.packages = [
+    pkgs.yubikey-personalization
+    pkgs.libfido2
+  ];
   services.pcscd.enable = true; 
 
   environment.systemPackages = with pkgs; [
     pam_u2f
     yubikey-manager
     yubioath-flutter
+    libfido2
   ];
   
   services.udev.extraRules = ''
