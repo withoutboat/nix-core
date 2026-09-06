@@ -75,27 +75,24 @@ and all related keys after verification.
 
 Encrypted secrets are managed using [sops-nix](https://github.com/Mic92/sops-nix) with [age-plugin-yubikey](https://github.com/str4d/age-plugin-yubikey). The private age key is stored in hardware on the YubiKey.
 
-### 1. Initialize the age key on YubiKey
+### 1. Initialize the age key on YubiKey (Automated)
 
 1. Insert your YubiKey into a USB port.
-2. Generate an age key in the YubiKey PIV slot:
+2. Generate an age key non-interactively without PIN and touch requirements (so system rebuilds and services can decrypt secrets automatically during boot and activation without touching the YubiKey):
    ```bash
-   age-plugin-yubikey
+   age-plugin-yubikey --generate --slot 1 --pin-policy never --touch-policy never --name "pc-th"
    ```
-   Follow the interactive wizard: choose a slot (default is 1), configure a PIN, and set the Touch Policy (requiring a physical touch to decrypt).
 
-3. Get the public recipient for the key (starts with `age1yubikey1...`):
+3. Get the public recipient for `.sops.yaml` (starts with `age1yubikey1...`):
    ```bash
    age-plugin-yubikey --list
    ```
 
-4. Export the identity stub file on the host to `/var/lib/sops-nix/key.txt` (required by `sops-nix` for decryption during system build/activation):
+4. Export the identity stub file directly into the repository:
    ```bash
-   sudo mkdir -p /var/lib/sops-nix
-   sudo sh -c 'age-plugin-yubikey --identity > /var/lib/sops-nix/key.txt'
-   sudo chmod 600 /var/lib/sops-nix/key.txt
+   age-plugin-yubikey --identity > secrets/yubikey-identity.txt
    ```
-   *(For managing secrets with `sops` as a non-root user, you can also save the identity to `~/.config/sops/age/keys.txt`)*
+   *Note: `secrets/yubikey-identity.txt` contains only the hardware reference (identity stub), not the private key (which never leaves the YubiKey). When committed, `modules/sops.nix` automatically uses this file on clean disk installs without requiring manual `/var/lib/sops-nix/key.txt` setup.*
 
 ### 2. Configure `.sops.yaml`
 

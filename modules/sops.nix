@@ -1,5 +1,9 @@
 { config, pkgs, lib, ... }:
 
+let
+  repoIdentityFile = ../secrets/yubikey-identity.txt;
+  hasRepoIdentity = builtins.pathExists repoIdentityFile;
+in
 {
   environment.systemPackages = with pkgs; [
     sops
@@ -13,7 +17,12 @@
   sops.age = {
     plugins = [ pkgs.age-plugin-yubikey ];
     generateKey = false;
-    keyFile = lib.mkDefault "/var/lib/sops-nix/key.txt";
+    keyFile = lib.mkDefault (
+      if hasRepoIdentity then
+        repoIdentityFile
+      else
+        "/var/lib/sops-nix/key.txt"
+    );
     sshKeyPaths = [ ];
   };
 }
