@@ -11,21 +11,6 @@ in
     age-plugin-yubikey
   ];
 
-  # Configure YubiKey age plugin for Home Manager user sessions
-  home-manager.sharedModules = [
-    ({ config, ... }: {
-      sops.age = {
-        plugins = [ pkgs.age-plugin-yubikey ];
-        keyFile = lib.mkDefault (
-          if hasRepoIdentity then
-            "/etc/sops/age/keys.txt"
-          else
-            "${config.home.homeDirectory}/.config/sops/age/keys.txt"
-        );
-      };
-    })
-  ];
-
   # PC/SC daemon required for YubiKey PIV communication
   services.pcscd.enable = true;
 
