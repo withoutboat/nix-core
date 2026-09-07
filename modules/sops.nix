@@ -1,4 +1,4 @@
-{ config, pkgs, lib, ... }:
+{ config, pkgs, lib, inputs, ... }:
 
 let
   repoIdentityFile = ../secrets/yubikey-identity.txt;
@@ -9,6 +9,22 @@ in
     sops
     age
     age-plugin-yubikey
+  ];
+
+  # Integrate sops-nix into Home Manager
+  home-manager.sharedModules = [
+    inputs.sops-nix.homeManagerModules.sops
+    ({ config, ... }: {
+      sops.age = {
+        plugins = [ pkgs.age-plugin-yubikey ];
+        keyFile = lib.mkDefault (
+          if hasRepoIdentity then
+            "/etc/sops/age/keys.txt"
+          else
+            "${config.home.homeDirectory}/.config/sops/age/keys.txt"
+        );
+      };
+    })
   ];
 
   # PC/SC daemon required for YubiKey PIV communication
