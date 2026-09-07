@@ -9,13 +9,18 @@ in
 
   # Declaratively symlink u2f_mappings from repo to /etc if present
   environment.etc = lib.mkIf hasRepoU2fMappings {
-    "u2f_mappings".source = repoU2fFile;
+    "u2f_mappings" = {
+      source = repoU2fFile;
+      mode = "0644";
+    };
   };
 
   security.pam.u2f = {
     enable = true;
     control = "sufficient";
     settings = {
+      origin = "pam://${config.networking.hostName}";
+      appid = "pam://${config.networking.hostName}";
       authfile = "/etc/u2f_mappings";
       cue = true;
       nouserok = true;

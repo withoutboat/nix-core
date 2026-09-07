@@ -214,9 +214,9 @@ All decrypted secret files are securely mounted in RAM at `/run/secrets/<name>` 
 To use your YubiKey instead of entering a password for login (`greetd`/`tuigreet`), `sudo` commands, and `polkit` elevation dialogs:
 
 ### 1. Register YubiKey (One-time)
-Insert your YubiKey into a USB port and run `pamu2fcfg` to generate the U2F mapping (touch the key when prompted):
+Insert your YubiKey into a USB port and run `pamu2fcfg` to generate the U2F mapping (touch the key when prompted, specifying your hostname as origin and appid):
 ```bash
-pamu2fcfg -u withoutboat | sudo tee /etc/u2f_mappings
+pamu2fcfg -o pam://pc-th -i pam://pc-th -u withoutboat | sudo tee /etc/u2f_mappings
 ```
 
 To persist the registration in the repository (so clean disk installs automatically provision it via a declarative `/etc/u2f_mappings` symlink):
