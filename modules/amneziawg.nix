@@ -9,6 +9,30 @@ let
   rawFileName = if hasAmneziaConfigSpec then baseNameOf amneziaConfigFile else null;
   secretPath = if hasAmneziaConfigSpec then ../secrets + "/${rawFileName}" else null;
   hasSecretFile = hasAmneziaConfigSpec && builtins.pathExists secretPath;
+
+  v4Dns = builtins.filter (s: !lib.hasInfix ":" s) cfg.dnsServers;
+  v6Dns = builtins.filter (s: lib.hasInfix ":" s) cfg.dnsServers;
+
+  nftBypassCommands = ''
+    ${pkgs.nftables}/bin/nft 'add table inet awg_bypass'
+    ${pkgs.nftables}/bin/nft 'list set inet awg_bypass bypass_v4' >/dev/null 2>&1 || \
+      ${pkgs.nftables}/bin/nft 'add set inet awg_bypass bypass_v4 { type ipv4_addr; flags timeout; timeout 1h; }'
+    ${pkgs.nftables}/bin/nft 'list set inet awg_bypass bypass_v6' >/dev/null 2>&1 || \
+      ${pkgs.nftables}/bin/nft 'add set inet awg_bypass bypass_v6 { type ipv6_addr; flags timeout; timeout 1h; }'
+    ${pkgs.nftables}/bin/nft 'add chain inet awg_bypass output { type route hook output priority mangle; policy accept; }'
+    ${pkgs.nftables}/bin/nft 'flush chain inet awg_bypass output'
+    ${lib.optionalString (v4Dns != [ ]) ''
+      ${pkgs.nftables}/bin/nft 'add rule inet awg_bypass output ip daddr { ${lib.concatStringsSep ", " v4Dns} } meta mark set 51820'
+    ''}
+    ${lib.optionalString (v6Dns != [ ]) ''
+      ${pkgs.nftables}/bin/nft 'add rule inet awg_bypass output ip6 daddr { ${lib.concatStringsSep ", " v6Dns} } meta mark set 51820'
+    ''}
+    ${pkgs.nftables}/bin/nft 'add rule inet awg_bypass output ip daddr @bypass_v4 meta mark set 51820'
+    ${pkgs.nftables}/bin/nft 'add rule inet awg_bypass output ip6 daddr @bypass_v6 meta mark set 51820'
+    ${pkgs.nftables}/bin/nft 'add chain inet awg_bypass postrouting { type nat hook postrouting priority srcnat; policy accept; }'
+    ${pkgs.nftables}/bin/nft 'flush chain inet awg_bypass postrouting'
+    ${pkgs.nftables}/bin/nft 'add rule inet awg_bypass postrouting meta mark 51820 masquerade'
+  '';
 in
 {
   options.services.amneziawg = {
@@ -58,6 +82,15 @@ in
         "crates.io"
       ];
       description = "Domain suffixes to route directly via default gateway in bypass of AmneziaWG.";
+    };
+
+    dnsServers = lib.mkOption {
+      type = lib.types.listOf lib.types.str;
+      default = spec.amneziaDnsServers or [
+        "1.1.1.1"
+        "1.0.0.1"
+      ];
+      description = "Upstream DNS servers for dnsmasq that always bypass the AmneziaWG tunnel directly via default gateway.";
     };
   };
 
@@ -113,6 +146,7 @@ in
           pkgs.iproute2
           pkgs.procps
           pkgs.coreutils
+          pkgs.gnused
           pkgs.ipset
           config.networking.firewall.package
           config.networking.resolvconf.package
@@ -137,6 +171,11 @@ in
           fi
           cp "${cfg.configFile}" /run/amneziawg/${cfg.interfaceName}.conf
           chmod 600 /run/amneziawg/${cfg.interfaceName}.conf
+          ${lib.optionalString cfg.bypassEnable ''
+            # Strip DNS entries from AmneziaWG config so awg-quick does not overwrite
+            # resolvconf and break local dnsmasq resolution and domain bypass
+            ${pkgs.gnused}/bin/sed -i '/^[[:space:]]*DNS[[:space:]]*=/d' /run/amneziawg/${cfg.interfaceName}.conf
+          ''}
           awg-quick up /run/amneziawg/${cfg.interfaceName}.conf || true
         '';
 
@@ -145,6 +184,9 @@ in
             if [ -f "${cfg.configFile}" ]; then
               cp "${cfg.configFile}" /run/amneziawg/${cfg.interfaceName}.conf
               chmod 600 /run/amneziawg/${cfg.interfaceName}.conf
+              ${lib.optionalString cfg.bypassEnable ''
+                ${pkgs.gnused}/bin/sed -i '/^[[:space:]]*DNS[[:space:]]*=/d' /run/amneziawg/${cfg.interfaceName}.conf
+              ''}
             fi
           fi
           if [ -f /run/amneziawg/${cfg.interfaceName}.conf ]; then
@@ -174,20 +216,7 @@ in
         "net.ipv4.conf.all.rp_filter" = lib.mkDefault 2;
       };
 
-      networking.firewall.extraCommands = lib.mkAfter ''
-        ${pkgs.nftables}/bin/nft 'add table inet awg_bypass'
-        ${pkgs.nftables}/bin/nft 'list set inet awg_bypass bypass_v4' >/dev/null 2>&1 || \
-          ${pkgs.nftables}/bin/nft 'add set inet awg_bypass bypass_v4 { type ipv4_addr; flags timeout; timeout 1h; }'
-        ${pkgs.nftables}/bin/nft 'list set inet awg_bypass bypass_v6' >/dev/null 2>&1 || \
-          ${pkgs.nftables}/bin/nft 'add set inet awg_bypass bypass_v6 { type ipv6_addr; flags timeout; timeout 1h; }'
-        ${pkgs.nftables}/bin/nft 'add chain inet awg_bypass output { type route hook output priority mangle; policy accept; }'
-        ${pkgs.nftables}/bin/nft 'flush chain inet awg_bypass output'
-        ${pkgs.nftables}/bin/nft 'add rule inet awg_bypass output ip daddr @bypass_v4 meta mark set 51820'
-        ${pkgs.nftables}/bin/nft 'add rule inet awg_bypass output ip6 daddr @bypass_v6 meta mark set 51820'
-        ${pkgs.nftables}/bin/nft 'add chain inet awg_bypass postrouting { type nat hook postrouting priority srcnat; policy accept; }'
-        ${pkgs.nftables}/bin/nft 'flush chain inet awg_bypass postrouting'
-        ${pkgs.nftables}/bin/nft 'add rule inet awg_bypass postrouting meta mark 51820 masquerade'
-      '';
+      networking.firewall.extraCommands = lib.mkAfter nftBypassCommands;
 
       networking.firewall.extraStopCommands = lib.mkAfter ''
         ${pkgs.nftables}/bin/nft 'delete table inet awg_bypass' 2>/dev/null || true
@@ -197,7 +226,7 @@ in
         enable = true;
         resolveLocalQueries = true;
         settings = {
-          server = [ "1.1.1.1" "1.0.0.1" ];
+          server = cfg.dnsServers;
           nftset = map (domain: "/${domain}/4#inet#awg_bypass#bypass_v4,6#inet#awg_bypass#bypass_v6") cfg.bypassDomains;
         };
       };
@@ -205,20 +234,7 @@ in
       systemd.services.dnsmasq = {
         after = [ "firewall.service" ];
         wants = [ "firewall.service" ];
-        preStart = lib.mkBefore ''
-          ${pkgs.nftables}/bin/nft 'add table inet awg_bypass'
-          ${pkgs.nftables}/bin/nft 'list set inet awg_bypass bypass_v4' >/dev/null 2>&1 || \
-            ${pkgs.nftables}/bin/nft 'add set inet awg_bypass bypass_v4 { type ipv4_addr; flags timeout; timeout 1h; }'
-          ${pkgs.nftables}/bin/nft 'list set inet awg_bypass bypass_v6' >/dev/null 2>&1 || \
-            ${pkgs.nftables}/bin/nft 'add set inet awg_bypass bypass_v6 { type ipv6_addr; flags timeout; timeout 1h; }'
-          ${pkgs.nftables}/bin/nft 'add chain inet awg_bypass output { type route hook output priority mangle; policy accept; }'
-          ${pkgs.nftables}/bin/nft 'flush chain inet awg_bypass output'
-          ${pkgs.nftables}/bin/nft 'add rule inet awg_bypass output ip daddr @bypass_v4 meta mark set 51820'
-          ${pkgs.nftables}/bin/nft 'add rule inet awg_bypass output ip6 daddr @bypass_v6 meta mark set 51820'
-          ${pkgs.nftables}/bin/nft 'add chain inet awg_bypass postrouting { type nat hook postrouting priority srcnat; policy accept; }'
-          ${pkgs.nftables}/bin/nft 'flush chain inet awg_bypass postrouting'
-          ${pkgs.nftables}/bin/nft 'add rule inet awg_bypass postrouting meta mark 51820 masquerade'
-        '';
+        preStart = lib.mkBefore nftBypassCommands;
       };
     })
   ];
