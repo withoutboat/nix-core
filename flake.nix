@@ -18,6 +18,7 @@
       url = "github:withoutboat/nix-home";
       inputs.nixpkgs.follows = "nixpkgs";
       inputs.home-manager.follows = "home-manager";
+      inputs.sops-nix.follows = "sops-nix";
     };
 
     nur = {

@@ -1,4 +1,4 @@
-{ config, pkgs, lib, inputs, ... }:
+{ config, pkgs, lib, ... }:
 
 let
   repoIdentityFile = ../secrets/yubikey-identity.txt;
@@ -11,9 +11,8 @@ in
     age-plugin-yubikey
   ];
 
-  # Integrate sops-nix into Home Manager
+  # Configure YubiKey age plugin for Home Manager user sessions
   home-manager.sharedModules = [
-    inputs.sops-nix.homeManagerModules.sops
     ({ config, ... }: {
       sops.age = {
         plugins = [ pkgs.age-plugin-yubikey ];
