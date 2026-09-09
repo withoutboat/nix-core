@@ -1,0 +1,88 @@
+### [AmneziaWG / WireGuard Show] :: awg show || wg show
+--- Executed at 2026-09-09T15:45:18Z ---
+interface: awg0
+  public key: 7Q9Jp0QvXu2tu6mog635EaVz1IYbMt9pdXgiFe61vH0=
+  private key: (hidden)
+  listening port: 45790
+  fwmark: 0xca6c
+  jc: 5
+  jmin: 10
+  jmax: 50
+  s1: 69
+  s2: 132
+  s3: 6
+  s4: 5
+  h1: 117028949-1005410162
+  h2: 1231176932-1803586643
+  h3: 1890197938-2064918576
+  h4: 2126864087-2138021283
+  i1: <b 0x084481800001000300000000077469636b65747306776964676574096b696e6f706f69736b0272750000010001c00c0005000100000039001806776964676574077469636b6574730679616e646578c025c0390005000100000039002b1765787465726e616c2d7469636b6574732d776964676574066166697368610679616e646578036e657400c05d000100010000001c000457fafe25>
+  random trailers: off
+  disable cookies: off
+
+peer: 2c1o9//w190B6DvPgsrJUr2+3wonW3NzNUojYxjMkkg=
+  preshared key: (hidden)
+  endpoint: 144.31.154.165:46399
+  allowed ips: 0.0.0.0/0, ::/0
+  transfer: 0 B received, 7.47 KiB sent
+  persistent keepalive: 25
+
+
+### [AmneziaWG Latest Handshakes] :: awg show awg0 latest-handshakes 2>/dev/null || true
+--- Executed at 2026-09-09T15:45:18Z ---
+2c1o9//w190B6DvPgsrJUr2+3wonW3NzNUojYxjMkkg=	0
+
+
+### [Ping Default Gateway (192.168.31.1)] :: ping -c 3 -W 2 192.168.31.1
+--- Executed at 2026-09-09T15:45:18Z ---
+PING 192.168.31.1 (192.168.31.1) 56(84) bytes of data.
+64 bytes from 192.168.31.1: icmp_seq=1 ttl=64 time=3.38 ms
+64 bytes from 192.168.31.1: icmp_seq=2 ttl=64 time=3.27 ms
+64 bytes from 192.168.31.1: icmp_seq=3 ttl=64 time=3.44 ms
+
+--- 192.168.31.1 ping statistics ---
+3 packets transmitted, 3 received, 0% packet loss, time 2001ms
+rtt min/avg/max/mdev = 3.272/3.364/3.437/0.068 ms
+
+
+### [Ping VPN Server Endpoint (144.31.154.165)] :: ping -c 3 -W 2 144.31.154.165
+--- Executed at 2026-09-09T15:45:20Z ---
+PING 144.31.154.165 (144.31.154.165) 56(84) bytes of data.
+
+--- 144.31.154.165 ping statistics ---
+3 packets transmitted, 0 received, 100% packet loss, time 2039ms
+
+
+
+### [Ping Upstream DNS 1.1.1.1] :: ping -c 3 -W 2 1.1.1.1
+--- Executed at 2026-09-09T15:45:24Z ---
+PING 1.1.1.1 (1.1.1.1) 56(84) bytes of data.
+64 bytes from 1.1.1.1: icmp_seq=1 ttl=54 time=41.7 ms
+
+--- 1.1.1.1 ping statistics ---
+1 packets transmitted, 1 received, 0% packet loss, time 0ms
+rtt min/avg/max/mdev = 41.729/41.729/41.729/0.000 ms
+
+
+### [Ping Upstream DNS 1.0.0.1] :: ping -c 3 -W 2 1.0.0.1
+--- Executed at 2026-09-09T15:45:24Z ---
+PING 1.0.0.1 (1.0.0.1) 56(84) bytes of data.
+64 bytes from 1.0.0.1: icmp_seq=1 ttl=54 time=40.1 ms
+
+--- 1.0.0.1 ping statistics ---
+1 packets transmitted, 1 received, 0% packet loss, time 0ms
+rtt min/avg/max/mdev = 40.134/40.134/40.134/0.000 ms
+
+
+### [Curl https://github.com (Bypass domain)] :: curl -svo /dev/null --connect-timeout 5 https://github.com
+--- Executed at 2026-09-09T15:45:24Z ---
+* Host github.com:443 was resolved.
+* IPv6: (none)
+* IPv4: 140.82.121.3
+*   Trying 140.82.121.3:443...
+* ALPN: curl offers h2,http/1.1
+} [5 bytes data]
+* TLSv1.3 (OUT), TLS handshake, Client hello (1):
+} [1554 bytes data]
+* SSL Trust Anchors:
+*   OpenSSL default paths (fallback)

@@ -1,0 +1,271 @@
+### [NetworkManager Status] :: systemctl status NetworkManager.service --no-pager
+--- Executed at 2026-09-09T15:44:32Z ---
+● NetworkManager.service - Network Manager
+     Loaded: loaded (/etc/systemd/system/NetworkManager.service; enabled; preset: ignored)
+    Drop-In: /nix/store/m6a8ykpnsnpnkvn5x3alqm91w6f0ag8g-system-units/NetworkManager.service.d
+             └─NetworkManager-ovs.conf, overrides.conf
+     Active: active (running) since Wed 2026-09-09 15:14:43 UTC; 29min ago
+ Invocation: e3ab1de63bee4f29808b7a10070982a7
+       Docs: man:NetworkManager(8)
+   Main PID: 21150 (NetworkManager)
+         IP: 0B in, 432B out
+         IO: 545.1M read, 24K written
+      Tasks: 4 (limit: 18931)
+     Memory: 13.5M (peak: 13.9M)
+        CPU: 638ms
+     CGroup: /system.slice/NetworkManager.service
+             └─21150 /nix/store/6qz6q8j2r2cirh33f67mpdsxnqf8d680-networkmanager-1.58.0/sbin/NetworkManager --no-daemon
+
+Sep 09 15:14:42 pc-th systemd[1]: Starting Network Manager...
+Sep 09 15:14:43 pc-th systemd[1]: Started Network Manager.
+Sep 09 15:14:43 pc-th NetworkManager[21150]: <warn>  [1788966883.4273] device (p2p-dev-wlo1): error setting IPv4 forwarding to '1': Success
+
+
+### [dnsmasq Status] :: systemctl status dnsmasq.service --no-pager
+--- Executed at 2026-09-09T15:44:33Z ---
+● dnsmasq.service - Dnsmasq Daemon
+     Loaded: loaded (/etc/systemd/system/dnsmasq.service; enabled; preset: ignored)
+     Active: active (running) since Wed 2026-09-09 15:44:01 UTC; 32s ago
+ Invocation: 7d8126ec9b7e4d0b931277eb4fb3206b
+    Process: 42418 ExecStartPre=/nix/store/qj0d69mdbj7fx1ksq45p6b6xac8iakxx-unit-script-dnsmasq-pre-start/bin/dnsmasq-pre-start (code=exited, status=0/SUCCESS)
+   Main PID: 42456 (dnsmasq)
+         IP: 338B in, 417B out
+         IO: 600K read, 0B written
+      Tasks: 1 (limit: 18931)
+     Memory: 5M (peak: 6.6M)
+        CPU: 158ms
+     CGroup: /system.slice/dnsmasq.service
+             └─42456 /nix/store/cgwmd5bjypw2m8acaq51a77683069b0f-dnsmasq-2.93/bin/dnsmasq -k --enable-dbus --user=dnsmasq -C /nix/store/7s24kzvf3f45d2l0m3nmcx1qalamibnk-dnsmasq.conf
+
+Sep 09 15:44:00 pc-th systemd[1]: Starting Dnsmasq Daemon...
+Sep 09 15:44:01 pc-th dnsmasq-pre-start[42447]: dnsmasq: syntax check OK.
+Sep 09 15:44:01 pc-th systemd[1]: Started Dnsmasq Daemon.
+Sep 09 15:44:01 pc-th dnsmasq[42456]: started, version 2.93 cachesize 150
+Sep 09 15:44:01 pc-th dnsmasq[42456]: compile time options: IPv6 GNU-getopt DBus no-UBus no-i18n IDN2 DHCP DHCPv6 no-Lua TFTP conntrack ipset nftset auth DNSSEC loop-detect inotify dumpfile
+Sep 09 15:44:01 pc-th dnsmasq[42456]: DBus support enabled: connected to system bus
+Sep 09 15:44:01 pc-th dnsmasq[42456]: warning: ignoring resolv-file flag because no-resolv is set
+Sep 09 15:44:01 pc-th dnsmasq[42456]: using nameserver 1.1.1.1#53
+Sep 09 15:44:01 pc-th dnsmasq[42456]: using nameserver 1.0.0.1#53
+Sep 09 15:44:01 pc-th dnsmasq[42456]: read /etc/hosts - 3 names
+
+
+### [firewall Status] :: systemctl status firewall.service --no-pager
+--- Executed at 2026-09-09T15:44:33Z ---
+● firewall.service - Firewall
+     Loaded: loaded (/etc/systemd/system/firewall.service; enabled; preset: ignored)
+     Active: active (exited) since Wed 2026-09-09 14:29:14 UTC; 1h 15min ago
+ Invocation: 5467c2ea3feb4efb9525ce61c64bec4f
+    Process: 41988 ExecReload=firewall-reload (code=exited, status=0/SUCCESS)
+   Main PID: 621 (code=exited, status=0/SUCCESS)
+         IP: 0B in, 0B out
+         IO: 2.5M read, 0B written
+   Mem peak: 9.4M
+        CPU: 291ms
+
+Sep 09 14:29:09 pc-th systemd[1]: Starting Firewall...
+Sep 09 14:29:14 pc-th systemd[1]: Finished Firewall.
+Sep 09 15:43:56 pc-th systemd[1]: Reloading Firewall...
+Sep 09 15:43:57 pc-th systemd[1]: Reloaded Firewall.
+
+
+### [awg-quick Status] :: systemctl status 'awg-quick*' 'wg-quick*' --no-pager
+--- Executed at 2026-09-09T15:44:33Z ---
+● awg-quick-awg0.service - AmneziaWG Tunnel - awg0
+     Loaded: loaded (/etc/systemd/system/awg-quick-awg0.service; enabled; preset: ignored)
+     Active: active (exited) since Wed 2026-09-09 15:44:02 UTC; 31s ago
+ Invocation: 09822069983a4e2b8d4bd22a8114f0c6
+    Process: 42461 ExecStart=/nix/store/p6kkynzn873j65690pacf41g6jpgvyzf-unit-script-awg-quick-awg0-start/bin/awg-quick-awg0-start (code=exited, status=0/SUCCESS)
+   Main PID: 42461 (code=exited, status=0/SUCCESS)
+         IP: 0B in, 0B out
+         IO: 3M read, 0B written
+   Mem peak: 7.2M
+        CPU: 200ms
+
+Sep 09 15:44:02 pc-th awg-quick-awg0-start[42467]: [#] ip -6 rule add not fwmark 51820 table 51820
+Sep 09 15:44:02 pc-th awg-quick-awg0-start[42467]: [#] ip -6 rule add table main suppress_prefixlength 0
+Sep 09 15:44:02 pc-th awg-quick-awg0-start[42467]: [#] ip -6 route add ::/0 dev awg0 table 51820
+Sep 09 15:44:02 pc-th awg-quick-awg0-start[42506]: [#] ip6tables-restore -n
+Sep 09 15:44:02 pc-th awg-quick-awg0-start[42467]: [#] ip -4 rule add not fwmark 51820 table 51820
+Sep 09 15:44:02 pc-th awg-quick-awg0-start[42467]: [#] ip -4 rule add table main suppress_prefixlength 0
+Sep 09 15:44:02 pc-th awg-quick-awg0-start[42467]: [#] ip -4 route add 0.0.0.0/0 dev awg0 table 51820
+Sep 09 15:44:02 pc-th awg-quick-awg0-start[42467]: [#] sysctl -q net.ipv4.conf.all.src_valid_mark=1
+Sep 09 15:44:02 pc-th awg-quick-awg0-start[42515]: [#] iptables-restore -n
+Sep 09 15:44:02 pc-th systemd[1]: Finished AmneziaWG Tunnel - awg0.
+
+
+### [Recent dnsmasq Journal Logs] :: journalctl -u dnsmasq.service -n 50 --no-pager
+--- Executed at 2026-09-09T15:44:33Z ---
+Sep 09 14:23:24 pc-th dnsmasq[37887]: started, version 2.93 cachesize 150
+Sep 09 14:23:24 pc-th dnsmasq[37887]: compile time options: IPv6 GNU-getopt DBus no-UBus no-i18n IDN2 DHCP DHCPv6 no-Lua TFTP conntrack ipset nftset auth DNSSEC loop-detect inotify dumpfile
+Sep 09 14:23:24 pc-th dnsmasq[37887]: DBus support enabled: connected to system bus
+Sep 09 14:23:24 pc-th dnsmasq[37887]: warning: ignoring resolv-file flag because no-resolv is set
+Sep 09 14:23:24 pc-th dnsmasq[37887]: using nameserver 1.1.1.1#53
+Sep 09 14:23:24 pc-th dnsmasq[37887]: using nameserver 1.0.0.1#53
+Sep 09 14:23:24 pc-th dnsmasq[37887]: read /etc/hosts - 3 names
+Sep 09 14:26:43 pc-th systemd[1]: Stopping Dnsmasq Daemon...
+Sep 09 14:26:43 pc-th systemd[1]: dnsmasq.service: Deactivated successfully.
+Sep 09 14:26:43 pc-th systemd[1]: Stopped Dnsmasq Daemon.
+Sep 09 14:26:43 pc-th systemd[1]: dnsmasq.service: Consumed 146ms CPU time over 3min 20.404s wall clock time, 6.8M memory peak, 1.6M read from disk.
+-- Boot 30d9eb5ab8ba47c1831b632c83e9d751 --
+Sep 09 14:29:20 pc-th systemd[1]: Starting Dnsmasq Daemon...
+Sep 09 14:29:21 pc-th dnsmasq-pre-start[1353]: dnsmasq: syntax check OK.
+Sep 09 14:29:21 pc-th systemd[1]: Started Dnsmasq Daemon.
+Sep 09 14:29:21 pc-th dnsmasq[1359]: started, version 2.93 cachesize 150
+Sep 09 14:29:21 pc-th dnsmasq[1359]: compile time options: IPv6 GNU-getopt DBus no-UBus no-i18n IDN2 DHCP DHCPv6 no-Lua TFTP conntrack ipset nftset auth DNSSEC loop-detect inotify dumpfile
+Sep 09 14:29:21 pc-th dnsmasq[1359]: DBus support enabled: connected to system bus
+Sep 09 14:29:21 pc-th dnsmasq[1359]: warning: ignoring resolv-file flag because no-resolv is set
+Sep 09 14:29:21 pc-th dnsmasq[1359]: using nameserver 1.1.1.1#53
+Sep 09 14:29:21 pc-th dnsmasq[1359]: using nameserver 1.0.0.1#53
+Sep 09 14:29:21 pc-th dnsmasq[1359]: read /etc/hosts - 3 names
+Sep 09 15:12:34 pc-th systemd[1]: Stopping Dnsmasq Daemon...
+Sep 09 15:12:34 pc-th systemd[1]: dnsmasq.service: Deactivated successfully.
+Sep 09 15:12:34 pc-th systemd[1]: Stopped Dnsmasq Daemon.
+Sep 09 15:12:34 pc-th systemd[1]: dnsmasq.service: Consumed 409ms CPU time over 43min 13.664s wall clock time, 8.4M memory peak, 1.6M read from disk, 280K incoming IP traffic, 384.9K outgoing IP traffic.
+Sep 09 15:15:55 pc-th systemd[1]: Starting Dnsmasq Daemon...
+Sep 09 15:15:55 pc-th dnsmasq-pre-start[22008]: dnsmasq: syntax check OK.
+Sep 09 15:15:55 pc-th systemd[1]: Started Dnsmasq Daemon.
+Sep 09 15:15:55 pc-th dnsmasq[22010]: started, version 2.93 cachesize 150
+Sep 09 15:15:55 pc-th dnsmasq[22010]: compile time options: IPv6 GNU-getopt DBus no-UBus no-i18n IDN2 DHCP DHCPv6 no-Lua TFTP conntrack ipset nftset auth DNSSEC loop-detect inotify dumpfile
+Sep 09 15:15:55 pc-th dnsmasq[22010]: DBus support enabled: connected to system bus
+Sep 09 15:15:55 pc-th dnsmasq[22010]: warning: ignoring resolv-file flag because no-resolv is set
+Sep 09 15:15:55 pc-th dnsmasq[22010]: using nameserver 1.1.1.1#53
+Sep 09 15:15:55 pc-th dnsmasq[22010]: using nameserver 1.0.0.1#53
+Sep 09 15:15:55 pc-th dnsmasq[22010]: read /etc/hosts - 3 names
+Sep 09 15:43:49 pc-th systemd[1]: Stopping Dnsmasq Daemon...
+Sep 09 15:43:49 pc-th dnsmasq[22010]: exiting on receipt of SIGTERM
+Sep 09 15:43:50 pc-th systemd[1]: dnsmasq.service: Deactivated successfully.
+Sep 09 15:43:50 pc-th systemd[1]: Stopped Dnsmasq Daemon.
+Sep 09 15:43:50 pc-th systemd[1]: dnsmasq.service: Consumed 132ms CPU time over 27min 53.493s wall clock time, 6.6M memory peak, 3.5M read from disk.
+Sep 09 15:44:00 pc-th systemd[1]: Starting Dnsmasq Daemon...
+Sep 09 15:44:01 pc-th dnsmasq-pre-start[42447]: dnsmasq: syntax check OK.
+Sep 09 15:44:01 pc-th systemd[1]: Started Dnsmasq Daemon.
+Sep 09 15:44:01 pc-th dnsmasq[42456]: started, version 2.93 cachesize 150
+Sep 09 15:44:01 pc-th dnsmasq[42456]: compile time options: IPv6 GNU-getopt DBus no-UBus no-i18n IDN2 DHCP DHCPv6 no-Lua TFTP conntrack ipset nftset auth DNSSEC loop-detect inotify dumpfile
+Sep 09 15:44:01 pc-th dnsmasq[42456]: DBus support enabled: connected to system bus
+Sep 09 15:44:01 pc-th dnsmasq[42456]: warning: ignoring resolv-file flag because no-resolv is set
+Sep 09 15:44:01 pc-th dnsmasq[42456]: using nameserver 1.1.1.1#53
+Sep 09 15:44:01 pc-th dnsmasq[42456]: using nameserver 1.0.0.1#53
+Sep 09 15:44:01 pc-th dnsmasq[42456]: read /etc/hosts - 3 names
+
+
+### [Recent awg-quick Journal Logs] :: journalctl -u 'awg-quick*' -n 50 --no-pager
+--- Executed at 2026-09-09T15:44:33Z ---
+Sep 09 15:05:40 pc-th awg-quick-awg0-pre-stop[16484]: [#] ip -4 rule delete table main suppress_prefixlength 0
+Sep 09 15:05:40 pc-th awg-quick-awg0-pre-stop[16484]: [#] ip -6 rule delete table 51820
+Sep 09 15:05:40 pc-th awg-quick-awg0-pre-stop[16484]: [#] ip -6 rule delete table main suppress_prefixlength 0
+Sep 09 15:05:40 pc-th awg-quick-awg0-pre-stop[16484]: [#] ip link delete dev awg0
+Sep 09 15:05:40 pc-th awg-quick-awg0-pre-stop[16517]: [#] iptables-restore -n
+Sep 09 15:05:40 pc-th awg-quick-awg0-pre-stop[16521]: [#] ip6tables-restore -n
+Sep 09 15:05:40 pc-th systemd[1]: awg-quick-awg0.service: Deactivated successfully.
+Sep 09 15:05:40 pc-th systemd[1]: Stopped AmneziaWG Tunnel - awg0.
+Sep 09 15:05:40 pc-th systemd[1]: Starting AmneziaWG Tunnel - awg0...
+Sep 09 15:05:40 pc-th awg-quick-awg0-start[16531]: [#] ip link add awg0 type amneziawg
+Sep 09 15:05:40 pc-th awg-quick-awg0-start[16531]: [#] awg setconf awg0 /dev/fd/63
+Sep 09 15:05:40 pc-th awg-quick-awg0-start[16531]: [#] ip -4 address add 10.8.1.11/32 dev awg0
+Sep 09 15:05:40 pc-th awg-quick-awg0-start[16531]: [#] ip link set mtu 1420 up dev awg0
+Sep 09 15:05:40 pc-th awg-quick-awg0-start[16531]: [#] awg set awg0 fwmark 51820
+Sep 09 15:05:40 pc-th awg-quick-awg0-start[16531]: [#] ip -6 rule add not fwmark 51820 table 51820
+Sep 09 15:05:40 pc-th awg-quick-awg0-start[16531]: [#] ip -6 rule add table main suppress_prefixlength 0
+Sep 09 15:05:40 pc-th awg-quick-awg0-start[16531]: [#] ip -6 route add ::/0 dev awg0 table 51820
+Sep 09 15:05:40 pc-th awg-quick-awg0-start[16568]: [#] ip6tables-restore -n
+Sep 09 15:05:40 pc-th awg-quick-awg0-start[16531]: [#] ip -4 rule add not fwmark 51820 table 51820
+Sep 09 15:05:40 pc-th awg-quick-awg0-start[16531]: [#] ip -4 rule add table main suppress_prefixlength 0
+Sep 09 15:05:40 pc-th awg-quick-awg0-start[16531]: [#] ip -4 route add 0.0.0.0/0 dev awg0 table 51820
+Sep 09 15:05:40 pc-th awg-quick-awg0-start[16531]: [#] sysctl -q net.ipv4.conf.all.src_valid_mark=1
+Sep 09 15:05:40 pc-th awg-quick-awg0-start[16577]: [#] iptables-restore -n
+Sep 09 15:05:40 pc-th systemd[1]: Finished AmneziaWG Tunnel - awg0.
+Sep 09 15:12:34 pc-th systemd[1]: Stopping AmneziaWG Tunnel - awg0...
+Sep 09 15:12:34 pc-th awg-quick-awg0-pre-stop[19926]: [#] ip -4 rule delete table 51820
+Sep 09 15:12:34 pc-th awg-quick-awg0-pre-stop[19926]: [#] ip -4 rule delete table main suppress_prefixlength 0
+Sep 09 15:12:34 pc-th awg-quick-awg0-pre-stop[19926]: [#] ip -6 rule delete table 51820
+Sep 09 15:12:34 pc-th awg-quick-awg0-pre-stop[19926]: [#] ip -6 rule delete table main suppress_prefixlength 0
+Sep 09 15:12:34 pc-th awg-quick-awg0-pre-stop[19926]: [#] ip link delete dev awg0
+Sep 09 15:12:34 pc-th awg-quick-awg0-pre-stop[19959]: [#] iptables-restore -n
+Sep 09 15:12:34 pc-th awg-quick-awg0-pre-stop[19963]: [#] ip6tables-restore -n
+Sep 09 15:12:34 pc-th systemd[1]: awg-quick-awg0.service: Deactivated successfully.
+Sep 09 15:12:34 pc-th systemd[1]: Stopped AmneziaWG Tunnel - awg0.
+Sep 09 15:44:01 pc-th systemd[1]: Starting AmneziaWG Tunnel - awg0...
+Sep 09 15:44:01 pc-th awg-quick-awg0-start[42467]: [#] ip link add awg0 type amneziawg
+Sep 09 15:44:01 pc-th awg-quick-awg0-start[42467]: [#] awg setconf awg0 /dev/fd/63
+Sep 09 15:44:02 pc-th awg-quick-awg0-start[42467]: [#] ip -4 address add 10.8.1.11/32 dev awg0
+Sep 09 15:44:02 pc-th awg-quick-awg0-start[42467]: [#] ip link set mtu 1420 up dev awg0
+Sep 09 15:44:02 pc-th awg-quick-awg0-start[42467]: [#] awg set awg0 fwmark 51820
+Sep 09 15:44:02 pc-th awg-quick-awg0-start[42467]: [#] ip -6 rule add not fwmark 51820 table 51820
+Sep 09 15:44:02 pc-th awg-quick-awg0-start[42467]: [#] ip -6 rule add table main suppress_prefixlength 0
+Sep 09 15:44:02 pc-th awg-quick-awg0-start[42467]: [#] ip -6 route add ::/0 dev awg0 table 51820
+Sep 09 15:44:02 pc-th awg-quick-awg0-start[42506]: [#] ip6tables-restore -n
+Sep 09 15:44:02 pc-th awg-quick-awg0-start[42467]: [#] ip -4 rule add not fwmark 51820 table 51820
+Sep 09 15:44:02 pc-th awg-quick-awg0-start[42467]: [#] ip -4 rule add table main suppress_prefixlength 0
+Sep 09 15:44:02 pc-th awg-quick-awg0-start[42467]: [#] ip -4 route add 0.0.0.0/0 dev awg0 table 51820
+Sep 09 15:44:02 pc-th awg-quick-awg0-start[42467]: [#] sysctl -q net.ipv4.conf.all.src_valid_mark=1
+Sep 09 15:44:02 pc-th awg-quick-awg0-start[42515]: [#] iptables-restore -n
+Sep 09 15:44:02 pc-th systemd[1]: Finished AmneziaWG Tunnel - awg0.
+
+
+### [Recent firewall Journal Logs] :: journalctl -u firewall.service -n 50 --no-pager
+--- Executed at 2026-09-09T15:44:33Z ---
+Aug 29 17:23:02 pc-th systemd[1]: Stopping Firewall...
+Aug 29 17:23:02 pc-th systemd[1]: firewall.service: Deactivated successfully.
+Aug 29 17:23:02 pc-th systemd[1]: Stopped Firewall.
+-- Boot d7c4c51d4e4b4c4996d9d09f9d499004 --
+Sep 06 12:07:39 pc-th systemd[1]: Starting Firewall...
+Sep 06 12:07:43 pc-th systemd[1]: Finished Firewall.
+Sep 06 17:16:50 pc-th systemd[1]: Stopping Firewall...
+Sep 06 17:16:52 pc-th systemd[1]: firewall.service: Deactivated successfully.
+Sep 06 17:16:52 pc-th systemd[1]: Stopped Firewall.
+-- Boot d69a87ced4c14671ab6d9d4e80c93cf8 --
+Sep 06 17:19:19 pc-th systemd[1]: Starting Firewall...
+Sep 06 17:19:24 pc-th systemd[1]: Finished Firewall.
+Sep 06 17:57:04 pc-th systemd[1]: Reloading Firewall...
+Sep 06 17:57:05 pc-th systemd[1]: Reloaded Firewall.
+Sep 06 18:05:32 pc-th systemd[1]: Reloading Firewall...
+Sep 06 18:05:33 pc-th systemd[1]: Reloaded Firewall.
+Sep 06 18:17:52 pc-th systemd[1]: Reloading Firewall...
+Sep 06 18:17:53 pc-th systemd[1]: Reloaded Firewall.
+Sep 06 18:40:14 pc-th systemd[1]: Stopping Firewall...
+Sep 06 18:40:14 pc-th systemd[1]: firewall.service: Deactivated successfully.
+Sep 06 18:40:14 pc-th systemd[1]: Stopped Firewall.
+Sep 06 18:40:49 pc-th systemd[1]: Starting Firewall...
+Sep 06 18:40:49 pc-th systemd[1]: Finished Firewall.
+Sep 06 18:45:17 pc-th systemd[1]: Stopping Firewall...
+Sep 06 18:45:17 pc-th systemd[1]: firewall.service: Deactivated successfully.
+Sep 06 18:45:17 pc-th systemd[1]: Stopped Firewall.
+Sep 06 18:45:54 pc-th systemd[1]: Starting Firewall...
+Sep 06 18:45:55 pc-th systemd[1]: Finished Firewall.
+Sep 06 19:44:41 pc-th systemd[1]: Stopping Firewall...
+Sep 06 19:44:41 pc-th systemd[1]: firewall.service: Deactivated successfully.
+Sep 06 19:44:41 pc-th systemd[1]: Stopped Firewall.
+-- Boot f16d85be19734c21b9faa7f34fbde6c1 --
+Sep 06 19:55:16 pc-th systemd[1]: Starting Firewall...
+Sep 06 19:55:22 pc-th systemd[1]: Finished Firewall.
+Sep 06 20:46:18 pc-th systemd[1]: Stopping Firewall...
+Sep 06 20:46:18 pc-th systemd[1]: firewall.service: Deactivated successfully.
+Sep 06 20:46:18 pc-th systemd[1]: Stopped Firewall.
+-- Boot 9e8c35e8ef92487e9040c207e4beeea7 --
+Sep 07 20:14:19 pc-th systemd[1]: Starting Firewall...
+Sep 07 20:14:24 pc-th systemd[1]: Finished Firewall.
+Sep 07 18:38:20 pc-th systemd[1]: Reloading Firewall...
+Sep 07 18:38:21 pc-th systemd[1]: Reloaded Firewall.
+Sep 07 18:53:29 pc-th systemd[1]: Stopping Firewall...
+Sep 07 18:53:29 pc-th systemd[1]: firewall.service: Deactivated successfully.
+Sep 07 18:53:29 pc-th systemd[1]: Stopped Firewall.
+-- Boot 5380b61914bf4007953dfad62ee580b6 --
+Sep 09 18:15:03 pc-th systemd[1]: Starting Firewall...
+Sep 09 18:15:07 pc-th systemd[1]: Finished Firewall.
+Sep 09 14:26:46 pc-th systemd[1]: Stopping Firewall...
+Sep 09 14:26:46 pc-th systemd[1]: firewall.service: Deactivated successfully.
+Sep 09 14:26:46 pc-th systemd[1]: Stopped Firewall.
+-- Boot 30d9eb5ab8ba47c1831b632c83e9d751 --
+Sep 09 14:29:09 pc-th systemd[1]: Starting Firewall...
+Sep 09 14:29:14 pc-th systemd[1]: Finished Firewall.
+Sep 09 15:43:56 pc-th systemd[1]: Reloading Firewall...
+Sep 09 15:43:57 pc-th systemd[1]: Reloaded Firewall.
+
+
+### [Kernel Drops and WireGuard Log (dmesg)] :: dmesg | grep -i -E 'refused connection|wireguard|amnezia' | tail -n 50
+--- Executed at 2026-09-09T15:44:33Z ---
+[   29.189658] amneziawg: AmneziaWG 1.0.0 loaded. See amnezia.org for information.
+[   29.189660] amneziawg: Copyright (C) 2015-2019 Jason A. Donenfeld <Jason@zx2c4.com>. All Rights Reserved.
+[   29.189661] amneziawg: Copyright (C) 2024-2025 AmneziaVPN <admin@amnezia.org>. All Rights Reserved.
+
+
