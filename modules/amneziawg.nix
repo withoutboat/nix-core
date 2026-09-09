@@ -139,9 +139,19 @@ in
             ${pkgs.gnused}/bin/sed -i '/^[[:space:]]*DNS[[:space:]]*=/d' /run/amneziawg/${cfg.interfaceName}.conf
           ''}
           awg-quick up /run/amneziawg/${cfg.interfaceName}.conf || true
+          PORT="$(awg show "${cfg.interfaceName}" listen-port 2>/dev/null || true)"
+          if [ -n "$PORT" ] && [ "$PORT" != "0" ]; then
+            iptables -I nixos-fw -p udp --dport "$PORT" -j nixos-fw-accept 2>/dev/null || true
+            ip6tables -I nixos-fw -p udp --dport "$PORT" -j nixos-fw-accept 2>/dev/null || true
+          fi
         '';
 
         preStop = ''
+          PORT="$(awg show "${cfg.interfaceName}" listen-port 2>/dev/null || true)"
+          if [ -n "$PORT" ] && [ "$PORT" != "0" ]; then
+            iptables -D nixos-fw -p udp --dport "$PORT" -j nixos-fw-accept 2>/dev/null || true
+            ip6tables -D nixos-fw -p udp --dport "$PORT" -j nixos-fw-accept 2>/dev/null || true
+          fi
           if [ ! -f /run/amneziawg/${cfg.interfaceName}.conf ]; then
             if [ -f "${cfg.configFile}" ]; then
               cp "${cfg.configFile}" /run/amneziawg/${cfg.interfaceName}.conf
@@ -160,6 +170,8 @@ in
       networking.networkmanager.unmanaged = lib.mkIf config.networking.networkmanager.enable [
         "interface-name:${cfg.interfaceName}"
       ];
+
+      networking.firewall.trustedInterfaces = [ cfg.interfaceName ];
     })
   ];
 }

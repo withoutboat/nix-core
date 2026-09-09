@@ -138,6 +138,7 @@ run_probe "awg-quick Status" "${SVC_LOG}" "systemctl status 'awg-quick*' 'wg-qui
 run_probe "Recent dnsmasq Journal Logs" "${SVC_LOG}" "journalctl -u dnsmasq.service -n 50 --no-pager"
 run_probe "Recent awg-quick Journal Logs" "${SVC_LOG}" "journalctl -u 'awg-quick*' -n 50 --no-pager"
 run_probe "Recent firewall Journal Logs" "${SVC_LOG}" "journalctl -u firewall.service -n 50 --no-pager"
+run_probe "Kernel Drops and WireGuard Log (dmesg)" "${SVC_LOG}" "dmesg | grep -i -E 'refused connection|wireguard|amnezia' | tail -n 50"
 
 # ------------------------------------------------------------------------------
 # 8. Tunnel & End-to-End Connectivity Checks
@@ -145,11 +146,18 @@ run_probe "Recent firewall Journal Logs" "${SVC_LOG}" "journalctl -u firewall.se
 echo -e "${BLUE}[8/8] Performing End-to-End Connectivity Probes...${NC}"
 CONN_LOG="${TARGET_DIR}/08-connectivity.log"
 run_probe "AmneziaWG / WireGuard Show" "${CONN_LOG}" "awg show || wg show"
+run_probe "AmneziaWG Latest Handshakes" "${CONN_LOG}" "awg show awg0 latest-handshakes 2>/dev/null || true"
 
 # Gateway ping
 DEFAULT_GW="$(ip route 2>/dev/null | awk '/default/ {print $3}' | head -n1)"
 if [ -n "${DEFAULT_GW}" ]; then
   run_probe "Ping Default Gateway (${DEFAULT_GW})" "${CONN_LOG}" "ping -c 3 -W 2 ${DEFAULT_GW}"
+fi
+
+# VPN Endpoint ping (reachability of server host)
+AWG_ENDPOINT="$(awg show awg0 endpoints 2>/dev/null | awk '{print $2}' | cut -d: -f1)"
+if [ -n "${AWG_ENDPOINT}" ]; then
+  run_probe "Ping VPN Server Endpoint (${AWG_ENDPOINT})" "${CONN_LOG}" "ping -c 3 -W 2 ${AWG_ENDPOINT}"
 fi
 
 # Upstream DNS ping

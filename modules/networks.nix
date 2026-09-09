@@ -27,7 +27,14 @@ let
     ${pkgs.nftables}/bin/nft 'add rule inet ${bypassCfg.nftablesTable} output ip6 daddr @bypass_v6 meta mark set ${toString bypassCfg.mark}'
     ${pkgs.nftables}/bin/nft 'add chain inet ${bypassCfg.nftablesTable} postrouting { type nat hook postrouting priority srcnat; policy accept; }'
     ${pkgs.nftables}/bin/nft 'flush chain inet ${bypassCfg.nftablesTable} postrouting'
-    ${pkgs.nftables}/bin/nft 'add rule inet ${bypassCfg.nftablesTable} postrouting meta mark ${toString bypassCfg.mark} masquerade'
+    ${lib.optionalString (v4Dns != [ ]) ''
+      ${pkgs.nftables}/bin/nft 'add rule inet ${bypassCfg.nftablesTable} postrouting ip daddr { ${lib.concatStringsSep ", " v4Dns} } masquerade'
+    ''}
+    ${lib.optionalString (v6Dns != [ ]) ''
+      ${pkgs.nftables}/bin/nft 'add rule inet ${bypassCfg.nftablesTable} postrouting ip6 daddr { ${lib.concatStringsSep ", " v6Dns} } masquerade'
+    ''}
+    ${pkgs.nftables}/bin/nft 'add rule inet ${bypassCfg.nftablesTable} postrouting ip daddr @bypass_v4 masquerade'
+    ${pkgs.nftables}/bin/nft 'add rule inet ${bypassCfg.nftablesTable} postrouting ip6 daddr @bypass_v6 masquerade'
   '';
 in
 {
