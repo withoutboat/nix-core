@@ -55,26 +55,6 @@ in
     };
   };
 
-  # Propagate base color options to Home Manager for Zellij default theme and other components
-  home-manager.sharedModules = [
-    ({ config, lib, ... }:
-      let
-        hmColors =
-          if config ? lib.stylix && config.lib.stylix ? colors then
-            mkBaseColors config.lib.stylix.colors.withHashtag
-          else
-            baseColors;
-      in
-      {
-        lib.stylix.baseColors = hmColors;
-
-        programs.zellij = {
-          settings.theme = lib.mkDefault "default";
-          themes.stylix.themes.default = lib.mapAttrs (_: lib.mkDefault) hmColors;
-        };
-      })
-  ];
-
   specialisation.light.configuration = {
     stylix = {
       polarity = lib.mkForce "light";
