@@ -1,0 +1,34 @@
+### [Hostname] :: hostname
+--- Executed at 2026-09-09T14:43:11Z ---
+pc-th
+
+
+### [Kernel Version] :: uname -a
+--- Executed at 2026-09-09T14:43:11Z ---
+Linux pc-th 6.18.49 #1-NixOS SMP PREEMPT_DYNAMIC Wed Sep  2 12:31:51 UTC 2026 x86_64 GNU/Linux
+
+
+### [Uptime & Load] :: uptime
+--- Executed at 2026-09-09T14:43:11Z ---
+ 14:43:11  up   0:14,  1 user,  load average: 1.21, 1.15, 0.76
+
+
+### [Network Kernel Modules Loaded] :: lsmod | grep -E 'amnezia|wireguard|nft|ipt|tun'
+--- Executed at 2026-09-09T14:43:11Z ---
+nft_masq               12288  1
+nft_chain_nat          12288  1
+nf_nat                 61440  2 nft_masq,nft_chain_nat
+nf_conntrack          196608  4 xt_conntrack,nf_nat,xt_connmark,nft_masq
+ipt_rpfilter           12288  1
+nft_compat             28672  19
+x_tables               53248  10 xt_conntrack,ip6t_rpfilter,nft_compat,xt_tcpudp,xt_addrtype,xt_comment,xt_connmark,ipt_rpfilter,xt_pkttype,xt_mark
+amneziawg             143360  0
+libcurve25519          65536  1 amneziawg
+libchacha20poly1305    20480  1 amneziawg
+libchacha              24576  2 libchacha20poly1305,amneziawg
+ip6_udp_tunnel         16384  1 amneziawg
+udp_tunnel             36864  1 amneziawg
+nf_tables             397312  133 nft_compat,nft_masq,nft_chain_nat
+nfnetlink              24576  3 nft_compat,nf_tables
+
+

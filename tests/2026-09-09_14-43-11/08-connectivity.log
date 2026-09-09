@@ -1,0 +1,257 @@
+### [AmneziaWG / WireGuard Show] :: awg show || wg show
+--- Executed at 2026-09-09T14:43:13Z ---
+interface: awg0
+  public key: 7Q9Jp0QvXu2tu6mog635EaVz1IYbMt9pdXgiFe61vH0=
+  private key: (hidden)
+  listening port: 60340
+  fwmark: 0xca6c
+  jc: 5
+  jmin: 10
+  jmax: 50
+  s1: 69
+  s2: 132
+  s3: 6
+  s4: 5
+  h1: 117028949-1005410162
+  h2: 1231176932-1803586643
+  h3: 1890197938-2064918576
+  h4: 2126864087-2138021283
+  i1: <b 0x084481800001000300000000077469636b65747306776964676574096b696e6f706f69736b0272750000010001c00c0005000100000039001806776964676574077469636b6574730679616e646578c025c0390005000100000039002b1765787465726e616c2d7469636b6574732d776964676574066166697368610679616e646578036e657400c05d000100010000001c000457fafe25>
+  random trailers: off
+  disable cookies: off
+
+peer: 2c1o9//w190B6DvPgsrJUr2+3wonW3NzNUojYxjMkkg=
+  preshared key: (hidden)
+  endpoint: 144.31.154.165:46399
+  allowed ips: 0.0.0.0/0, ::/0
+  transfer: 0 B received, 80.07 KiB sent
+  persistent keepalive: 25
+
+
+### [Ping Default Gateway (192.168.31.1)] :: ping -c 3 -W 2 192.168.31.1
+--- Executed at 2026-09-09T14:43:13Z ---
+PING 192.168.31.1 (192.168.31.1) 56(84) bytes of data.
+64 bytes from 192.168.31.1: icmp_seq=1 ttl=64 time=2.96 ms
+64 bytes from 192.168.31.1: icmp_seq=2 ttl=64 time=3.03 ms
+64 bytes from 192.168.31.1: icmp_seq=3 ttl=64 time=3.12 ms
+
+--- 192.168.31.1 ping statistics ---
+3 packets transmitted, 3 received, 0% packet loss, time 2000ms
+rtt min/avg/max/mdev = 2.957/3.032/3.115/0.064 ms
+
+
+### [Ping Upstream DNS 1.1.1.1] :: ping -c 3 -W 2 1.1.1.1
+--- Executed at 2026-09-09T14:43:15Z ---
+PING 1.1.1.1 (1.1.1.1) 56(84) bytes of data.
+64 bytes from 1.1.1.1: icmp_seq=1 ttl=54 time=40.2 ms
+64 bytes from 1.1.1.1: icmp_seq=2 ttl=54 time=41.2 ms
+64 bytes from 1.1.1.1: icmp_seq=3 ttl=54 time=42.3 ms
+
+--- 1.1.1.1 ping statistics ---
+3 packets transmitted, 3 received, 0% packet loss, time 2001ms
+rtt min/avg/max/mdev = 40.184/41.218/42.254/0.845 ms
+
+
+### [Ping Upstream DNS 1.0.0.1] :: ping -c 3 -W 2 1.0.0.1
+--- Executed at 2026-09-09T14:43:17Z ---
+PING 1.0.0.1 (1.0.0.1) 56(84) bytes of data.
+64 bytes from 1.0.0.1: icmp_seq=1 ttl=54 time=38.4 ms
+64 bytes from 1.0.0.1: icmp_seq=2 ttl=54 time=41.7 ms
+64 bytes from 1.0.0.1: icmp_seq=3 ttl=54 time=41.1 ms
+
+--- 1.0.0.1 ping statistics ---
+3 packets transmitted, 3 received, 0% packet loss, time 2002ms
+rtt min/avg/max/mdev = 38.409/40.404/41.718/1.434 ms
+
+
+### [Curl https://github.com (Bypass domain)] :: curl -svo /dev/null --connect-timeout 5 https://github.com
+--- Executed at 2026-09-09T14:43:19Z ---
+* Host github.com:443 was resolved.
+* IPv6: (none)
+* IPv4: 140.82.121.4
+*   Trying 140.82.121.4:443...
+* ALPN: curl offers h2,http/1.1
+} [5 bytes data]
+* TLSv1.3 (OUT), TLS handshake, Client hello (1):
+} [1554 bytes data]
+* SSL Trust Anchors:
+*   OpenSSL default paths (fallback)
+{ [5 bytes data]
+* TLSv1.3 (IN), TLS handshake, Server hello (2):
+{ [122 bytes data]
+* TLSv1.3 (IN), TLS change cipher, Change cipher spec (1):
+{ [1 bytes data]
+* TLSv1.3 (IN), TLS handshake, Encrypted Extensions (8):
+{ [19 bytes data]
+* TLSv1.3 (IN), TLS handshake, Certificate (11):
+{ [2741 bytes data]
+* TLSv1.3 (IN), TLS handshake, CERT verify (15):
+{ [80 bytes data]
+* TLSv1.3 (IN), TLS handshake, Finished (20):
+{ [36 bytes data]
+* TLSv1.3 (OUT), TLS change cipher, Change cipher spec (1):
+} [1 bytes data]
+* TLSv1.3 (OUT), TLS handshake, Finished (20):
+} [36 bytes data]
+* SSL connection using TLSv1.3 / TLS_AES_128_GCM_SHA256 / x25519 / id-ecPublicKey
+* ALPN: server accepted h2
+* Server certificate:
+*   subject: CN=github.com
+*   start date: Sep  1 00:00:00 2026 GMT
+*   expire date: Nov 29 23:59:59 2026 GMT
+*   issuer: C=GB; O=Sectigo Limited; CN=Sectigo Public Server Authentication CA DV E36
+*   Certificate level 0: Public key type EC/prime256v1 (256/128 Bits/secBits), signed using ecdsa-with-SHA256
+*   Certificate level 1: Public key type EC/prime256v1 (256/128 Bits/secBits), signed using ecdsa-with-SHA384
+*   Certificate level 2: Public key type EC/secp384r1 (384/192 Bits/secBits), signed using ecdsa-with-SHA384
+*   subjectAltName: "github.com" matches cert's "github.com"
+* OpenSSL verify result: 0
+* SSL certificate verified via OpenSSL.
+* Established connection to github.com (140.82.121.4 port 443) from 10.8.1.11 port 52584 
+* using HTTP/2
+* [HTTP/2] [1] OPENED stream for https://github.com/
+* [HTTP/2] [1] [:method: GET]
+* [HTTP/2] [1] [:scheme: https]
+* [HTTP/2] [1] [:authority: github.com]
+* [HTTP/2] [1] [:path: /]
+* [HTTP/2] [1] [user-agent: curl/8.21.0]
+* [HTTP/2] [1] [accept: */*]
+} [5 bytes data]
+> GET / HTTP/2
+> Host: github.com
+> User-Agent: curl/8.21.0
+> Accept: */*
+> 
+* Request completely sent off
+} [5 bytes data]
+* TLSv1.3 (IN), TLS handshake, Newsession Ticket (4):
+{ [57 bytes data]
+* TLSv1.3 (IN), TLS handshake, Newsession Ticket (4):
+{ [57 bytes data]
+< HTTP/2 200 
+< date: Wed, 09 Sep 2026 14:43:18 GMT
+< content-type: text/html; charset=utf-8
+< content-language: en-US
+< vary: X-PJAX, X-PJAX-Container, Turbo-Visit, Turbo-Frame, X-Requested-With, X-GitHub-Client-Version, Accept-Language, Sec-Fetch-Site,Accept-Encoding, Accept, X-Requested-With
+< etag: W/"23db8a63f6ec91e05b2ac4eb049855ca"
+< cache-control: max-age=0, private, must-revalidate
+< strict-transport-security: max-age=31536000; includeSubdomains; preload
+< x-frame-options: deny
+< x-content-type-options: nosniff
+< x-xss-protection: 0
+< referrer-policy: origin-when-cross-origin, strict-origin-when-cross-origin
+< content-security-policy: default-src 'none'; base-uri 'self'; child-src github.githubassets.com github.com/assets-cdn/worker/ github.com/assets/ gist.github.com/assets-cdn/worker/; connect-src 'self' uploads.github.com www.githubstatus.com collector.github.com raw.githubusercontent.com api.github.com github-cloud.s3.amazonaws.com github-production-repository-file-5c1aeb.s3.amazonaws.com github-production-upload-manifest-file-7fdce7.s3.amazonaws.com github-production-user-asset-6210df.s3.amazonaws.com *.rel.tunnels.api.visualstudio.com wss://*.rel.tunnels.api.visualstudio.com github.githubassets.com objects-origin.githubusercontent.com copilot-proxy.githubusercontent.com proxy.individual.githubcopilot.com proxy.business.githubcopilot.com proxy.enterprise.githubcopilot.com *.actions.githubusercontent.com wss://*.actions.githubusercontent.com productionresultssa0.blob.core.windows.net productionresultssa1.blob.core.windows.net productionresultssa2.blob.core.windows.net productionresultssa3.blob.core.windows.net productionresultssa4.blob.core.windows.net productionresultssa5.blob.core.windows.net productionresultssa6.blob.core.windows.net productionresultssa7.blob.core.windows.net productionresultssa8.blob.core.windows.net productionresultssa9.blob.core.windows.net productionresultssa10.blob.core.windows.net productionresultssa11.blob.core.windows.net productionresultssa12.blob.core.windows.net productionresultssa13.blob.core.windows.net productionresultssa14.blob.core.windows.net productionresultssa15.blob.core.windows.net productionresultssa16.blob.core.windows.net productionresultssa17.blob.core.windows.net productionresultssa18.blob.core.windows.net productionresultssa19.blob.core.windows.net github-production-repository-image-32fea6.s3.amazonaws.com github-production-release-asset-2e65be.s3.amazonaws.com insights.github.com wss://alive.github.com wss://alive-staging.github.com api.githubcopilot.com api.individual.githubcopilot.com api.business.githubcopilot.com api.enterprise.githubcopilot.com wss://production-copilot-host.webpubsub.azure.com edge.fullstory.com rs.fullstory.com; font-src github.githubassets.com; form-action 'self' github.com gist.github.com copilot-workspace.githubnext.com objects-origin.githubusercontent.com; frame-ancestors 'none'; frame-src viewscreen.githubusercontent.com notebooks.githubusercontent.com www.youtube-nocookie.com; img-src 'self' data: blob: github.githubassets.com media.githubusercontent.com camo.githubusercontent.com identicons.github.com avatars.githubusercontent.com private-avatars.githubusercontent.com github-cloud.s3.amazonaws.com objects.githubusercontent.com release-assets.githubusercontent.com secured-user-images.githubusercontent.com user-images.githubusercontent.com private-user-images.githubusercontent.com opengraph.githubassets.com repository-images.githubusercontent.com marketplace-screenshots.githubusercontent.com copilotprodattachments.blob.core.windows.net/github-production-copilot-attachments/ github-production-user-asset-6210df.s3.amazonaws.com customer-stories-feed.github.com spotlights-feed.github.com explore-feed.github.com objects-origin.githubusercontent.com *.githubusercontent.com images.ctfassets.net/8aevphvgewt8/; manifest-src 'self'; media-src github.com user-images.githubusercontent.com secured-user-images.githubusercontent.com private-user-images.githubusercontent.com github-production-user-asset-6210df.s3.amazonaws.com gist.github.com github.githubassets.com assets.ctfassets.net/8aevphvgewt8/ videos.ctfassets.net/8aevphvgewt8/; script-src github.githubassets.com; style-src 'unsafe-inline' github.githubassets.com; upgrade-insecure-requests; worker-src github.githubassets.com github.com/assets-cdn/worker/ github.com/assets/ gist.github.com/assets-cdn/worker/
+< server: github.com
+< accept-ranges: bytes
+< set-cookie: _gh_sess=xf8mSlLd4eJQ3jktWEbgE4meUTA4rS1xMvNxjW5BvxTmThASg1ZmZg6lWOBd8Fjw1UyA7MTMVB3hp%2FM4VPIjbQvIxJ8%2FaORpS%2BkNKesApsSftt3Npf5DcH2rBNtvdmpf1pZo9jwHEWLSP%2BtvGbm4J1IaIwM%2BrlfWoiXkfgMzUv6RPMndcCYfUb%2B5YKC%2FwcHHRFMYMZysGAyXLhXhaRa9mI8Sotaj%2Bv2FzSdEzXeWZodx1YIyUexKHuKfuotENYsozd%2BVXrfXGKaWZCE8Ua3drA%3D%3D--b%2B9eRNhRI4gZ80tU--1TCdKEUWwndoAFRZR37QuA%3D%3D; path=/; HttpOnly; secure; SameSite=Lax
+< set-cookie: _octo=GH1.1.1262317646.1788965000; expires=Thu, 09 Sep 2027 14:43:20 GMT; domain=.github.com; path=/; secure; SameSite=Lax
+< set-cookie: logged_in=no; expires=Thu, 09 Sep 2027 14:43:20 GMT; domain=.github.com; path=/; HttpOnly; secure; SameSite=Lax
+< x-github-request-id: 1406:186D60:1C1B52:1945A9:6AA17088
+< x-github-edge-region: fra
+< 
+{ [11323 bytes data]
+* Connection #0 to host github.com:443 left intact
+
+
+### [Curl https://nixos.org (Bypass domain)] :: curl -svo /dev/null --connect-timeout 5 https://nixos.org
+--- Executed at 2026-09-09T14:43:20Z ---
+* Host nixos.org:443 was resolved.
+* IPv6: (none)
+* IPv4: 99.83.231.61, 75.2.60.5
+*   Trying 99.83.231.61:443...
+* ALPN: curl offers h2,http/1.1
+} [5 bytes data]
+* TLSv1.3 (OUT), TLS handshake, Client hello (1):
+} [1553 bytes data]
+* SSL Trust Anchors:
+*   OpenSSL default paths (fallback)
+{ [5 bytes data]
+* TLSv1.3 (IN), TLS handshake, Server hello (2):
+{ [122 bytes data]
+* TLSv1.3 (IN), TLS change cipher, Change cipher spec (1):
+{ [1 bytes data]
+* TLSv1.3 (IN), TLS handshake, Encrypted Extensions (8):
+{ [19 bytes data]
+* TLSv1.3 (IN), TLS handshake, Certificate (11):
+{ [3418 bytes data]
+* TLSv1.3 (IN), TLS handshake, CERT verify (15):
+{ [80 bytes data]
+* TLSv1.3 (IN), TLS handshake, Finished (20):
+{ [36 bytes data]
+* TLSv1.3 (OUT), TLS change cipher, Change cipher spec (1):
+} [1 bytes data]
+* TLSv1.3 (OUT), TLS handshake, Finished (20):
+} [36 bytes data]
+* SSL connection using TLSv1.3 / TLS_AES_128_GCM_SHA256 / x25519 / id-ecPublicKey
+* ALPN: server accepted h2
+* Server certificate:
+*   subject: CN=nixos.org
+*   start date: Sep  2 17:53:49 2026 GMT
+*   expire date: Dec  1 17:53:48 2026 GMT
+*   issuer: C=US; O=Let's Encrypt; CN=YE1
+*   Certificate level 0: Public key type EC/prime256v1 (256/128 Bits/secBits), signed using ecdsa-with-SHA384
+*   Certificate level 1: Public key type EC/secp384r1 (384/192 Bits/secBits), signed using ecdsa-with-SHA384
+*   Certificate level 2: Public key type EC/secp384r1 (384/192 Bits/secBits), signed using ecdsa-with-SHA384
+*   Certificate level 3: Public key type EC/secp384r1 (384/192 Bits/secBits), signed using ecdsa-with-SHA384
+*   subjectAltName: "nixos.org" matches cert's "nixos.org"
+* OpenSSL verify result: 0
+* SSL certificate verified via OpenSSL.
+* Established connection to nixos.org (99.83.231.61 port 443) from 10.8.1.11 port 49708 
+* using HTTP/2
+* [HTTP/2] [1] OPENED stream for https://nixos.org/
+* [HTTP/2] [1] [:method: GET]
+* [HTTP/2] [1] [:scheme: https]
+* [HTTP/2] [1] [:authority: nixos.org]
+* [HTTP/2] [1] [:path: /]
+* [HTTP/2] [1] [user-agent: curl/8.21.0]
+* [HTTP/2] [1] [accept: */*]
+} [5 bytes data]
+> GET / HTTP/2
+> Host: nixos.org
+> User-Agent: curl/8.21.0
+> Accept: */*
+> 
+* Request completely sent off
+{ [5 bytes data]
+* TLSv1.3 (IN), TLS handshake, Newsession Ticket (4):
+{ [122 bytes data]
+< HTTP/2 200 
+< accept-ranges: bytes
+< age: 6079
+< cache-control: public,max-age=0,must-revalidate
+< cache-status: "Netlify Edge"; hit; ttl=31529921
+< content-type: text/html; charset=UTF-8
+< date: Wed, 09 Sep 2026 14:43:21 GMT
+< etag: "05aac15c54237dcc258a4c47509f6749-ssl"
+< server: Netlify
+< strict-transport-security: max-age=31536000
+< vary: Accept-Encoding
+< x-nf-request-id: 01M239Z60KJJF3TWBMEPZMH2MA
+< content-length: 57343
+< 
+{ [5 bytes data]
+* Connection #0 to host nixos.org:443 left intact
+
+
+### [Curl Public IP (ifconfig.me)] :: curl -s --connect-timeout 5 https://ifconfig.me
+--- Executed at 2026-09-09T14:43:20Z ---
+
+
+### [Curl https://google.com (Tunnel route)] :: curl -svo /dev/null --connect-timeout 5 https://google.com
+--- Executed at 2026-09-09T14:43:25Z ---
+* Host google.com:443 was resolved.
+* IPv6: 2a00:1450:4010:c0d::66, 2a00:1450:4010:c0d::64, 2a00:1450:4010:c0d::71, 2a00:1450:4010:c0d::65
+* IPv4: 173.194.221.102, 173.194.221.101, 173.194.221.113, 173.194.221.138, 173.194.221.100, 173.194.221.139
+*   Trying [2a00:1450:4010:c0d::66]:443...
+*   Trying 173.194.221.102:443...
+*   Trying [2a00:1450:4010:c0d::64]:443...
+*   Trying 173.194.221.101:443...
+*   Trying [2a00:1450:4010:c0d::71]:443...
+*   Trying 173.194.221.113:443...
+*   Trying [2a00:1450:4010:c0d::65]:443...
+*   Trying 173.194.221.138:443...
+*   Trying 173.194.221.100:443...
+*   Trying 173.194.221.139:443...
+* Connection timed out after 5000 milliseconds
+* closing connection #0
+
+
