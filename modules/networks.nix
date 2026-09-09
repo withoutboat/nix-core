@@ -18,23 +18,23 @@ let
     ${pkgs.nftables}/bin/nft 'add chain inet ${bypassCfg.nftablesTable} output { type route hook output priority mangle; policy accept; }'
     ${pkgs.nftables}/bin/nft 'flush chain inet ${bypassCfg.nftablesTable} output'
     ${lib.optionalString (v4Dns != [ ]) ''
-      ${pkgs.nftables}/bin/nft 'add rule inet ${bypassCfg.nftablesTable} output ip daddr { ${lib.concatStringsSep ", " v4Dns} } meta mark set ${toString bypassCfg.mark}'
+      ${pkgs.nftables}/bin/nft 'add rule inet ${bypassCfg.nftablesTable} output ip daddr { ${lib.concatStringsSep ", " v4Dns} } counter meta mark set ${toString bypassCfg.mark}'
     ''}
     ${lib.optionalString (v6Dns != [ ]) ''
-      ${pkgs.nftables}/bin/nft 'add rule inet ${bypassCfg.nftablesTable} output ip6 daddr { ${lib.concatStringsSep ", " v6Dns} } meta mark set ${toString bypassCfg.mark}'
+      ${pkgs.nftables}/bin/nft 'add rule inet ${bypassCfg.nftablesTable} output ip6 daddr { ${lib.concatStringsSep ", " v6Dns} } counter meta mark set ${toString bypassCfg.mark}'
     ''}
-    ${pkgs.nftables}/bin/nft 'add rule inet ${bypassCfg.nftablesTable} output ip daddr @bypass_v4 meta mark set ${toString bypassCfg.mark}'
-    ${pkgs.nftables}/bin/nft 'add rule inet ${bypassCfg.nftablesTable} output ip6 daddr @bypass_v6 meta mark set ${toString bypassCfg.mark}'
+    ${pkgs.nftables}/bin/nft 'add rule inet ${bypassCfg.nftablesTable} output ip daddr @bypass_v4 counter meta mark set ${toString bypassCfg.mark}'
+    ${pkgs.nftables}/bin/nft 'add rule inet ${bypassCfg.nftablesTable} output ip6 daddr @bypass_v6 counter meta mark set ${toString bypassCfg.mark}'
     ${pkgs.nftables}/bin/nft 'add chain inet ${bypassCfg.nftablesTable} postrouting { type nat hook postrouting priority srcnat; policy accept; }'
     ${pkgs.nftables}/bin/nft 'flush chain inet ${bypassCfg.nftablesTable} postrouting'
     ${lib.optionalString (v4Dns != [ ]) ''
-      ${pkgs.nftables}/bin/nft 'add rule inet ${bypassCfg.nftablesTable} postrouting ip daddr { ${lib.concatStringsSep ", " v4Dns} } masquerade'
+      ${pkgs.nftables}/bin/nft 'add rule inet ${bypassCfg.nftablesTable} postrouting ip daddr { ${lib.concatStringsSep ", " v4Dns} } counter masquerade'
     ''}
     ${lib.optionalString (v6Dns != [ ]) ''
-      ${pkgs.nftables}/bin/nft 'add rule inet ${bypassCfg.nftablesTable} postrouting ip6 daddr { ${lib.concatStringsSep ", " v6Dns} } masquerade'
+      ${pkgs.nftables}/bin/nft 'add rule inet ${bypassCfg.nftablesTable} postrouting ip6 daddr { ${lib.concatStringsSep ", " v6Dns} } counter masquerade'
     ''}
-    ${pkgs.nftables}/bin/nft 'add rule inet ${bypassCfg.nftablesTable} postrouting ip daddr @bypass_v4 masquerade'
-    ${pkgs.nftables}/bin/nft 'add rule inet ${bypassCfg.nftablesTable} postrouting ip6 daddr @bypass_v6 masquerade'
+    ${pkgs.nftables}/bin/nft 'add rule inet ${bypassCfg.nftablesTable} postrouting ip daddr @bypass_v4 counter masquerade'
+    ${pkgs.nftables}/bin/nft 'add rule inet ${bypassCfg.nftablesTable} postrouting ip6 daddr @bypass_v6 counter masquerade'
   '';
 in
 {
@@ -137,6 +137,9 @@ in
         dnsutils
         curl
         ethtool
+        tcpdump
+        traceroute
+        conntrack-tools
       ];
     }
 
