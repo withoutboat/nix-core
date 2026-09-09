@@ -1,0 +1,263 @@
+### [AmneziaWG / WireGuard Show] :: awg show || wg show
+--- Executed at 2026-09-09T16:05:10Z ---
+interface: awg0
+  public key: 7Q9Jp0QvXu2tu6mog635EaVz1IYbMt9pdXgiFe61vH0=
+  private key: (hidden)
+  listening port: 39431
+  fwmark: 0xca6c
+  jc: 5
+  jmin: 10
+  jmax: 50
+  s1: 69
+  s2: 132
+  s3: 6
+  s4: 5
+  h1: 117028949-1005410162
+  h2: 1231176932-1803586643
+  h3: 1890197938-2064918576
+  h4: 2126864087-2138021283
+  i1: <b 0x084481800001000300000000077469636b65747306776964676574096b696e6f706f69736b0272750000010001c00c0005000100000039001806776964676574077469636b6574730679616e646578c025c0390005000100000039002b1765787465726e616c2d7469636b6574732d776964676574066166697368610679616e646578036e657400c05d000100010000001c000457fafe25>
+  random trailers: off
+  disable cookies: off
+
+peer: 2c1o9//w190B6DvPgsrJUr2+3wonW3NzNUojYxjMkkg=
+  preshared key: (hidden)
+  endpoint: 144.31.154.165:46399
+  allowed ips: 0.0.0.0/0, ::/0
+  transfer: 0 B received, 3.50 KiB sent
+  persistent keepalive: 25
+
+
+### [AmneziaWG Latest Handshakes] :: awg show awg0 latest-handshakes 2>/dev/null || true
+--- Executed at 2026-09-09T16:05:10Z ---
+2c1o9//w190B6DvPgsrJUr2+3wonW3NzNUojYxjMkkg=	0
+
+
+### [Ping Default Gateway (192.168.31.1)] :: ping -c 3 -W 2 192.168.31.1
+--- Executed at 2026-09-09T16:05:10Z ---
+PING 192.168.31.1 (192.168.31.1) 56(84) bytes of data.
+64 bytes from 192.168.31.1: icmp_seq=1 ttl=64 time=2.81 ms
+64 bytes from 192.168.31.1: icmp_seq=2 ttl=64 time=2.93 ms
+64 bytes from 192.168.31.1: icmp_seq=3 ttl=64 time=0.845 ms
+
+--- 192.168.31.1 ping statistics ---
+3 packets transmitted, 3 received, 0% packet loss, time 2001ms
+rtt min/avg/max/mdev = 0.845/2.193/2.926/0.954 ms
+
+
+### [Direct Ping to VPN Endpoint via Physical Interface (wlo1)] :: ping -c 3 -W 2 -I wlo1 144.31.154.165
+--- Executed at 2026-09-09T16:05:12Z ---
+PING 144.31.154.165 (144.31.154.165) from 192.168.31.169 wlo1: 56(84) bytes of data.
+64 bytes from 144.31.154.165: icmp_seq=1 ttl=44 time=90.7 ms
+64 bytes from 144.31.154.165: icmp_seq=2 ttl=44 time=101 ms
+64 bytes from 144.31.154.165: icmp_seq=3 ttl=44 time=91.9 ms
+
+--- 144.31.154.165 ping statistics ---
+3 packets transmitted, 3 received, 0% packet loss, time 2001ms
+rtt min/avg/max/mdev = 90.722/94.476/100.766/4.475 ms
+
+
+### [Traceroute (ICMP) to VPN Endpoint via wlo1] :: traceroute -n -w 2 -m 15 -i wlo1 144.31.154.165 2>/dev/null || true
+--- Executed at 2026-09-09T16:05:14Z ---
+traceroute to 144.31.154.165 (144.31.154.165), 15 hops max, 60 byte packets
+ 1  192.168.31.1  0.957 ms  0.916 ms  1.030 ms
+ 2  * * *
+ 3  77.239.208.62  3.479 ms  3.469 ms  5.135 ms
+ 4  212.188.44.78  4.064 ms  5.458 ms  5.449 ms
+ 5  212.188.29.225  60.563 ms  60.553 ms  60.544 ms
+ 6  212.188.42.129  58.405 ms  57.571 ms  57.137 ms
+ 7  212.188.1.181  39.029 ms * *
+ 8  * * *
+ 9  212.188.29.23  57.292 ms  57.091 ms 212.188.29.109  57.459 ms
+10  213.248.88.28  57.106 ms  57.081 ms  64.488 ms
+11  62.115.122.34  81.651 ms 62.115.122.32  85.996 ms 62.115.122.34  82.284 ms
+12  62.115.143.29  91.027 ms 62.115.138.105  87.034 ms 62.115.136.151  86.528 ms
+13  62.115.120.241  92.345 ms 62.115.132.233  83.647 ms  84.221 ms
+14  62.115.192.217  88.732 ms  85.360 ms  93.119 ms
+15  109.206.242.35  84.879 ms  83.935 ms  84.057 ms
+
+
+### [Traceroute (UDP:46399) to VPN Endpoint via wlo1] :: traceroute -n -U -p 46399 -w 2 -m 15 -i wlo1 144.31.154.165 2>/dev/null || true
+--- Executed at 2026-09-09T16:05:16Z ---
+traceroute to 144.31.154.165 (144.31.154.165), 15 hops max, 60 byte packets
+ 1  192.168.31.1  3.312 ms  3.223 ms  3.197 ms
+ 2  * * *
+ 3  77.239.208.62  6.343 ms  5.455 ms  5.432 ms
+ 4  212.188.44.78  5.690 ms  5.668 ms  5.645 ms
+ 5  212.188.29.225  61.838 ms  61.816 ms  61.794 ms
+ 6  212.188.42.129  58.818 ms  60.357 ms  60.137 ms
+ 7  212.188.1.181  40.816 ms  39.211 ms *
+ 8  * * *
+ 9  212.188.29.23  59.832 ms 212.188.29.109  58.727 ms 212.188.29.23  57.249 ms
+10  213.248.88.28  57.285 ms  62.646 ms  57.235 ms
+11  62.115.122.32  85.730 ms 62.115.122.34  81.595 ms  83.200 ms
+12  62.115.143.29  90.627 ms  89.537 ms 62.115.138.105  86.954 ms
+13  62.115.132.233  83.626 ms  83.248 ms  83.446 ms
+14  62.115.192.217  85.983 ms  83.381 ms  83.702 ms
+15  109.206.242.35  82.806 ms  83.250 ms  83.811 ms
+
+
+### [Tcpdump 5s capture on wlo1 for 144.31.154.165] :: timeout 5 tcpdump -ni wlo1 -nn -vv host 144.31.154.165 2>&1 || true
+--- Executed at 2026-09-09T16:05:18Z ---
+tcpdump: listening on wlo1, link-type EN10MB (Ethernet), snapshot length 262144 bytes
+16:05:21.528000 IP (tos 0x0, ttl 64, id 16210, offset 0, flags [none], proto UDP (17), length 180)
+    192.168.31.169.39431 > 144.31.154.165.46399: [bad udp cksum 0x0bc8 -> 0xe076!] UDP, length 152
+16:05:21.528035 IP (tos 0xe2,ECT(0), ttl 64, id 16211, offset 0, flags [none], proto UDP (17), length 55)
+    192.168.31.169.39431 > 144.31.154.165.46399: [bad udp cksum 0x0b4b -> 0xc0b2!] UDP, length 27
+16:05:21.528045 IP (tos 0x4a,ECT(0), ttl 64, id 16212, offset 0, flags [none], proto UDP (17), length 73)
+    192.168.31.169.39431 > 144.31.154.165.46399: [bad udp cksum 0x0b5d -> 0x6c92!] UDP, length 45
+16:05:21.528054 IP (tos 0x70, ttl 64, id 16213, offset 0, flags [none], proto UDP (17), length 58)
+    192.168.31.169.39431 > 144.31.154.165.46399: [bad udp cksum 0x0b4e -> 0x875b!] UDP, length 30
+16:05:21.528061 IP (tos 0xe,ECT(0), ttl 64, id 16214, offset 0, flags [none], proto UDP (17), length 39)
+    192.168.31.169.39431 > 144.31.154.165.46399: [bad udp cksum 0x0b3b -> 0xc1c7!] UDP, length 11
+16:05:21.528068 IP (tos 0xec, ttl 64, id 16215, offset 0, flags [none], proto UDP (17), length 51)
+    192.168.31.169.39431 > 144.31.154.165.46399: [bad udp cksum 0x0b47 -> 0x3f8b!] UDP, length 23
+16:05:21.528255 IP (tos 0x88, ttl 64, id 16216, offset 0, flags [none], proto UDP (17), length 245)
+    192.168.31.169.39431 > 144.31.154.165.46399: [bad udp cksum 0x0c09 -> 0xea2d!] UDP, length 217
+
+7 packets captured
+7 packets received by filter
+0 packets dropped by kernel
+
+
+### [Ping VPN Endpoint (System Routing)] :: ping -c 3 -W 2 144.31.154.165
+--- Executed at 2026-09-09T16:05:24Z ---
+PING 144.31.154.165 (144.31.154.165) 56(84) bytes of data.
+
+--- 144.31.154.165 ping statistics ---
+3 packets transmitted, 0 received, 100% packet loss, time 2045ms
+
+
+
+### [Ping Upstream DNS 1.1.1.1] :: ping -c 3 -W 2 1.1.1.1
+--- Executed at 2026-09-09T16:05:28Z ---
+PING 1.1.1.1 (1.1.1.1) 56(84) bytes of data.
+64 bytes from 1.1.1.1: icmp_seq=1 ttl=54 time=41.8 ms
+64 bytes from 1.1.1.1: icmp_seq=2 ttl=54 time=43.1 ms
+64 bytes from 1.1.1.1: icmp_seq=3 ttl=54 time=41.7 ms
+
+--- 1.1.1.1 ping statistics ---
+3 packets transmitted, 3 received, 0% packet loss, time 1999ms
+rtt min/avg/max/mdev = 41.678/42.179/43.062/0.626 ms
+
+
+### [Ping Upstream DNS 1.0.0.1] :: ping -c 3 -W 2 1.0.0.1
+--- Executed at 2026-09-09T16:05:30Z ---
+PING 1.0.0.1 (1.0.0.1) 56(84) bytes of data.
+64 bytes from 1.0.0.1: icmp_seq=1 ttl=54 time=55.0 ms
+64 bytes from 1.0.0.1: icmp_seq=2 ttl=54 time=40.3 ms
+64 bytes from 1.0.0.1: icmp_seq=3 ttl=54 time=40.1 ms
+
+--- 1.0.0.1 ping statistics ---
+3 packets transmitted, 3 received, 0% packet loss, time 2001ms
+rtt min/avg/max/mdev = 40.107/45.122/55.005/6.988 ms
+
+
+### [Curl https://github.com (Bypass domain)] :: curl -svo /dev/null --connect-timeout 5 https://github.com
+--- Executed at 2026-09-09T16:05:32Z ---
+* Host github.com:443 was resolved.
+* IPv6: (none)
+* IPv4: 140.82.121.3
+*   Trying 140.82.121.3:443...
+* Connection timed out after 5002 milliseconds
+* closing connection #0
+
+
+### [Curl https://nixos.org (Bypass domain)] :: curl -svo /dev/null --connect-timeout 5 https://nixos.org
+--- Executed at 2026-09-09T16:05:37Z ---
+* Host nixos.org:443 was resolved.
+* IPv6: (none)
+* IPv4: 99.83.231.61, 75.2.60.5
+*   Trying 99.83.231.61:443...
+* ALPN: curl offers h2,http/1.1
+} [5 bytes data]
+* TLSv1.3 (OUT), TLS handshake, Client hello (1):
+} [1553 bytes data]
+* SSL Trust Anchors:
+*   OpenSSL default paths (fallback)
+{ [5 bytes data]
+* TLSv1.3 (IN), TLS handshake, Server hello (2):
+{ [122 bytes data]
+* TLSv1.3 (IN), TLS change cipher, Change cipher spec (1):
+{ [1 bytes data]
+* TLSv1.3 (IN), TLS handshake, Encrypted Extensions (8):
+{ [19 bytes data]
+* TLSv1.3 (IN), TLS handshake, Certificate (11):
+{ [3418 bytes data]
+* TLSv1.3 (IN), TLS handshake, CERT verify (15):
+{ [78 bytes data]
+* TLSv1.3 (IN), TLS handshake, Finished (20):
+{ [36 bytes data]
+* TLSv1.3 (OUT), TLS change cipher, Change cipher spec (1):
+} [1 bytes data]
+* TLSv1.3 (OUT), TLS handshake, Finished (20):
+} [36 bytes data]
+* SSL connection using TLSv1.3 / TLS_AES_128_GCM_SHA256 / x25519 / id-ecPublicKey
+* ALPN: server accepted h2
+* Server certificate:
+*   subject: CN=nixos.org
+*   start date: Sep  2 17:53:49 2026 GMT
+*   expire date: Dec  1 17:53:48 2026 GMT
+*   issuer: C=US; O=Let's Encrypt; CN=YE1
+*   Certificate level 0: Public key type EC/prime256v1 (256/128 Bits/secBits), signed using ecdsa-with-SHA384
+*   Certificate level 1: Public key type EC/secp384r1 (384/192 Bits/secBits), signed using ecdsa-with-SHA384
+*   Certificate level 2: Public key type EC/secp384r1 (384/192 Bits/secBits), signed using ecdsa-with-SHA384
+*   Certificate level 3: Public key type EC/secp384r1 (384/192 Bits/secBits), signed using ecdsa-with-SHA384
+*   subjectAltName: "nixos.org" matches cert's "nixos.org"
+* OpenSSL verify result: 0
+* SSL certificate verified via OpenSSL.
+* Established connection to nixos.org (99.83.231.61 port 443) from 10.8.1.11 port 56488 
+* using HTTP/2
+* [HTTP/2] [1] OPENED stream for https://nixos.org/
+* [HTTP/2] [1] [:method: GET]
+* [HTTP/2] [1] [:scheme: https]
+* [HTTP/2] [1] [:authority: nixos.org]
+* [HTTP/2] [1] [:path: /]
+* [HTTP/2] [1] [user-agent: curl/8.21.0]
+* [HTTP/2] [1] [accept: */*]
+} [5 bytes data]
+> GET / HTTP/2
+> Host: nixos.org
+> User-Agent: curl/8.21.0
+> Accept: */*
+> 
+* Request completely sent off
+{ [5 bytes data]
+* TLSv1.3 (IN), TLS handshake, Newsession Ticket (4):
+{ [122 bytes data]
+< HTTP/2 200 
+< accept-ranges: bytes
+< age: 9050
+< cache-control: public,max-age=0,must-revalidate
+< cache-status: "Netlify Edge"; hit; ttl=31526950
+< content-type: text/html; charset=UTF-8
+< date: Wed, 09 Sep 2026 16:05:37 GMT
+< etag: "05aac15c54237dcc258a4c47509f6749-ssl"
+< server: Netlify
+< strict-transport-security: max-age=31536000
+< vary: Accept-Encoding
+< x-nf-request-id: 01M23ENTJBS38N3EJ98W6C0R9X
+< content-length: 57343
+< 
+{ [5 bytes data]
+* Connection #0 to host nixos.org:443 left intact
+
+
+### [Curl Public IP (ifconfig.me)] :: curl -s --connect-timeout 5 https://ifconfig.me
+--- Executed at 2026-09-09T16:05:37Z ---
+
+
+### [Curl https://google.com (Tunnel route)] :: curl -svo /dev/null --connect-timeout 5 https://google.com
+--- Executed at 2026-09-09T16:05:42Z ---
+*   Trying [2a00:1450:4010:c0d::8b]:443...
+* Host google.com:443 was resolved.
+* IPv6: 2a00:1450:4010:c0d::8b, 2a00:1450:4010:c0d::64, 2a00:1450:4010:c0d::8a, 2a00:1450:4010:c0d::71
+* IPv4: 142.251.142.238
+*   Trying 142.251.142.238:443...
+*   Trying [2a00:1450:4010:c0d::64]:443...
+*   Trying [2a00:1450:4010:c0d::8a]:443...
+*   Trying [2a00:1450:4010:c0d::71]:443...
+* Connection timed out after 5000 milliseconds
+* closing connection #0
+
+
