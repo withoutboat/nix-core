@@ -1,6 +1,31 @@
 { config, pkgs, lib, ... }:
 
 let
+  # Default system themes for console, greetd, and base system
+  defaultThemes = {
+    default_dark = {
+      name = "default_dark";
+      polarity = "dark";
+      base16Scheme = "${pkgs.base16-schemes}/share/themes/catppuccin-mocha.yaml";
+      image = pkgs.fetchurl {
+        name = "catppuccin-mocha-waves.jpg";
+        url = "https://raw.githubusercontent.com/zhichaoh/catppuccin-wallpapers/main/waves/Waves%20Dark%206016x6016.jpg";
+        sha256 = "1a8e42ab67483980c79674e6b614990630ec4d176691e94e25ae5e6ff2c45d88";
+      };
+    };
+
+    default_light = {
+      name = "default_light";
+      polarity = "light";
+      base16Scheme = "${pkgs.base16-schemes}/share/themes/catppuccin-latte.yaml";
+      image = pkgs.fetchurl {
+        name = "catppuccin-latte-waves.jpg";
+        url = "https://raw.githubusercontent.com/zhichaoh/catppuccin-wallpapers/main/waves/Waves%20Light%206016x6016.jpg";
+        sha256 = "6ab30f280e6c09a7e2df0df288c01b0f8a5ac1a70f3f65767a776963c9ced8ed";
+      };
+    };
+  };
+
   # Derive base color mapping from active Stylix palette (base16)
   mkBaseColors = c: {
     fg = c.base05;
@@ -24,14 +49,9 @@ in
 
   stylix = {
     enable = true;
-    polarity = "dark";
-    base16Scheme = "${pkgs.base16-schemes}/share/themes/catppuccin-mocha.yaml";
-    # Catppuccin Mocha Waves wallpaper (community mirror of catppuccin/wallpapers)
-    image = pkgs.fetchurl {
-      name = "catppuccin-mocha-waves.jpg";
-      url = "https://raw.githubusercontent.com/zhichaoh/catppuccin-wallpapers/main/waves/Waves%20Dark%206016x6016.jpg";
-      sha256 = "1a8e42ab67483980c79674e6b614990630ec4d176691e94e25ae5e6ff2c45d88";
-    };
+    polarity = defaultThemes.default_dark.polarity;
+    base16Scheme = defaultThemes.default_dark.base16Scheme;
+    image = defaultThemes.default_dark.image;
 
     fonts = {
       monospace = {
@@ -57,14 +77,9 @@ in
 
   specialisation.light.configuration = {
     stylix = {
-      polarity = lib.mkForce "light";
-      base16Scheme = lib.mkForce "${pkgs.base16-schemes}/share/themes/catppuccin-latte.yaml";
-      # Catppuccin Latte Waves wallpaper (community mirror of catppuccin/wallpapers)
-      image = lib.mkForce (pkgs.fetchurl {
-        name = "catppuccin-latte-waves.jpg";
-        url = "https://raw.githubusercontent.com/zhichaoh/catppuccin-wallpapers/main/waves/Waves%20Light%206016x6016.jpg";
-        sha256 = "6ab30f280e6c09a7e2df0df288c01b0f8a5ac1a70f3f65767a776963c9ced8ed";
-      });
+      polarity = lib.mkForce defaultThemes.default_light.polarity;
+      base16Scheme = lib.mkForce defaultThemes.default_light.base16Scheme;
+      image = lib.mkForce defaultThemes.default_light.image;
     };
   };
 
