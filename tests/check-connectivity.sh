@@ -120,7 +120,18 @@ else
   report_fail "NixOS Cache HTTPS Traffic" "Failed to connect to https://nixos.org"
 fi
 
-# 8. AmneziaWG Tunnel Status & Full Tunnel Verification
+# 8. VPN Server Endpoint Reachability (Physical Interface)
+AWG_ENDPOINT="$(awg show awg0 endpoints 2>/dev/null | awk '{print $2}' | cut -d: -f1)"
+PHYS_IF="$(ip route show table main 2>/dev/null | awk '/default/ {print $5}' | head -n1)"
+if [ -n "${AWG_ENDPOINT}" ]; then
+  if [ -n "${PHYS_IF}" ] && ping -c 2 -W 2 -I "${PHYS_IF}" "${AWG_ENDPOINT}" >/dev/null 2>&1; then
+    report_pass "VPN Endpoint Link" "Endpoint ${AWG_ENDPOINT} is reachable directly via ${PHYS_IF}"
+  else
+    report_warn "VPN Endpoint Link" "Endpoint ${AWG_ENDPOINT} did not respond to ICMP ping via ${PHYS_IF:-default} (host may block ping)"
+  fi
+fi
+
+# 9. AmneziaWG Tunnel Status & Full Tunnel Verification
 AWG_IF="$(ip link show dev awg0 2>/dev/null || true)"
 if [ -n "${AWG_IF}" ]; then
   AWG_HANDSHAKE="$(awg show awg0 latest-handshakes 2>/dev/null || wg show awg0 latest-handshakes 2>/dev/null || true)"

@@ -87,6 +87,12 @@ run_probe "Route Get GitHub (140.82.121.4, default mark)" "${ROUTE_LOG}" "ip rou
 run_probe "Route Get GitHub (140.82.121.4, mark 51820)" "${ROUTE_LOG}" "ip route get 140.82.121.4 mark 51820"
 run_probe "Route Get Arbitrary Internet (8.8.8.8, default mark)" "${ROUTE_LOG}" "ip route get 8.8.8.8"
 
+AWG_ENDPOINT_IP="$(awg show awg0 endpoints 2>/dev/null | awk '{print $2}' | cut -d: -f1)"
+if [ -n "${AWG_ENDPOINT_IP}" ]; then
+  run_probe "Route Get VPN Endpoint (${AWG_ENDPOINT_IP}, default mark)" "${ROUTE_LOG}" "ip route get ${AWG_ENDPOINT_IP}"
+  run_probe "Route Get VPN Endpoint (${AWG_ENDPOINT_IP}, mark 51820)" "${ROUTE_LOG}" "ip route get ${AWG_ENDPOINT_IP} mark 51820"
+fi
+
 # ------------------------------------------------------------------------------
 # 4. DNS Configuration & Resolution
 # ------------------------------------------------------------------------------
@@ -139,6 +145,9 @@ run_probe "Recent dnsmasq Journal Logs" "${SVC_LOG}" "journalctl -u dnsmasq.serv
 run_probe "Recent awg-quick Journal Logs" "${SVC_LOG}" "journalctl -u 'awg-quick*' -n 50 --no-pager"
 run_probe "Recent firewall Journal Logs" "${SVC_LOG}" "journalctl -u firewall.service -n 50 --no-pager"
 run_probe "Kernel Drops and WireGuard Log (dmesg)" "${SVC_LOG}" "dmesg | grep -i -E 'refused connection|wireguard|amnezia' | tail -n 50"
+run_probe "Listening UDP Sockets (ss -ulnp)" "${SVC_LOG}" "ss -ulnp"
+run_probe "Active UDP Sockets (ss -u -a)" "${SVC_LOG}" "ss -u -a"
+run_probe "Conntrack UDP Entries" "${SVC_LOG}" "conntrack -L -p udp 2>/dev/null || true"
 
 # ------------------------------------------------------------------------------
 # 8. Tunnel & End-to-End Connectivity Checks
@@ -150,14 +159,26 @@ run_probe "AmneziaWG Latest Handshakes" "${CONN_LOG}" "awg show awg0 latest-hand
 
 # Gateway ping
 DEFAULT_GW="$(ip route 2>/dev/null | awk '/default/ {print $3}' | head -n1)"
+PHYS_IF="$(ip route show table main 2>/dev/null | awk '/default/ {print $5}' | head -n1)"
 if [ -n "${DEFAULT_GW}" ]; then
   run_probe "Ping Default Gateway (${DEFAULT_GW})" "${CONN_LOG}" "ping -c 3 -W 2 ${DEFAULT_GW}"
 fi
 
-# VPN Endpoint ping (reachability of server host)
+# VPN Endpoint deep reachability probes
 AWG_ENDPOINT="$(awg show awg0 endpoints 2>/dev/null | awk '{print $2}' | cut -d: -f1)"
+AWG_PORT="$(awg show awg0 endpoints 2>/dev/null | awk '{print $2}' | cut -d: -f2)"
 if [ -n "${AWG_ENDPOINT}" ]; then
-  run_probe "Ping VPN Server Endpoint (${AWG_ENDPOINT})" "${CONN_LOG}" "ping -c 3 -W 2 ${AWG_ENDPOINT}"
+  if [ -n "${PHYS_IF}" ]; then
+    run_probe "Direct Ping to VPN Endpoint via Physical Interface (${PHYS_IF})" "${CONN_LOG}" "ping -c 3 -W 2 -I ${PHYS_IF} ${AWG_ENDPOINT}"
+    run_probe "Traceroute (ICMP) to VPN Endpoint via ${PHYS_IF}" "${CONN_LOG}" "traceroute -n -w 2 -m 15 -i ${PHYS_IF} ${AWG_ENDPOINT} 2>/dev/null || true"
+    if [ -n "${AWG_PORT}" ]; then
+      run_probe "Traceroute (UDP:${AWG_PORT}) to VPN Endpoint via ${PHYS_IF}" "${CONN_LOG}" "traceroute -n -U -p ${AWG_PORT} -w 2 -m 15 -i ${PHYS_IF} ${AWG_ENDPOINT} 2>/dev/null || true"
+    fi
+    if command -v tcpdump >/dev/null 2>&1; then
+      run_probe "Tcpdump 5s capture on ${PHYS_IF} for ${AWG_ENDPOINT}" "${CONN_LOG}" "timeout 5 tcpdump -ni ${PHYS_IF} -nn -vv host ${AWG_ENDPOINT} 2>&1 || true"
+    fi
+  fi
+  run_probe "Ping VPN Endpoint (System Routing)" "${CONN_LOG}" "ping -c 3 -W 2 ${AWG_ENDPOINT}"
 fi
 
 # Upstream DNS ping
@@ -207,6 +228,15 @@ if curl -s --connect-timeout 3 https://google.com >/dev/null 2>&1; then
   GOOGLE_STATUS="✅ Connected"
 fi
 
+ENDPOINT_STATUS="N/A"
+if [ -n "${AWG_ENDPOINT}" ]; then
+  if [ -n "${PHYS_IF}" ] && ping -c 1 -W 2 -I "${PHYS_IF}" "${AWG_ENDPOINT}" >/dev/null 2>&1; then
+    ENDPOINT_STATUS="✅ Reachable via ${PHYS_IF}"
+  else
+    ENDPOINT_STATUS="❌ Unreachable via ${PHYS_IF} (ICMP ping failed)"
+  fi
+fi
+
 cat << EOF > "${REPORT_FILE}"
 # Network Diagnostics Report
 
@@ -223,6 +253,7 @@ cat << EOF > "${REPORT_FILE}"
 |---|---|---|
 | **Default Gateway** | ${GW_STATUS} | Physical LAN gateway connection |
 | **Upstream DNS (1.1.1.1)** | ${DNS_PING_STATUS} | Direct bypass ICMP reachability |
+| **VPN Endpoint (${AWG_ENDPOINT:-N/A})** | ${ENDPOINT_STATUS} | Physical path reachability to server |
 | **Local dnsmasq (127.0.0.1)** | ${DNSMASQ_STATUS} | Port 53 resolution via dnsmasq |
 | **Domain Bypass (github.com)** | ${GITHUB_STATUS} | HTTPS connectivity to bypass domain |
 | **Domain Bypass (nixos.org)** | ${NIXOS_STATUS} | HTTPS connectivity to bypass domain |
