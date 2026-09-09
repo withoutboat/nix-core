@@ -9,30 +9,6 @@ let
   rawFileName = if hasAmneziaConfigSpec then baseNameOf amneziaConfigFile else null;
   secretPath = if hasAmneziaConfigSpec then ../secrets + "/${rawFileName}" else null;
   hasSecretFile = hasAmneziaConfigSpec && builtins.pathExists secretPath;
-
-  v4Dns = builtins.filter (s: !lib.hasInfix ":" s) cfg.dnsServers;
-  v6Dns = builtins.filter (s: lib.hasInfix ":" s) cfg.dnsServers;
-
-  nftBypassCommands = ''
-    ${pkgs.nftables}/bin/nft 'add table inet awg_bypass'
-    ${pkgs.nftables}/bin/nft 'list set inet awg_bypass bypass_v4' >/dev/null 2>&1 || \
-      ${pkgs.nftables}/bin/nft 'add set inet awg_bypass bypass_v4 { type ipv4_addr; flags timeout; timeout 1h; }'
-    ${pkgs.nftables}/bin/nft 'list set inet awg_bypass bypass_v6' >/dev/null 2>&1 || \
-      ${pkgs.nftables}/bin/nft 'add set inet awg_bypass bypass_v6 { type ipv6_addr; flags timeout; timeout 1h; }'
-    ${pkgs.nftables}/bin/nft 'add chain inet awg_bypass output { type route hook output priority mangle; policy accept; }'
-    ${pkgs.nftables}/bin/nft 'flush chain inet awg_bypass output'
-    ${lib.optionalString (v4Dns != [ ]) ''
-      ${pkgs.nftables}/bin/nft 'add rule inet awg_bypass output ip daddr { ${lib.concatStringsSep ", " v4Dns} } meta mark set 51820'
-    ''}
-    ${lib.optionalString (v6Dns != [ ]) ''
-      ${pkgs.nftables}/bin/nft 'add rule inet awg_bypass output ip6 daddr { ${lib.concatStringsSep ", " v6Dns} } meta mark set 51820'
-    ''}
-    ${pkgs.nftables}/bin/nft 'add rule inet awg_bypass output ip daddr @bypass_v4 meta mark set 51820'
-    ${pkgs.nftables}/bin/nft 'add rule inet awg_bypass output ip6 daddr @bypass_v6 meta mark set 51820'
-    ${pkgs.nftables}/bin/nft 'add chain inet awg_bypass postrouting { type nat hook postrouting priority srcnat; policy accept; }'
-    ${pkgs.nftables}/bin/nft 'flush chain inet awg_bypass postrouting'
-    ${pkgs.nftables}/bin/nft 'add rule inet awg_bypass postrouting meta mark 51820 masquerade'
-  '';
 in
 {
   options.services.amneziawg = {
@@ -60,37 +36,23 @@ in
       description = "Whether to start interface at boot.";
     };
 
+    # Backwards-compatibility options referencing networking.bypass
     bypassEnable = lib.mkOption {
       type = lib.types.bool;
-      default = spec.amneziaBypassEnable or true;
-      description = "Enable DNS-based domain bypassing of AmneziaWG for direct internet access to specified domains.";
+      default = config.networking.bypass.enable;
+      description = "Enable DNS-based domain bypassing (delegated to networking.bypass.enable).";
     };
 
     bypassDomains = lib.mkOption {
       type = lib.types.listOf lib.types.str;
-      default = spec.amneziaBypassDomains or [
-        "github.com"
-        "githubusercontent.com"
-        "githubassets.com"
-        "github.io"
-        "nixos.org"
-        "cachix.org"
-        "flakehub.com"
-        "garnix.io"
-        "gitlab.com"
-        "codeberg.org"
-        "crates.io"
-      ];
-      description = "Domain suffixes to route directly via default gateway in bypass of AmneziaWG.";
+      default = config.networking.bypass.domains;
+      description = "Domain suffixes to route directly (delegated to networking.bypass.domains).";
     };
 
     dnsServers = lib.mkOption {
       type = lib.types.listOf lib.types.str;
-      default = spec.amneziaDnsServers or [
-        "1.1.1.1"
-        "1.0.0.1"
-      ];
-      description = "Upstream DNS servers for dnsmasq that always bypass the AmneziaWG tunnel directly via default gateway.";
+      default = config.networking.bypass.dnsServers;
+      description = "Upstream DNS servers for bypass (delegated to networking.bypass.dnsServers).";
     };
   };
 
@@ -171,7 +133,7 @@ in
           fi
           cp "${cfg.configFile}" /run/amneziawg/${cfg.interfaceName}.conf
           chmod 600 /run/amneziawg/${cfg.interfaceName}.conf
-          ${lib.optionalString cfg.bypassEnable ''
+          ${lib.optionalString config.networking.bypass.enable ''
             # Strip DNS entries from AmneziaWG config so awg-quick does not overwrite
             # resolvconf and break local dnsmasq resolution and domain bypass
             ${pkgs.gnused}/bin/sed -i '/^[[:space:]]*DNS[[:space:]]*=/d' /run/amneziawg/${cfg.interfaceName}.conf
@@ -184,7 +146,7 @@ in
             if [ -f "${cfg.configFile}" ]; then
               cp "${cfg.configFile}" /run/amneziawg/${cfg.interfaceName}.conf
               chmod 600 /run/amneziawg/${cfg.interfaceName}.conf
-              ${lib.optionalString cfg.bypassEnable ''
+              ${lib.optionalString config.networking.bypass.enable ''
                 ${pkgs.gnused}/bin/sed -i '/^[[:space:]]*DNS[[:space:]]*=/d' /run/amneziawg/${cfg.interfaceName}.conf
               ''}
             fi
@@ -198,44 +160,6 @@ in
       networking.networkmanager.unmanaged = lib.mkIf config.networking.networkmanager.enable [
         "interface-name:${cfg.interfaceName}"
       ];
-
-      networking.firewall.checkReversePath = lib.mkDefault "loose";
-    })
-
-    (lib.mkIf (cfg.enable && cfg.bypassEnable && cfg.bypassDomains != [ ]) {
-      environment.systemPackages = [
-        pkgs.nftables
-      ];
-
-      boot.kernelModules = [
-        "nf_tables"
-      ];
-
-      boot.kernel.sysctl = {
-        "net.ipv4.conf.default.rp_filter" = lib.mkDefault 2;
-        "net.ipv4.conf.all.rp_filter" = lib.mkDefault 2;
-      };
-
-      networking.firewall.extraCommands = lib.mkAfter nftBypassCommands;
-
-      networking.firewall.extraStopCommands = lib.mkAfter ''
-        ${pkgs.nftables}/bin/nft 'delete table inet awg_bypass' 2>/dev/null || true
-      '';
-
-      services.dnsmasq = {
-        enable = true;
-        resolveLocalQueries = true;
-        settings = {
-          server = cfg.dnsServers;
-          nftset = map (domain: "/${domain}/4#inet#awg_bypass#bypass_v4,6#inet#awg_bypass#bypass_v6") cfg.bypassDomains;
-        };
-      };
-
-      systemd.services.dnsmasq = {
-        after = [ "firewall.service" ];
-        wants = [ "firewall.service" ];
-        preStart = lib.mkBefore nftBypassCommands;
-      };
     })
   ];
 }
