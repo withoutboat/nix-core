@@ -1,0 +1,301 @@
+### [Full nftables Ruleset] :: nft list ruleset
+--- Executed at 2026-09-09T15:10:18Z ---
+# Warning: table ip filter is managed by iptables-nft, do not touch!
+table ip filter {
+	chain nixos-fw-accept {
+		counter packets 7356 bytes 5861124 accept
+	}
+
+	chain nixos-fw-refuse {
+		counter packets 797 bytes 120477 drop
+	}
+
+	chain nixos-fw-log-refuse {
+		pkttype != unicast counter packets 729 bytes 117118 jump nixos-fw-refuse
+		counter packets 68 bytes 3359 jump nixos-fw-refuse
+	}
+
+	chain nixos-fw {
+		iifname "lo" counter packets 3343 bytes 345457 jump nixos-fw-accept
+		ct state related,established counter packets 4013 bytes 5515667 jump nixos-fw-accept
+		ip protocol icmp icmp type echo-request counter packets 0 bytes 0 jump nixos-fw-accept
+		counter packets 797 bytes 120477 jump nixos-fw-log-refuse
+	}
+
+	chain INPUT {
+		type filter hook input priority filter; policy accept;
+		counter packets 8153 bytes 5981601 jump nixos-fw
+	}
+}
+# Warning: table ip6 filter is managed by iptables-nft, do not touch!
+table ip6 filter {
+	chain nixos-fw-accept {
+		counter packets 380 bytes 38150 accept
+	}
+
+	chain nixos-fw-refuse {
+		counter packets 0 bytes 0 drop
+	}
+
+	chain nixos-fw-log-refuse {
+		pkttype != unicast counter packets 0 bytes 0 jump nixos-fw-refuse
+		counter packets 0 bytes 0 jump nixos-fw-refuse
+	}
+
+	chain nixos-fw {
+		iifname "lo" counter packets 380 bytes 38150 jump nixos-fw-accept
+		ct state related,established counter packets 0 bytes 0 jump nixos-fw-accept
+		meta l4proto ipv6-icmp icmpv6 type nd-redirect counter packets 0 bytes 0 drop
+		meta l4proto ipv6-icmp xt match "icmp6" counter packets 0 bytes 0 drop
+		meta l4proto ipv6-icmp counter packets 0 bytes 0 jump nixos-fw-accept
+		ip6 daddr fe80::/64 udp dport 546 counter packets 0 bytes 0 jump nixos-fw-accept
+		counter packets 0 bytes 0 jump nixos-fw-log-refuse
+	}
+
+	chain INPUT {
+		type filter hook input priority filter; policy accept;
+		counter packets 380 bytes 38150 jump nixos-fw
+	}
+}
+# Warning: table ip mangle is managed by iptables-nft, do not touch!
+table ip mangle {
+	chain nixos-fw-rpfilter {
+		fib saddr . mark oif != 0 counter packets 8153 bytes 5981601 return
+		udp sport 67 udp dport 68 counter packets 1 bytes 367 return
+		ip saddr 0.0.0.0 ip daddr 255.255.255.255 udp sport 68 udp dport 67 counter packets 0 bytes 0 return
+		counter packets 0 bytes 0 drop
+	}
+
+	chain PREROUTING {
+		type filter hook prerouting priority mangle; policy accept;
+		ip protocol udp  counter packets 391 bytes 38185 meta mark set ct mark
+		counter packets 8154 bytes 5981968 jump nixos-fw-rpfilter
+	}
+
+	chain POSTROUTING {
+		type filter hook postrouting priority mangle; policy accept;
+		ip protocol udp meta mark 0x0000ca6c  counter packets 1262 bytes 108448 ct mark set mark
+	}
+}
+# Warning: table ip6 mangle is managed by iptables-nft, do not touch!
+table ip6 mangle {
+	chain nixos-fw-rpfilter {
+		fib saddr . mark oif != 0 counter packets 380 bytes 38150 return
+		counter packets 0 bytes 0 drop
+	}
+
+	chain PREROUTING {
+		type filter hook prerouting priority mangle; policy accept;
+		meta l4proto udp  counter packets 290 bytes 29102 meta mark set ct mark
+		counter packets 380 bytes 38150 jump nixos-fw-rpfilter
+	}
+
+	chain POSTROUTING {
+		type filter hook postrouting priority mangle; policy accept;
+		meta l4proto udp meta mark 0x0000ca6c  counter packets 0 bytes 0 ct mark set mark
+	}
+}
+table inet awg_bypass {
+	set bypass_v4 {
+		type ipv4_addr
+		timeout 1h
+		elements = { 75.2.60.5 expires 32m53s66ms,
+			     99.83.231.61 expires 32m53s69ms,
+			     140.82.112.22 expires 50m20s354ms,
+			     140.82.113.21 expires 30m65ms,
+			     140.82.113.22 expires 32m34s845ms,
+			     140.82.114.21 expires 37m15s814ms,
+			     140.82.114.22 expires 34m50s948ms,
+			     140.82.121.3 expires 29m58s919ms,
+			     140.82.121.4 expires 31m7s32ms,
+			     140.82.121.5 expires 30m99ms,
+			     185.199.108.133 expires 29m59s331ms,
+			     185.199.108.215 expires 29m59s314ms,
+			     185.199.109.133 expires 29m59s332ms,
+			     185.199.109.215 expires 29m59s312ms,
+			     185.199.110.133 expires 29m59s332ms,
+			     185.199.110.215 expires 29m59s313ms,
+			     185.199.111.133 expires 29m59s333ms,
+			     185.199.111.215 expires 29m59s313ms }
+	}
+
+	set bypass_v6 {
+		type ipv6_addr
+		timeout 1h
+		elements = { 2606:50c0:8000::154 expires 29m59s317ms,
+			     2606:50c0:8000::215 expires 29m59s341ms,
+			     2606:50c0:8001::154 expires 29m59s317ms,
+			     2606:50c0:8001::215 expires 29m59s338ms,
+			     2606:50c0:8002::154 expires 29m59s315ms,
+			     2606:50c0:8002::215 expires 29m59s340ms,
+			     2606:50c0:8003::154 expires 29m59s316ms,
+			     2606:50c0:8003::215 expires 29m59s339ms }
+	}
+
+	chain output {
+		type route hook output priority mangle; policy accept;
+		ip daddr { 1.0.0.1, 1.1.1.1 } meta mark set 0x0000ca6c
+		ip daddr @bypass_v4 meta mark set 0x0000ca6c
+		ip6 daddr @bypass_v6 meta mark set 0x0000ca6c
+	}
+
+	chain postrouting {
+		type nat hook postrouting priority srcnat; policy accept;
+		ip daddr @bypass_v4 masquerade
+		ip6 daddr @bypass_v6 masquerade
+	}
+}
+# Warning: table ip raw is managed by iptables-nft, do not touch!
+table ip raw {
+	chain PREROUTING {
+		type filter hook prerouting priority raw; policy accept;
+		ip daddr 10.8.1.11 iifname != "awg0" fib saddr type != local  counter packets 0 bytes 0 drop
+	}
+}
+
+
+### [Table inet awg_bypass] :: nft list table inet awg_bypass
+--- Executed at 2026-09-09T15:10:18Z ---
+table inet awg_bypass {
+	set bypass_v4 {
+		type ipv4_addr
+		timeout 1h
+		elements = { 75.2.60.5 expires 32m53s54ms,
+			     99.83.231.61 expires 32m53s57ms,
+			     140.82.112.22 expires 50m20s342ms,
+			     140.82.113.21 expires 30m53ms,
+			     140.82.113.22 expires 32m34s833ms,
+			     140.82.114.21 expires 37m15s802ms,
+			     140.82.114.22 expires 34m50s936ms,
+			     140.82.121.3 expires 29m58s907ms,
+			     140.82.121.4 expires 31m7s20ms,
+			     140.82.121.5 expires 30m87ms,
+			     185.199.108.133 expires 29m59s319ms,
+			     185.199.108.215 expires 29m59s302ms,
+			     185.199.109.133 expires 29m59s320ms,
+			     185.199.109.215 expires 29m59s300ms,
+			     185.199.110.133 expires 29m59s320ms,
+			     185.199.110.215 expires 29m59s301ms,
+			     185.199.111.133 expires 29m59s321ms,
+			     185.199.111.215 expires 29m59s301ms }
+	}
+
+	set bypass_v6 {
+		type ipv6_addr
+		timeout 1h
+		elements = { 2606:50c0:8000::154 expires 29m59s305ms,
+			     2606:50c0:8000::215 expires 29m59s329ms,
+			     2606:50c0:8001::154 expires 29m59s305ms,
+			     2606:50c0:8001::215 expires 29m59s326ms,
+			     2606:50c0:8002::154 expires 29m59s303ms,
+			     2606:50c0:8002::215 expires 29m59s328ms,
+			     2606:50c0:8003::154 expires 29m59s304ms,
+			     2606:50c0:8003::215 expires 29m59s327ms }
+	}
+
+	chain output {
+		type route hook output priority mangle; policy accept;
+		ip daddr { 1.0.0.1, 1.1.1.1 } meta mark set 0x0000ca6c
+		ip daddr @bypass_v4 meta mark set 0x0000ca6c
+		ip6 daddr @bypass_v6 meta mark set 0x0000ca6c
+	}
+
+	chain postrouting {
+		type nat hook postrouting priority srcnat; policy accept;
+		ip daddr @bypass_v4 masquerade
+		ip6 daddr @bypass_v6 masquerade
+	}
+}
+
+
+### [Set inet awg_bypass bypass_v4] :: nft list set inet awg_bypass bypass_v4
+--- Executed at 2026-09-09T15:10:18Z ---
+table inet awg_bypass {
+	set bypass_v4 {
+		type ipv4_addr
+		timeout 1h
+		elements = { 75.2.60.5 expires 32m53s41ms,
+			     99.83.231.61 expires 32m53s44ms,
+			     140.82.112.22 expires 50m20s329ms,
+			     140.82.113.21 expires 30m40ms,
+			     140.82.113.22 expires 32m34s820ms,
+			     140.82.114.21 expires 37m15s789ms,
+			     140.82.114.22 expires 34m50s923ms,
+			     140.82.121.3 expires 29m58s894ms,
+			     140.82.121.4 expires 31m7s7ms,
+			     140.82.121.5 expires 30m74ms,
+			     185.199.108.133 expires 29m59s306ms,
+			     185.199.108.215 expires 29m59s289ms,
+			     185.199.109.133 expires 29m59s307ms,
+			     185.199.109.215 expires 29m59s287ms,
+			     185.199.110.133 expires 29m59s307ms,
+			     185.199.110.215 expires 29m59s288ms,
+			     185.199.111.133 expires 29m59s308ms,
+			     185.199.111.215 expires 29m59s288ms }
+	}
+}
+
+
+### [Set inet awg_bypass bypass_v6] :: nft list set inet awg_bypass bypass_v6
+--- Executed at 2026-09-09T15:10:18Z ---
+table inet awg_bypass {
+	set bypass_v6 {
+		type ipv6_addr
+		timeout 1h
+		elements = { 2606:50c0:8000::154 expires 29m59s279ms,
+			     2606:50c0:8000::215 expires 29m59s303ms,
+			     2606:50c0:8001::154 expires 29m59s279ms,
+			     2606:50c0:8001::215 expires 29m59s300ms,
+			     2606:50c0:8002::154 expires 29m59s277ms,
+			     2606:50c0:8002::215 expires 29m59s302ms,
+			     2606:50c0:8003::154 expires 29m59s278ms,
+			     2606:50c0:8003::215 expires 29m59s301ms }
+	}
+}
+
+
+### [iptables Filter Rules] :: iptables -S
+--- Executed at 2026-09-09T15:10:18Z ---
+-P INPUT ACCEPT
+-P FORWARD ACCEPT
+-P OUTPUT ACCEPT
+-N nixos-fw
+-N nixos-fw-accept
+-N nixos-fw-log-refuse
+-N nixos-fw-refuse
+-A INPUT -j nixos-fw
+-A nixos-fw -i lo -j nixos-fw-accept
+-A nixos-fw -m conntrack --ctstate RELATED,ESTABLISHED -j nixos-fw-accept
+-A nixos-fw -p icmp -m icmp --icmp-type 8 -j nixos-fw-accept
+-A nixos-fw -j nixos-fw-log-refuse
+-A nixos-fw-accept -j ACCEPT
+-A nixos-fw-log-refuse -m pkttype ! --pkt-type unicast -j nixos-fw-refuse
+-A nixos-fw-log-refuse -j nixos-fw-refuse
+-A nixos-fw-refuse -j DROP
+
+
+### [iptables NAT Rules] :: iptables -t nat -S
+--- Executed at 2026-09-09T15:10:18Z ---
+-P PREROUTING ACCEPT
+-P INPUT ACCEPT
+-P OUTPUT ACCEPT
+-P POSTROUTING ACCEPT
+
+
+### [iptables Mangle Rules] :: iptables -t mangle -S
+--- Executed at 2026-09-09T15:10:18Z ---
+-P PREROUTING ACCEPT
+-P INPUT ACCEPT
+-P FORWARD ACCEPT
+-P OUTPUT ACCEPT
+-P POSTROUTING ACCEPT
+-N nixos-fw-rpfilter
+-A PREROUTING -p udp -m comment --comment "awg-quick(8) rule for awg0" -j CONNMARK --restore-mark --nfmask 0xffffffff --ctmask 0xffffffff
+-A PREROUTING -j nixos-fw-rpfilter
+-A POSTROUTING -p udp -m mark --mark 0xca6c -m comment --comment "awg-quick(8) rule for awg0" -j CONNMARK --save-mark --nfmask 0xffffffff --ctmask 0xffffffff
+-A nixos-fw-rpfilter -m rpfilter --loose --validmark -j RETURN
+-A nixos-fw-rpfilter -p udp -m udp --sport 67 --dport 68 -j RETURN
+-A nixos-fw-rpfilter -s 0.0.0.0/32 -d 255.255.255.255/32 -p udp -m udp --sport 68 --dport 67 -j RETURN
+-A nixos-fw-rpfilter -j DROP
+
+

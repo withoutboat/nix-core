@@ -1,0 +1,156 @@
+### [AmneziaWG / WireGuard Show] :: awg show || wg show
+--- Executed at 2026-09-09T15:10:18Z ---
+interface: awg0
+  public key: 7Q9Jp0QvXu2tu6mog635EaVz1IYbMt9pdXgiFe61vH0=
+  private key: (hidden)
+  listening port: 40396
+  fwmark: 0xca6c
+  jc: 5
+  jmin: 10
+  jmax: 50
+  s1: 69
+  s2: 132
+  s3: 6
+  s4: 5
+  h1: 117028949-1005410162
+  h2: 1231176932-1803586643
+  h3: 1890197938-2064918576
+  h4: 2126864087-2138021283
+  i1: <b 0x084481800001000300000000077469636b65747306776964676574096b696e6f706f69736b0272750000010001c00c0005000100000039001806776964676574077469636b6574730679616e646578c025c0390005000100000039002b1765787465726e616c2d7469636b6574732d776964676574066166697368610679616e646578036e657400c05d000100010000001c000457fafe25>
+  random trailers: off
+  disable cookies: off
+
+peer: 2c1o9//w190B6DvPgsrJUr2+3wonW3NzNUojYxjMkkg=
+  preshared key: (hidden)
+  endpoint: 144.31.154.165:46399
+  allowed ips: 0.0.0.0/0, ::/0
+  transfer: 0 B received, 22.36 KiB sent
+  persistent keepalive: 25
+
+
+### [Ping Default Gateway (192.168.31.1)] :: ping -c 3 -W 2 192.168.31.1
+--- Executed at 2026-09-09T15:10:18Z ---
+PING 192.168.31.1 (192.168.31.1) 56(84) bytes of data.
+64 bytes from 192.168.31.1: icmp_seq=1 ttl=64 time=2.94 ms
+64 bytes from 192.168.31.1: icmp_seq=2 ttl=64 time=3.23 ms
+64 bytes from 192.168.31.1: icmp_seq=3 ttl=64 time=2.79 ms
+
+--- 192.168.31.1 ping statistics ---
+3 packets transmitted, 3 received, 0% packet loss, time 2000ms
+rtt min/avg/max/mdev = 2.790/2.985/3.232/0.183 ms
+
+
+### [Ping Upstream DNS 1.1.1.1] :: ping -c 3 -W 2 1.1.1.1
+--- Executed at 2026-09-09T15:10:20Z ---
+PING 1.1.1.1 (1.1.1.1) 56(84) bytes of data.
+
+--- 1.1.1.1 ping statistics ---
+3 packets transmitted, 0 received, 100% packet loss, time 2039ms
+
+
+
+### [Ping Upstream DNS 1.0.0.1] :: ping -c 3 -W 2 1.0.0.1
+--- Executed at 2026-09-09T15:10:24Z ---
+PING 1.0.0.1 (1.0.0.1) 56(84) bytes of data.
+
+--- 1.0.0.1 ping statistics ---
+3 packets transmitted, 0 received, 100% packet loss, time 2028ms
+
+
+
+### [Curl https://github.com (Bypass domain)] :: curl -svo /dev/null --connect-timeout 5 https://github.com
+--- Executed at 2026-09-09T15:10:28Z ---
+* Resolving timed out after 5000 milliseconds
+* closing connection #0
+
+
+### [Curl https://nixos.org (Bypass domain)] :: curl -svo /dev/null --connect-timeout 5 https://nixos.org
+--- Executed at 2026-09-09T15:10:33Z ---
+* Host nixos.org:443 was resolved.
+* IPv6: (none)
+* IPv4: 99.83.231.61, 75.2.60.5
+*   Trying 99.83.231.61:443...
+* ALPN: curl offers h2,http/1.1
+} [5 bytes data]
+* TLSv1.3 (OUT), TLS handshake, Client hello (1):
+} [1553 bytes data]
+* SSL Trust Anchors:
+*   OpenSSL default paths (fallback)
+{ [5 bytes data]
+* TLSv1.3 (IN), TLS handshake, Server hello (2):
+{ [122 bytes data]
+* TLSv1.3 (IN), TLS change cipher, Change cipher spec (1):
+{ [1 bytes data]
+* TLSv1.3 (IN), TLS handshake, Encrypted Extensions (8):
+{ [19 bytes data]
+* TLSv1.3 (IN), TLS handshake, Certificate (11):
+{ [3418 bytes data]
+* TLSv1.3 (IN), TLS handshake, CERT verify (15):
+{ [80 bytes data]
+* TLSv1.3 (IN), TLS handshake, Finished (20):
+{ [36 bytes data]
+* TLSv1.3 (OUT), TLS change cipher, Change cipher spec (1):
+} [1 bytes data]
+* TLSv1.3 (OUT), TLS handshake, Finished (20):
+} [36 bytes data]
+* SSL connection using TLSv1.3 / TLS_AES_128_GCM_SHA256 / x25519 / id-ecPublicKey
+* ALPN: server accepted h2
+* Server certificate:
+*   subject: CN=nixos.org
+*   start date: Sep  2 17:53:49 2026 GMT
+*   expire date: Dec  1 17:53:48 2026 GMT
+*   issuer: C=US; O=Let's Encrypt; CN=YE1
+*   Certificate level 0: Public key type EC/prime256v1 (256/128 Bits/secBits), signed using ecdsa-with-SHA384
+*   Certificate level 1: Public key type EC/secp384r1 (384/192 Bits/secBits), signed using ecdsa-with-SHA384
+*   Certificate level 2: Public key type EC/secp384r1 (384/192 Bits/secBits), signed using ecdsa-with-SHA384
+*   Certificate level 3: Public key type EC/secp384r1 (384/192 Bits/secBits), signed using ecdsa-with-SHA384
+*   subjectAltName: "nixos.org" matches cert's "nixos.org"
+* OpenSSL verify result: 0
+* SSL certificate verified via OpenSSL.
+* Established connection to nixos.org (99.83.231.61 port 443) from 10.8.1.11 port 58426 
+* using HTTP/2
+* [HTTP/2] [1] OPENED stream for https://nixos.org/
+* [HTTP/2] [1] [:method: GET]
+* [HTTP/2] [1] [:scheme: https]
+* [HTTP/2] [1] [:authority: nixos.org]
+* [HTTP/2] [1] [:path: /]
+* [HTTP/2] [1] [user-agent: curl/8.21.0]
+* [HTTP/2] [1] [accept: */*]
+} [5 bytes data]
+> GET / HTTP/2
+> Host: nixos.org
+> User-Agent: curl/8.21.0
+> Accept: */*
+> 
+* Request completely sent off
+{ [5 bytes data]
+* TLSv1.3 (IN), TLS handshake, Newsession Ticket (4):
+{ [122 bytes data]
+< HTTP/2 200 
+< accept-ranges: bytes
+< age: 6490
+< cache-control: public,max-age=0,must-revalidate
+< cache-status: "Netlify Edge"; hit; ttl=31529510
+< content-type: text/html; charset=UTF-8
+< date: Wed, 09 Sep 2026 15:10:35 GMT
+< etag: "05aac15c54237dcc258a4c47509f6749-ssl"
+< server: Netlify
+< strict-transport-security: max-age=31536000
+< vary: Accept-Encoding
+< x-nf-request-id: 01M23BH1MVA40VA2G5GDDX12PD
+< content-length: 57343
+< 
+{ [5 bytes data]
+* Connection #0 to host nixos.org:443 left intact
+
+
+### [Curl Public IP (ifconfig.me)] :: curl -s --connect-timeout 5 https://ifconfig.me
+--- Executed at 2026-09-09T15:10:34Z ---
+
+
+### [Curl https://google.com (Tunnel route)] :: curl -svo /dev/null --connect-timeout 5 https://google.com
+--- Executed at 2026-09-09T15:10:39Z ---
+* Resolving timed out after 5000 milliseconds
+* closing connection #0
+
+
