@@ -1,54 +1,54 @@
-# Сетевая диагностика и тесты (Network Diagnostics & Tests)
+# Network Diagnostics & Tests
 
-Данный каталог содержит комплекс инструментов, скриптов автоматизации и документацию для **полного и исключительного понимания** того, что происходит с сетью, файрволом, DNS и VPN-туннелями на машине под управлением NixOS (`pc-th`).
+This directory contains a comprehensive suite of tools, automation scripts, and documentation for a **complete and definitive understanding** of what is happening with the network, firewall, DNS, and VPN tunnels on a NixOS machine (`pc-th`).
 
 ---
 
-## Быстрый старт (Quick Start)
+## Quick Start
 
-Все скрипты расположены в директории `tests/` и готовы к запуску.
+All scripts are located in the `tests/` directory and are ready to run.
 
-### 1. Полный сбор диагностических данных
+### 1. Comprehensive Diagnostic Data Collection
 
-Запуск полной автоматизированной диагностики сетевого стека:
+Run full automated diagnostics of the entire network stack:
 
 ```bash
 sudo ./tests/diagnose-network.sh
 ```
 
-- Автоматически собирает полный срез состояния системы (интерфейсы, маршрутизация, DNS, nftables, iptables, сервисы, туннель, пинги и curl-запросы).
-- Создаёт отдельную директорию `tests/<YYYY-MM-DD_HH-MM-SS>/` (или `tests/<date>`) со всеми сырыми логами.
-- Генерирует сводный отчёт `tests/<date>/report.md` с таблицей статусов.
-- Обновляет удобный симлинк `tests/latest` на последний прогон.
+- Automatically collects a full snapshot of the system state (interfaces, routing rules, DNS, nftables, iptables, services, tunnel, ping, and curl probes).
+- Creates an isolated directory `tests/<YYYY-MM-DD_HH-MM-SS>/` (or `tests/<date>`) containing all raw logs.
+- Generates a summary report `tests/<date>/report.md` with a status overview table.
+- Updates the convenient `tests/latest` symlink pointing to the most recent run.
 
-Можно явно передать путь или дату для сохранения результатов:
+You can also explicitly specify a target directory or date for saving the results:
 
 ```bash
 sudo ./tests/diagnose-network.sh tests/$(date +%Y-%m-%d)
 ```
 
-### 2. Быстрая проверка связности и байпасов
+### 2. Rapid Connectivity & Bypass Health Check
 
-Быстрый чек всех ключевых компонентов с понятным выводом `PASS` / `WARN` / `FAIL`:
+Quick assertion check across all key components with clear `PASS` / `WARN` / `FAIL` status:
 
 ```bash
 sudo ./tests/check-connectivity.sh
 ```
 
-Проверяет:
-1. Доступность физического шлюза (LAN Gateway).
-2. Прямой пинг upstream DNS (1.1.1.1).
-3. Работу локального резолвера dnsmasq на `127.0.0.1:53`.
-4. Корректность `/etc/resolv.conf`.
-5. Существование таблицы `inet awg_bypass` и сетов `bypass_v4` / `bypass_v6`.
-6. Динамическое наполнение nftset при резолве доменов (например, `github.com`).
-7. HTTPS-доступность доменов байпаса (`github.com`, `nixos.org`).
-8. Статус туннеля AmneziaWG (`awg0`) и наличие handshake.
-9. Выход в глобальный интернет через полный туннель.
+Verifies:
+1. Physical LAN Gateway reachability.
+2. Direct ping to upstream DNS (`1.1.1.1`).
+3. Local dnsmasq resolver responsiveness on `127.0.0.1:53`.
+4. Correctness of `/etc/resolv.conf`.
+5. Existence of table `inet awg_bypass` and sets `bypass_v4` / `bypass_v6`.
+6. Dynamic population of nftset upon domain resolution (e.g. `github.com`).
+7. HTTPS accessibility of bypass domains (`github.com`, `nixos.org`).
+8. Status of the AmneziaWG tunnel (`awg0`) and presence of active handshakes.
+9. Outbound global internet routing through the full VPN tunnel.
 
-### 3. Тестирование механизма доменного байпаса
+### 3. Domain Bypass Mechanism Deep Test
 
-Глубокая проверка связки `dnsmasq` -> `nftset` -> `fwmark 51820` -> `table main`:
+Deep inspection and verification of the `dnsmasq` -> `nftset` -> `fwmark 51820` -> `table main` chain:
 
 ```bash
 sudo ./tests/test-dnsmasq-bypass.sh github.com
@@ -56,99 +56,99 @@ sudo ./tests/test-dnsmasq-bypass.sh github.com
 
 ---
 
-## Структура вывода `tests/<date>/`
+## Output Structure `tests/<date>/`
 
-Каждый запуск `diagnose-network.sh` формирует в `tests/<date>/` структурированный набор файлов:
+Each execution of `diagnose-network.sh` creates a structured artifact directory:
 
 ```text
 tests/<date>/
-├── report.md                  # Сводный Markdown-отчёт с таблицей проверок
-├── 01-system-info.log         # Ядро, хостнейм, аптайм, загруженные модули
-├── 02-interfaces.log          # ip link, ip addr, статистика пакетов, nmcli
-├── 03-routing.log             # ip rule, table main, table 51820, route get
-├── 04-dns.log                 # resolv.conf, dnsmasq configs, dig, getent
-├── 05-firewall-nftables.log   # nft list ruleset, awg_bypass set, iptables -S
-├── 06-sysctl.log              # rp_filter, ip_forward, forwarding
-├── 07-services.log            # systemctl status и journalctl для всех служб
-└── 08-connectivity.log        # awg show, ping, curl тесты доменов и внешнего IP
+├── report.md                  # Markdown summary report with status check table
+├── 01-system-info.log         # Kernel version, hostname, uptime, loaded modules
+├── 02-interfaces.log          # ip link, ip addr, packet drop/error stats, nmcli
+├── 03-routing.log             # ip rule, table main, table 51820, route get lookups
+├── 04-dns.log                 # resolv.conf, dnsmasq configs, dig, getent hosts
+├── 05-firewall-nftables.log   # nft list ruleset, awg_bypass sets, iptables -S
+├── 06-sysctl.log              # rp_filter settings, ip_forward, forwarding
+├── 07-services.log            # systemctl status and journalctl logs for all services
+└── 08-connectivity.log        # awg show, ping, curl domain probes, public IP
 ```
 
 ---
 
-## Исчерпывающий справочник команд (Manual Inspection Commands)
+## Comprehensive Command Reference (Manual Inspection)
 
-Если требуется вручную понять, что происходит с сетью на машине:
+When you need to manually inspect the machine's networking state:
 
-### 1. Интерфейсы и физический уровень
+### 1. Interfaces & Physical Layer
 ```bash
-# Список всех интерфейсов, флаги состояния (UP/DOWN), MTU и MAC-адреса
+# List all interfaces, link state (UP/DOWN), MTU, and MAC addresses
 ip -details link show
 
-# Все назначенные IPv4 и IPv6 адреса
+# All assigned IPv4 and IPv6 addresses
 ip -brief addr show
 ip -4 addr show
 ip -6 addr show
 
-# Ошибки, сброшенные пакеты (drops), коллизии на интерфейсах
+# Packet errors, drops, and collisions per interface
 ip -s link
 
-# Состояние устройств и подключений в NetworkManager
+# NetworkManager devices and active connection profiles
 nmcli device status
 nmcli connection show --active
 ```
 
-### 2. Маршрутизация и Policy Routing (FIB)
+### 2. Routing & Policy Routing (FIB)
 ```bash
-# Правила маршрутизации (Policy Routing Rules / FIB):
-# Показывает, в каком порядке и по каким условиям (fwmark, suppress) опрашиваются таблицы
+# Policy routing rules (FIB):
+# Shows rule precedence and lookup tables based on fwmark, suppress, etc.
 ip -4 rule show
 ip -6 rule show
 
-# Основная таблица маршрутизации (физический шлюз, локальная подсеть Wi-Fi/Ethernet)
+# Main routing table (physical gateway, local Wi-Fi / Ethernet subnets)
 ip -4 route show table main
 
-# Таблица маршрутизации VPN (awg-quick направляет 0.0.0.0/0 в awg0)
+# VPN routing table (awg-quick directs 0.0.0.0/0 to awg0 here)
 ip -4 route show table 51820
 
-# Проверка, через какой интерфейс и с каким source IP ядро отправит пакет:
-# Без метки (пойдёт в awg0):
+# Query which interface and source IP the kernel will select:
+# Without mark (routes to awg0):
 ip route get 1.1.1.1
 ip route get 140.82.121.4
 
-# С меткой байпаса 51820 (пойдёт через физический шлюз wlp1s0 / enp...):
+# With bypass fwmark 51820 (routes via default physical gateway wlp1s0 / enp...):
 ip route get 1.1.1.1 mark 51820
 ip route get 140.82.121.4 mark 51820
 ```
 
-### 3. DNS и разрешение имён
+### 3. DNS & Name Resolution
 ```bash
-# Текущий системный файл резолвера (должен содержать nameserver 127.0.0.1)
+# Current system resolver configuration (should contain nameserver 127.0.0.1)
 cat /etc/resolv.conf
 
-# Проверка прямого ответа от локального dnsmasq
+# Query local dnsmasq resolver directly
 dig @127.0.0.1 github.com +short
 
-# Проверка ответа от upstream DNS напрямую через байпас
+# Query upstream DNS directly bypassing the tunnel
 dig @1.1.1.1 github.com +short
 
-# Проверка через glibc getent (так, как резолвят curl, git, браузеры)
+# Test via glibc getent (matches resolution behavior of curl, git, browsers)
 getent hosts github.com
 getent hosts nixos.org
 ```
 
-### 4. Файрвол и nftables
+### 4. Firewall & nftables
 ```bash
-# Полный дамп всех правил nftables
+# Dump the complete active nftables ruleset
 sudo nft list ruleset
 
-# Просмотр таблицы байпаса
+# Inspect the bypass table
 sudo nft list table inet awg_bypass
 
-# Просмотр IP-адресов, динамически добавленных dnsmasq в сет байпаса
+# Inspect IPs dynamically added by dnsmasq to the bypass sets
 sudo nft list set inet awg_bypass bypass_v4
 sudo nft list set inet awg_bypass bypass_v6
 
-# Просмотр классических правил iptables (если включен firewall-iptables)
+# Inspect legacy iptables rules (if firewall-iptables is active)
 sudo iptables -S
 sudo iptables -t nat -S
 sudo iptables -t mangle -S
@@ -156,71 +156,72 @@ sudo iptables -t mangle -S
 
 ### 5. AmneziaWG / WireGuard
 ```bash
-# Текущий статус туннеля (публичные ключи, endpoint, handshake, трафик rx/tx)
+# Current tunnel interface status (public keys, endpoint, handshake, rx/tx bytes)
 sudo awg show
 sudo wg show
 
-# Статус системной службы туннеля
+# Systemd tunnel service status and logs
 systemctl status awg-quick-awg0.service --no-pager
 journalctl -u awg-quick-awg0.service -n 50 --no-pager
 ```
 
-### 6. Системные службы
+### 6. System Services
 ```bash
-# Статус NetworkManager, dnsmasq, firewall
+# Status of NetworkManager, dnsmasq, and firewall services
 systemctl status NetworkManager.service --no-pager
 systemctl status dnsmasq.service --no-pager
 systemctl status firewall.service --no-pager
 
-# Логи dnsmasq (проверка, нет ли ошибок прав доступа к nftset)
+# dnsmasq logs (check for permission issues when writing to nftset)
 journalctl -u dnsmasq.service -n 50 --no-pager
 ```
 
-### 7. Параметры ядра (sysctl)
+### 7. Kernel Parameters (sysctl)
 ```bash
-# Настройки фильтрации обратного пути (rp_filter)
-# 0 = выключен, 1 = строгий (strict), 2 = мягкий (loose)
+# Reverse path filter (rp_filter) settings:
+# 0 = disabled, 1 = strict, 2 = loose
 sysctl -a | grep -E '\.rp_filter'
 
-# Маршрутизация пакетов (ip_forward)
+# IPv4 packet forwarding
 sysctl net.ipv4.ip_forward
 ```
 
 ---
 
-## Архитектура работы сети и байпаса
+## Network Architecture & Split Tunneling
 
-### 1. Почему не работал интернет при всех включенных сервисах?
-1. **Тестовые ключи в конфиге AmneziaWG**: В `secrets/amnezia_for_awg.conf` находятся тестовые ключи. При автозапуске службы `awg-quick-awg0` утилита `awg-quick` перехватывает весь трафик (`AllowedIPs = 0.0.0.0/0`) через правило `not fwmark 51820 lookup 51820`. Если сервер не отвечает, весь трафик уходит в чёрную дыру.
-2. **Засорение DNS-серверов в dnsmasq**: Если NetworkManager передаёт через DHCP адреса DNS (например, провайдерские или внешние 8.8.8.8), а `no-resolv` не установлен, `dnsmasq` пытается опрашивать эти адреса. Они не помечены меткой байпаса, уходят в мёртвый туннель `awg0` и вызывают таймаут разрешения имён. С параметром `no-resolv = true` запросы идут **только** на адреса из `networking.bypass.dnsServers` (1.1.1.1, 1.0.0.1), которые гарантированно имеют метку `51820` и всегда идут мимо туннеля.
-3. **Drop обратных пакетов (rp_filter)**: Когда ядро отправляет байпас-пакет через `wlp1s0` с меткой `51820`, ответный пакет приходит на физический интерфейс. Если в файрволе включен строгий `checkReversePath`, файрвол отбрасывает ответ. Установка `checkReversePath = "loose"` решает эту проблему.
-4. **Права dnsmasq на запись в nftables**: `dnsmasq` при старте сбрасывает привилегии до непривилегированного пользователя. Для добавления записей в `nftset` сервису необходима capability `CAP_NET_ADMIN`.
+### 1. Root Causes: Why Internet Broke With All Services Enabled
+1. **Placeholder Keys in AmneziaWG Config**: `secrets/amnezia_for_awg.conf` contains published test keys. When `awg-quick-awg0` starts, `awg-quick` hijacks all traffic (`AllowedIPs = 0.0.0.0/0`) via `not fwmark 51820 lookup 51820`. If the tunnel endpoint is unreachable, all unexempted traffic enters a black hole.
+2. **DNS Pollution in dnsmasq**: If NetworkManager pushes DHCP DNS servers (e.g., local router or unrouted 8.8.8.8) and `no-resolv` is missing, `dnsmasq` queries those servers without a bypass mark. Those queries enter the dead `awg0` tunnel, stalling DNS. With `no-resolv = true`, queries are dispatched **strictly** to `networking.bypass.dnsServers` (`1.1.1.1`, `1.0.0.1`), which are explicitly marked with `51820` and routed through the physical gateway.
+3. **Reverse Path Filter Packet Drops (`rp_filter`)**: When bypass traffic leaves via `wlp1s0` with mark `51820`, return packets arrive on the physical interface. With strict `checkReversePath`, the kernel drops responses because the forward routing table points to `awg0`. Setting `checkReversePath = "loose"` resolves asymmetric return path drops.
+4. **dnsmasq nftset Permissions**: `dnsmasq` drops privileges to an unprivileged user at startup. Adding resolved entries to nftables sets requires the `CAP_NET_ADMIN` capability.
 
-### 2. Как устроен раздельный туннель (Split Tunnel)
+### 2. How the Split Tunnel Works
 ```text
- Приложение (curl https://github.com)
+ Application (e.g. curl https://github.com)
      │
      ▼
- 1. Резолв DNS -> 127.0.0.1:53 (dnsmasq)
+ 1. DNS Resolution -> 127.0.0.1:53 (dnsmasq)
      │
-     ├─► dnsmasq отправляет запрос на 1.1.1.1
-     │   (в nftables адрес 1.1.1.1 имеет правило: meta mark set 51820 -> идёт через физический шлюз)
+     ├─► dnsmasq sends query to 1.1.1.1
+     │   (nftables rule: ip daddr 1.1.1.1 -> meta mark set 51820 -> routes via default gateway)
      │
-     ├─► Получен ответ (например, 140.82.121.4)
-     │   dnsmasq автоматически выполняет:
+     ├─► Resolved response received (e.g. 140.82.121.4)
+     │   dnsmasq automatically executes:
      │   add element inet awg_bypass bypass_v4 { 140.82.121.4 }
      │
      ▼
- 2. Подключение к 140.82.121.4:443
+ 2. Connection to 140.82.121.4:443
      │
      ├─► nftables output chain (mangle):
      │   ip daddr @bypass_v4 -> meta mark set 51820
      │
      ├─► Policy Routing:
-     │   not fwmark 51820 lookup 51820  (НЕ СРАБАТЫВАЕТ, так как метка есть!)
-     │   lookup main                     (СРАБАТЫВАЕТ -> идёт через default gateway Wi-Fi)
+     │   not fwmark 51820 lookup 51820  (SKIPPED - mark matches!)
+     │   lookup main                     (MATCHED -> routes via physical Wi-Fi gateway)
      │
      └─► nftables postrouting chain:
-         meta mark 51820 masquerade -> SNAT в адрес Wi-Fi интерфейса
+         meta mark 51820 masquerade -> SNAT to physical interface IP
 ```
-Любые домены, не входящие в список байпаса, не попадают в `@bypass_v4`, не получают метку `51820` и безопасно идут внутри защищённого туннеля `awg0`.
+
+Any domain not listed in the bypass configuration does not enter `@bypass_v4`, receives no fwmark, and routes securely inside the `awg0` VPN tunnel.
