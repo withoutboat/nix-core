@@ -1,6 +1,27 @@
-{ pkgs, lib, ... }:
+{ config, pkgs, lib, ... }:
 
+let
+  # Derive base color mapping from active Stylix palette (base16)
+  mkBaseColors = c: {
+    fg = c.base05;
+    bg = c.base00;
+    black = c.base01;
+    red = c.base08;
+    green = c.base0B;
+    yellow = c.base0A;
+    blue = c.base0D;
+    magenta = c.base0E;
+    cyan = c.base0C;
+    white = c.base06;
+    orange = c.base09;
+  };
+
+  baseColors = mkBaseColors config.lib.stylix.colors.withHashtag;
+in
 {
+  # Expose base colors in config.lib.stylix for NixOS modules
+  lib.stylix.baseColors = baseColors;
+
   stylix = {
     enable = true;
     polarity = "dark";
@@ -33,6 +54,26 @@
       };
     };
   };
+
+  # Propagate base color options to Home Manager for Zellij default theme and other components
+  home-manager.sharedModules = [
+    ({ config, lib, ... }:
+      let
+        hmColors =
+          if config ? lib.stylix && config.lib.stylix ? colors then
+            mkBaseColors config.lib.stylix.colors.withHashtag
+          else
+            baseColors;
+      in
+      {
+        lib.stylix.baseColors = hmColors;
+
+        programs.zellij = {
+          settings.theme = lib.mkDefault "default";
+          themes.stylix.themes.default = lib.mapAttrs (_: lib.mkDefault) hmColors;
+        };
+      })
+  ];
 
   specialisation.light.configuration = {
     stylix = {
