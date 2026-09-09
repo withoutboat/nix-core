@@ -26,22 +26,50 @@ Rebuild the `pc-th` host after the bootstrapper has generated `hosts/pc-th/hardw
 sudo nixos-rebuild switch --flake .#pc-th
 ```
 
+## [Сетевая диагностика и тесты (Network Diagnostics & Tests)](tests/README.md)
 
-## `pc-th` AmneziaWG integration
+Полный набор автоматизированных тестов и скриптов сбора диагностики расположен в папке [`tests/`](tests/README.md).
 
-`pc-th` imports the local `modules/amneziawg.nix` module.
+- **Полная автоматическая диагностика**:
+  ```bash
+  sudo ./tests/diagnose-network.sh
+  ```
+  Собирает исчерпывающий срез состояния сетевого стека (интерфейсы, маршрутизацию, DNS, nftables, iptables, логи служб, пинги) в папку `tests/<date>/` и генерирует `tests/<date>/report.md`.
+- **Быстрая проверка связности и байпасов**:
+  ```bash
+  sudo ./tests/check-connectivity.sh
+  ```
+- **Тестирование связки dnsmasq + nftset + policy routing**:
+  ```bash
+  sudo ./tests/test-dnsmasq-bypass.sh github.com
+  ```
 
-- Config filename is specified in `hosts/<name>/configuration.nix` via `_module.args.spec.amneziaConfig` (e.g. `"amnezia_for_awg.conf"`).
-- When `amneziaConfig` is set and the encrypted file exists in `secrets/`, `modules/amneziawg.nix` automatically registers the SOPS binary secret and enables the system tunnel as `awg0`.
-- With `networking.networkmanager.enable = true`, the module orders the
-  `wg-quick-awg0` unit after `NetworkManager-wait-online.service`.
-- **Domain Bypass**: By default, traffic to `github.com` and all domains where Nix fetches packages/caches (`nixos.org`, `cachix.org`, `flakehub.com`, `garnix.io`, `gitlab.com`, `codeberg.org`, `crates.io`) automatically bypasses the `awg0` tunnel and routes directly via the physical network interface using `dnsmasq` and kernel `nftset`/`nftables` packet marking. Can be toggled with `services.amneziawg.bypassEnable` or customized via `services.amneziawg.bypassDomains`.
+Подробное руководство по командам ручной инспекции и архитектуре раздельного туннеля см. в **[tests/README.md](tests/README.md)**.
 
-For a full tunnel, keep the routing in the config file, including
-`AllowedIPs = 0.0.0.0/0` and `AllowedIPs = ::/0` when needed, plus any endpoint
-reachability rules required by your provider's `amneziawg` config.
 
-This module does not configure a generic kill-switch automatically.
+## Сетевая архитектура и интеграция AmneziaWG (`pc-th`)
+
+Сетевая система модульная и разделена на два специализированных модуля:
+
+### 1. `modules/networks.nix` (Сети, файрвол, DNS и байпас)
+- **Wi-Fi**: Декларативное создание профилей NetworkManager через `networking.networkmanager.ensureProfiles` на основе `spec.wifiSSID` и `spec.wifiPass`.
+- **Файрвол и фильтрация**: Настройка `networking.firewall` с `checkReversePath = "loose"` для корректного приёма ответных пакетов по маршрутам раздельного туннелирования.
+- **Раздельный туннель (Domain Bypass)**:
+  - Опция `networking.bypass.enable` (по умолчанию `true`).
+  - Трафик к `github.com` и кэшам Nix (`nixos.org`, `cachix.org`, `flakehub.com`, `garnix.io`, `gitlab.com`, `codeberg.org`, `crates.io`) автоматически пускается напрямую через шлюз по умолчанию.
+  - Управляется через `dnsmasq` и `nftables`: `dnsmasq` динамически наполняет сет `@bypass_v4` в таблице `inet awg_bypass`, а цепочка `output` помечает пакеты меткой `51820`, направляя их в `table main`.
+  - Защита DNS: `dnsmasq` настроен с `no-resolv = true`, исключая задержки и зависания из-за недоступных DNS-серверов внутри туннеля или некорректных DHCP-ответов.
+- **Параметры ядра**: `rp_filter = 2` (loose) и включение `ip_forward`.
+
+### 2. `modules/amneziawg.nix` (Изолированная логика AmneziaWG)
+- Отвечает исключительно за туннельный интерфейс AmneziaWG:
+  - Загрузка модулей ядра (`amneziawg`) и системных пакетов (`amneziawg-tools`, `amneziawg-go`).
+  - Автоматическая регистрация SOPS-бинарного секрета по `_module.args.spec.amneziaConfig` (например, `"amnezia_for_awg.conf"`).
+  - Управление жизненным циклом службы `awg-quick-${cfg.interfaceName}`.
+  - Удаление строк `DNS =` из конфига перед запуском `awg-quick`, предотвращая затирание `/etc/resolv.conf`.
+  - Маркировка интерфейса как неконтролируемого NetworkManager (`unmanaged`).
+
+Для полного туннеля сохраняйте маршруты в конфигурационном файле, включая `AllowedIPs = 0.0.0.0/0` и `AllowedIPs = ::/0`.
 
 ### After merge
 
