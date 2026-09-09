@@ -1,6 +1,27 @@
-{ pkgs, lib, ... }:
+{ config, pkgs, lib, ... }:
 
+let
+  # Derive base color mapping from active Stylix palette (base16)
+  mkBaseColors = c: {
+    fg = c.base05;
+    bg = c.base00;
+    black = c.base01;
+    red = c.base08;
+    green = c.base0B;
+    yellow = c.base0A;
+    blue = c.base0D;
+    magenta = c.base0E;
+    cyan = c.base0C;
+    white = c.base06;
+    orange = c.base09;
+  };
+
+  baseColors = mkBaseColors config.lib.stylix.colors.withHashtag;
+in
 {
+  # Expose base colors in config.lib.stylix for NixOS modules
+  lib.stylix.baseColors = baseColors;
+
   stylix = {
     enable = true;
     polarity = "dark";
