@@ -37,8 +37,6 @@ in
     polkit-1.u2fAuth = true;
   };
 
-  hardware.fido2.enable = true;
-
   services.udev.packages = [
     pkgs.yubikey-personalization
     pkgs.libfido2
