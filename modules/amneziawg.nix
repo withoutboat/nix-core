@@ -63,6 +63,7 @@ in
         sopsFile = secretPath;
         mode = "0400";
         owner = "root";
+        restartUnits = [ "awg-quick-${cfg.interfaceName}.service" ];
       };
     })
 
