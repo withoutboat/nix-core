@@ -35,7 +35,8 @@ in
   networking.hostName = "pc-th";
   networking.networkmanager.enable = true;
 
-  time.timeZone = "Asia/Tyumen";
+  time.timeZone = "Asia/Yekaterinburg";
+  services.timesyncd.enable = true;
   i18n.defaultLocale = "en_US.UTF-8";
 
   boot.loader.systemd-boot.enable = true;
