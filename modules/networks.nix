@@ -48,10 +48,6 @@ in
     domains = lib.mkOption {
       type = lib.types.listOf lib.types.str;
       default = spec.bypassDomains or spec.amneziaBypassDomains or [
-        "github.com"
-        "githubusercontent.com"
-        "githubassets.com"
-        "github.io"
         "nixos.org"
         "cachix.org"
         "flakehub.com"

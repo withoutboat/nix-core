@@ -41,7 +41,7 @@ sudo nixos-rebuild switch --flake .#pc-th
   ```
 - **Тестирование связки dnsmasq + nftset + policy routing**:
   ```bash
-  sudo ./tests/test-dnsmasq-bypass.sh github.com
+  sudo ./tests/test-dnsmasq-bypass.sh nixos.org
   ```
 
 Подробное руководство по командам ручной инспекции и архитектуре раздельного туннеля см. в **[tests/README.md](tests/README.md)**.
@@ -56,7 +56,7 @@ sudo nixos-rebuild switch --flake .#pc-th
 - **Файрвол и фильтрация**: Настройка `networking.firewall` с `checkReversePath = "loose"` для корректного приёма ответных пакетов по маршрутам раздельного туннелирования.
 - **Раздельный туннель (Domain Bypass)**:
   - Опция `networking.bypass.enable` (по умолчанию `true`).
-  - Трафик к `github.com` и кэшам Nix (`nixos.org`, `cachix.org`, `flakehub.com`, `garnix.io`, `gitlab.com`, `codeberg.org`, `crates.io`) автоматически пускается напрямую через шлюз по умолчанию.
+  - Трафик к кэшам Nix и репозиториям (`nixos.org`, `cachix.org`, `flakehub.com`, `garnix.io`, `gitlab.com`, `codeberg.org`, `crates.io`) автоматически пускается напрямую через шлюз по умолчанию (трафик GitHub направляется через VPN для работы Copilot и других сервисов).
   - Управляется через `dnsmasq` и `nftables`: `dnsmasq` динамически наполняет сет `@bypass_v4` в таблице `inet awg_bypass`, а цепочка `output` помечает пакеты меткой `51820`, направляя их в `table main`.
   - Защита DNS: `dnsmasq` настроен с `no-resolv = true`, исключая задержки и зависания из-за недоступных DNS-серверов внутри туннеля или некорректных DHCP-ответов.
 - **Параметры ядра**: `rp_filter = 2` (loose) и включение `ip_forward`.

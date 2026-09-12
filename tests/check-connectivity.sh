@@ -93,18 +93,18 @@ else
 fi
 
 # 6. Bypass Domain Resolution & nftset Population
-RESOLVED_GITHUB="$(dig @127.0.0.1 github.com +short +timeout=3 2>/dev/null | grep -E '^[0-9]+\.[0-9]+' | head -n1)"
-if [ -n "${RESOLVED_GITHUB}" ]; then
-  report_pass "Bypass Domain Resolution" "github.com resolved to ${RESOLVED_GITHUB}"
+RESOLVED_BYPASS="$(dig @127.0.0.1 nixos.org +short +timeout=3 2>/dev/null | grep -E '^[0-9]+\.[0-9]+' | head -n1)"
+if [ -n "${RESOLVED_BYPASS}" ]; then
+  report_pass "Bypass Domain Resolution" "nixos.org resolved to ${RESOLVED_BYPASS}"
   
   # Check if IP was added to nftables set
-  if nft list set inet awg_bypass bypass_v4 2>/dev/null | grep -q "${RESOLVED_GITHUB}"; then
-    report_pass "Dynamic nftset Population" "IP ${RESOLVED_GITHUB} was successfully added to @bypass_v4 by dnsmasq"
+  if nft list set inet awg_bypass bypass_v4 2>/dev/null | grep -q "${RESOLVED_BYPASS}"; then
+    report_pass "Dynamic nftset Population" "IP ${RESOLVED_BYPASS} was successfully added to @bypass_v4 by dnsmasq"
   else
-    report_warn "Dynamic nftset Population" "IP ${RESOLVED_GITHUB} was NOT found in @bypass_v4. Check dnsmasq CAP_NET_ADMIN"
+    report_warn "Dynamic nftset Population" "IP ${RESOLVED_BYPASS} was NOT found in @bypass_v4. Check dnsmasq CAP_NET_ADMIN"
   fi
 else
-  report_fail "Bypass Domain Resolution" "Failed to resolve github.com via local resolver"
+  report_fail "Bypass Domain Resolution" "Failed to resolve nixos.org via local resolver"
 fi
 
 # 7. Bypass Domain HTTP/HTTPS Connectivity

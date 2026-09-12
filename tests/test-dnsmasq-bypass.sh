@@ -13,7 +13,7 @@ BLUE='\033[0;34m'
 BOLD='\033[1m'
 NC='\033[0m'
 
-TEST_DOMAIN="${1:-github.com}"
+TEST_DOMAIN="${1:-nixos.org}"
 
 echo -e "${BOLD}${BLUE}===================================================================${NC}"
 echo -e "${BOLD}${BLUE}   dnsmasq + nftables Split-Tunnel Bypass Verification             ${NC}"
