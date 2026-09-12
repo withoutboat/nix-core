@@ -19,6 +19,7 @@ in
     ../../modules/hyperland.nix
     ../../modules/sops.nix
     ../../modules/theme.nix
+    ../../modules/system.nix
   ]
   ++ lib.optional hasGeneratedConfiguration generatedConfiguration
   ++ lib.optional hasGeneratedHardware generatedHardware;
@@ -42,11 +43,6 @@ in
   boot.loader.efi.canTouchEfiVariables = true;
   boot.loader.systemd-boot.configurationLimit = 5;
   boot.loader.systemd-boot.editor = false;
-  nix.gc = {
-    automatic = true;
-    dates = "weekly";
-    options = "--delete-older-than 2d";
-  };
 
   boot.initrd = {
     systemd.enable = true;
@@ -61,28 +57,6 @@ in
   environment.systemPackages = with pkgs; [
     git curl home-manager
   ];
-
-  # Enable compressed swap in RAM to prevent system freezes and OOM during heavy builds
-  zramSwap = {
-    enable = true;
-    memoryPercent = 50;
-  };
-
-  # Protect interactive desktop & terminal from nix build starvation
-  nix = {
-    settings = {
-      experimental-features = [ "nix-command" "flakes" ];
-      auto-optimise-store = true;
-    };
-    daemonCPUSchedPolicy = "idle";
-    daemonIOSchedClass = "idle";
-  };
-
-  # Prevent total kernel freezes under extreme memory pressure
-  services.earlyoom = {
-    enable = true;
-    enableNotifications = true;
-  };
 
   system.stateVersion = "26.11";
 }

@@ -50,6 +50,7 @@
       yubikey = import ./modules/yubikey.nix;
       amneziawg = import ./modules/amneziawg.nix;
       theme = import ./modules/theme.nix;
+      system = import ./modules/system.nix;
       default = self.nixosModules.yubikey;
     };
 
