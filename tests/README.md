@@ -41,8 +41,8 @@ Verifies:
 3. Local dnsmasq resolver responsiveness on `127.0.0.1:53`.
 4. Correctness of `/etc/resolv.conf`.
 5. Existence of table `inet awg_bypass` and sets `bypass_v4` / `bypass_v6`.
-6. Dynamic population of nftset upon domain resolution (e.g. `github.com`).
-7. HTTPS accessibility of bypass domains (`github.com`, `nixos.org`).
+6. Dynamic population of nftset upon domain resolution (e.g. `nixos.org`).
+7. HTTPS accessibility of bypass domains (`nixos.org`).
 8. Status of the AmneziaWG tunnel (`awg0`) and presence of active handshakes.
 9. Outbound global internet routing through the full VPN tunnel.
 
@@ -51,7 +51,7 @@ Verifies:
 Deep inspection and verification of the `dnsmasq` -> `nftset` -> `fwmark 51820` -> `table main` chain:
 
 ```bash
-sudo ./tests/test-dnsmasq-bypass.sh github.com
+sudo ./tests/test-dnsmasq-bypass.sh nixos.org
 ```
 
 ---
@@ -198,7 +198,7 @@ sysctl net.ipv4.ip_forward
 
 ### 2. How the Split Tunnel Works
 ```text
- Application (e.g. curl https://github.com)
+ Application (e.g. curl https://nixos.org)
      │
      ▼
  1. DNS Resolution -> 127.0.0.1:53 (dnsmasq)
@@ -206,12 +206,12 @@ sysctl net.ipv4.ip_forward
      ├─► dnsmasq sends query to 1.1.1.1
      │   (nftables rule: ip daddr 1.1.1.1 -> meta mark set 51820 -> routes via default gateway)
      │
-     ├─► Resolved response received (e.g. 140.82.121.4)
+     ├─► Resolved response received (e.g. IP of nixos.org)
      │   dnsmasq automatically executes:
-     │   add element inet awg_bypass bypass_v4 { 140.82.121.4 }
+     │   add element inet awg_bypass bypass_v4 { <ip> }
      │
      ▼
- 2. Connection to 140.82.121.4:443
+ 2. Connection to <ip>:443
      │
      ├─► nftables output chain (mangle):
      │   ip daddr @bypass_v4 -> meta mark set 51820
