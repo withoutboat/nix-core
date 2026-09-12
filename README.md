@@ -26,50 +26,33 @@ Rebuild the `pc-th` host after the bootstrapper has generated `hosts/pc-th/hardw
 sudo nixos-rebuild switch --flake .#pc-th
 ```
 
-## [Сетевая диагностика и тесты (Network Diagnostics & Tests)](tests/README.md)
+## Network Diagnostics & Tests
 
-Полный набор автоматизированных тестов и скриптов сбора диагностики расположен в папке [`tests/`](tests/README.md).
+For network diagnostics, connectivity checks, and split-tunnel inspection tools, see [tests/README.md](tests/README.md).
 
-- **Полная автоматическая диагностика**:
-  ```bash
-  sudo ./tests/diagnose-network.sh
-  ```
-  Собирает исчерпывающий срез состояния сетевого стека (интерфейсы, маршрутизацию, DNS, nftables, iptables, логи служб, пинги) в папку `tests/<date>/` и генерирует `tests/<date>/report.md`.
-- **Быстрая проверка связности и байпасов**:
-  ```bash
-  sudo ./tests/check-connectivity.sh
-  ```
-- **Тестирование связки dnsmasq + nftset + policy routing**:
-  ```bash
-  sudo ./tests/test-dnsmasq-bypass.sh github.com
-  ```
+## Network Architecture & AmneziaWG Integration (`pc-th`)
 
-Подробное руководство по командам ручной инспекции и архитектуре раздельного туннеля см. в **[tests/README.md](tests/README.md)**.
+The network stack is modular and split into two specialized modules:
 
+### 1. `modules/networks.nix` (Networking, Firewall, DNS & Split-Tunnel Bypass)
+- **Wi-Fi**: Declarative NetworkManager profiles via `networking.networkmanager.ensureProfiles` using `spec.wifiSSID` and `spec.wifiPass`.
+- **Firewall & Filtering**: Configures `networking.firewall` with `checkReversePath = "loose"` to prevent asymmetric return packet drops on split-tunnel routes.
+- **Split Tunnel (Domain Bypass)**:
+  - Option `networking.bypass.enable` (defaults to `true`).
+  - Traffic to Nix caches and repositories (`nixos.org`, `cachix.org`, `flakehub.com`, `garnix.io`, `gitlab.com`, `codeberg.org`, `crates.io`) routes directly via default gateway (GitHub traffic routes through VPN for Copilot and other services).
+  - Managed via `dnsmasq` and `nftables`: `dnsmasq` dynamically populates the `@bypass_v4` set in table `inet awg_bypass`, and the `output` chain tags packets with mark `51820`, steering them into `table main`.
+  - DNS Protection: `dnsmasq` configured with `no-resolv = true`, preventing stalls caused by unreachable DNS servers inside the tunnel or broken DHCP responses.
+- **Kernel Parameters**: `rp_filter = 2` (loose) and `ip_forward = 1`.
 
-## Сетевая архитектура и интеграция AmneziaWG (`pc-th`)
+### 2. `modules/amneziawg.nix` (Isolated AmneziaWG Logic)
+- Dedicated solely to the AmneziaWG tunnel interface:
+  - Kernel module loading (`amneziawg`) and system packages (`amneziawg-tools`, `amneziawg-go`).
+  - Automatic SOPS binary secret registration using `_module.args.spec.amneziaConfig` (e.g., `"amnezia_for_awg.conf"`).
+  - Lifecycle management of the `awg-quick-${cfg.interfaceName}` systemd service.
+  - Strips `DNS =` lines before launching `awg-quick`, preventing `/etc/resolv.conf` from being overwritten.
+  - Marks interface as unmanaged by NetworkManager (`unmanaged`).
 
-Сетевая система модульная и разделена на два специализированных модуля:
-
-### 1. `modules/networks.nix` (Сети, файрвол, DNS и байпас)
-- **Wi-Fi**: Декларативное создание профилей NetworkManager через `networking.networkmanager.ensureProfiles` на основе `spec.wifiSSID` и `spec.wifiPass`.
-- **Файрвол и фильтрация**: Настройка `networking.firewall` с `checkReversePath = "loose"` для корректного приёма ответных пакетов по маршрутам раздельного туннелирования.
-- **Раздельный туннель (Domain Bypass)**:
-  - Опция `networking.bypass.enable` (по умолчанию `true`).
-  - Трафик к `github.com` и кэшам Nix (`nixos.org`, `cachix.org`, `flakehub.com`, `garnix.io`, `gitlab.com`, `codeberg.org`, `crates.io`) автоматически пускается напрямую через шлюз по умолчанию.
-  - Управляется через `dnsmasq` и `nftables`: `dnsmasq` динамически наполняет сет `@bypass_v4` в таблице `inet awg_bypass`, а цепочка `output` помечает пакеты меткой `51820`, направляя их в `table main`.
-  - Защита DNS: `dnsmasq` настроен с `no-resolv = true`, исключая задержки и зависания из-за недоступных DNS-серверов внутри туннеля или некорректных DHCP-ответов.
-- **Параметры ядра**: `rp_filter = 2` (loose) и включение `ip_forward`.
-
-### 2. `modules/amneziawg.nix` (Изолированная логика AmneziaWG)
-- Отвечает исключительно за туннельный интерфейс AmneziaWG:
-  - Загрузка модулей ядра (`amneziawg`) и системных пакетов (`amneziawg-tools`, `amneziawg-go`).
-  - Автоматическая регистрация SOPS-бинарного секрета по `_module.args.spec.amneziaConfig` (например, `"amnezia_for_awg.conf"`).
-  - Управление жизненным циклом службы `awg-quick-${cfg.interfaceName}`.
-  - Удаление строк `DNS =` из конфига перед запуском `awg-quick`, предотвращая затирание `/etc/resolv.conf`.
-  - Маркировка интерфейса как неконтролируемого NetworkManager (`unmanaged`).
-
-Для полного туннеля сохраняйте маршруты в конфигурационном файле, включая `AllowedIPs = 0.0.0.0/0` и `AllowedIPs = ::/0`.
+For full tunnel operation, preserve routes in the configuration file, including `AllowedIPs = 0.0.0.0/0` and `AllowedIPs = ::/0`.
 
 ### After merge
 
