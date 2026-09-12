@@ -46,6 +46,13 @@
     };
   in
   {
+    nixosModules = {
+      yubikey = import ./modules/yubikey.nix;
+      amneziawg = import ./modules/amneziawg.nix;
+      theme = import ./modules/theme.nix;
+      default = self.nixosModules.yubikey;
+    };
+
     packages.${system}.iso-installer = (nixpkgs.lib.nixosSystem {
       inherit system;
       modules = [
