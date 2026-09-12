@@ -134,6 +134,8 @@ in
           fi
           cp "${cfg.configFile}" /run/amneziawg/${cfg.interfaceName}.conf
           chmod 600 /run/amneziawg/${cfg.interfaceName}.conf
+          # Strip empty key=value lines (e.g. empty I2 =, I3 =, etc.) which cause 'Line unrecognized' in awg setconf
+          ${pkgs.gnused}/bin/sed -i -E '/^[[:space:]]*[A-Za-z0-9_-]+[[:space:]]*=[[:space:]]*$/d' /run/amneziawg/${cfg.interfaceName}.conf
           ${lib.optionalString config.networking.bypass.enable ''
             # Strip DNS entries from AmneziaWG config so awg-quick does not overwrite
             # resolvconf and break local dnsmasq resolution and domain bypass
@@ -157,6 +159,8 @@ in
             if [ -f "${cfg.configFile}" ]; then
               cp "${cfg.configFile}" /run/amneziawg/${cfg.interfaceName}.conf
               chmod 600 /run/amneziawg/${cfg.interfaceName}.conf
+              # Strip empty key=value lines (e.g. empty I2 =, I3 =, etc.) which cause 'Line unrecognized' in awg setconf
+              ${pkgs.gnused}/bin/sed -i -E '/^[[:space:]]*[A-Za-z0-9_-]+[[:space:]]*=[[:space:]]*$/d' /run/amneziawg/${cfg.interfaceName}.conf
               ${lib.optionalString config.networking.bypass.enable ''
                 ${pkgs.gnused}/bin/sed -i '/^[[:space:]]*DNS[[:space:]]*=/d' /run/amneziawg/${cfg.interfaceName}.conf
               ''}
