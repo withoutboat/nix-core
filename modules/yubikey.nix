@@ -37,6 +37,8 @@ in
     polkit-1.u2fAuth = true;
   };
 
+  hardware.fido2.enable = true;
+
   services.udev.packages = [
     pkgs.yubikey-personalization
     pkgs.libfido2
@@ -63,7 +65,7 @@ in
   users.users.greeter.extraGroups = [ "plugdev" ];
 
   services.udev.extraRules = ''
-    SUBSYSTEM=="usb", ATTR{idVendor}=="1050", MODE="0660", GROUP="plugdev"
-    KERNEL=="hidraw*", SUBSYSTEM=="hidraw", ATTRS{idVendor}=="1050", MODE="0660", GROUP="plugdev"
+    SUBSYSTEM=="usb", ATTR{idVendor}=="1050", MODE="0660", GROUP="plugdev", TAG+="uaccess"
+    KERNEL=="hidraw*", SUBSYSTEM=="hidraw", ATTRS{idVendor}=="1050", MODE="0660", GROUP="plugdev", TAG+="uaccess"
   '';
 }
