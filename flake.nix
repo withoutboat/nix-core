@@ -51,6 +51,7 @@
       amneziawg = import ./modules/amneziawg.nix;
       theme = import ./modules/theme.nix;
       system = import ./modules/system.nix;
+      vial = import ./modules/vial.nix;
       default = self.nixosModules.yubikey;
     };
 
