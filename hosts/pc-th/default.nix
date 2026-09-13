@@ -14,6 +14,7 @@ in
     ../../modules/networks.nix
     ../../modules/amneziawg.nix
     ../../modules/yubikey.nix
+    ../../modules/vial.nix
     ../../modules/logitech.nix
     ../../modules/terminal.nix
     ../../modules/hyperland.nix
