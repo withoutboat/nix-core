@@ -78,10 +78,10 @@ in
   };
 
   # Enable memory accounting for user sessions and cgroups
-  systemd.user.extraConfig = ''
-    DefaultMemoryAccounting=yes
-    DefaultCPUAccounting=yes
-  '';
+  systemd.user.settings.Manager = {
+    DefaultMemoryAccounting = true;
+    DefaultCPUAccounting = true;
+  };
 
   # Targeted earlyoom: protect desktop & sessions, target memory hogs before freeze
   services.earlyoom = {
